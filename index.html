@@ -293,7 +293,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
   display:flex;flex-direction:column;align-items:center;gap:7px;z-index:6;box-shadow:0 6px 20px rgb(0 0 0/.18)}
 .quiz .ex{font-family:var(--display);font-size:clamp(26px,8.5vw,38px);line-height:1;font-variant-numeric:tabular-nums}
 .quiz .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:14px}
-.quiz .dots i{width:13px;height:13px;border-radius:50%;background:var(--accent)}
+.quiz .dots i{width:11px;height:11px;border-radius:50%;background:var(--accent)}
 .quiz .dots i.b{background:var(--gold)} .quiz .dots i.gap{width:8px;background:none}
 .quiz .dots i.x{background:none;border:2px dashed var(--muted);box-sizing:border-box}
 .quiz .ans{display:flex;gap:10px;width:100%}
@@ -1616,17 +1616,18 @@ SCENES.boat=function(alive){
 };
 
 /* 2–4. Камни с примерами */
-const NUM_WORDS=['Ноль','Один','Два','Три','Четыре','Пять','Шесть','Семь','Восемь','Девять','Десять'];
+const NUM_WORDS=['Ноль','Один','Два','Три','Четыре','Пять','Шесть','Семь','Восемь','Девять','Десять','Одиннадцать','Двенадцать','Тринадцать','Четырнадцать','Пятнадцать','Шестнадцать','Семнадцать','Восемнадцать','Девятнадцать','Двадцать'];
 function makeExample(mode,prev){
   for(let k=0;k<30;k++){
     let a,b,op='+';
-    if(mode==='add5'){a=1+Math.floor(Math.random()*4);b=1+Math.floor(Math.random()*(5-a))}
-    else if(mode==='add10'){a=1+Math.floor(Math.random()*8);b=1+Math.floor(Math.random()*(10-a));if(a+b<6)continue}
-    else{op='−';a=3+Math.floor(Math.random()*8);b=1+Math.floor(Math.random()*(a-1))}
+    const R=(lo,hi)=>lo+Math.floor(Math.random()*(hi-lo+1));
+    if(mode==='add10'){a=R(2,8);b=R(2,10-a);if(a+b<6)continue}            // сложение до 10
+    else if(mode==='add20'){a=R(4,9);b=R(3,9);if(a+b<11)continue}         // сложение с переходом через десяток
+    else{op='−';a=R(11,18);b=R(3,9);if(a-b>9)continue}                    // вычитание с переходом через десяток
     const ans=op==='+'?a+b:a-b;
     if(prev&&prev.a===a&&prev.b===b) continue;
     const opts=new Set([ans]);
-    while(opts.size<3){const d=ans+pick([-2,-1,1,2]);if(d>=0&&d<=10)opts.add(d)}
+    while(opts.size<3){const d=ans+pick([-2,-1,1,2]);if(d>=0&&d<=20)opts.add(d)}
     return{a,b,op,ans,opts:[...opts].sort(()=>Math.random()-.5)};
   }
 }
@@ -1667,9 +1668,9 @@ function stonesScene(alive,mode,last){
   }
   setTimeout(()=>alive()&&ask(),500);
 }
-SCENES.stones1=alive=>stonesScene(alive,'add5',false);
-SCENES.stones2=alive=>stonesScene(alive,'add10',false);
-SCENES.stones3=alive=>stonesScene(alive,'sub10',true);
+SCENES.stones1=alive=>stonesScene(alive,'add10',false);
+SCENES.stones2=alive=>stonesScene(alive,'add20',false);
+SCENES.stones3=alive=>stonesScene(alive,'sub20',true);
 
 /* 5. Берег */
 SCENES.shore=function(alive){
