@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Чёрный паук</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: one-screen game — сверху карточка этапа (точки, задание, прогресс), сцена с пауками и букашками, снизу кнопки */
+:root{
+  --bg:#eef0e9; --web:#c7cbbd; --fg:#1b1c18; --muted:#6b6f62;
+  --bubble:#ffffff; --accent:#d8432f; --spider:#141412; --violet:#7a3cc9; --red:#d6332b; --blue:#2350c8; --green:#2f9e44; --gold:#e8a816;
+  --wing:rgb(160 190 215/.7); --track:rgb(27 28 24/.1); --poison:#2f6fe0;
+  --display:"Rubik Mono One","Arial Black",system-ui,sans-serif;
+  --body:"Nunito",system-ui,-apple-system,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17181c; --web:#34363d; --fg:#ecebe6; --muted:#8e9099; --bubble:#2a2c33; --accent:#ff6a52;
+  --spider:#050506; --violet:#9b5cf0; --red:#ff4d43; --blue:#4d7dff; --green:#4cc764; --gold:#f5c03a; --wing:rgb(190 215 240/.55); --track:rgb(236 235 230/.12); --poison:#5a95ff; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#17181c; --web:#34363d; --fg:#ecebe6; --muted:#8e9099; --bubble:#2a2c33; --accent:#ff6a52;
+  --spider:#050506; --violet:#9b5cf0; --red:#ff4d43; --blue:#4d7dff; --green:#4cc764; --gold:#f5c03a; --wing:rgb(190 215 240/.55); --track:rgb(236 235 230/.12); --poison:#5a95ff; color-scheme:dark }
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;padding:0 16px;box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+#web{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#web path,#web line{stroke:var(--web);fill:none;stroke-width:1.5}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
+
+/* ---- карточка этапа ---- */
+.hud{position:relative;z-index:5;padding-block:14px 4px;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.hud.pop{animation:pop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:scale(.85);opacity:.3}100%{transform:scale(1);opacity:1}}
+.steps{display:flex;gap:6px}
+.steps i{width:10px;height:10px;border-radius:50%;background:var(--track);transition:background .3s,transform .3s}
+.steps i.done{background:var(--gold)}
+.steps i.now{background:var(--accent);transform:scale(1.35)}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);line-height:1.15;margin:0;text-wrap:balance}
+.hint{color:var(--muted);margin:0;font-size:15px;font-weight:600;text-wrap:balance}
+.bars{width:100%;max-width:280px;display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.bar{height:12px;border-radius:999px;background:var(--track);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .35s cubic-bezier(.3,1.4,.5,1)}
+.bar.rival{height:8px}.bar.rival i{background:var(--red)}
+.count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.count b{font-family:var(--display);font-weight:400;color:var(--accent)}
+.count em{font-style:normal;font-family:var(--display);color:var(--red)}
+#replay{font:inherit;font-family:var(--display);font-size:16px;color:#fff;background:var(--accent);border:0;border-radius:999px;padding:12px 22px;cursor:pointer;margin-top:4px}
+
+/* ---- сцена ---- */
+.stage{position:relative;flex:1;width:100%;max-width:680px;overflow:hidden;touch-action:none}
+#threads{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#threads line{stroke:var(--muted);stroke-width:2}
+#banner{position:absolute;left:50%;top:42%;translate:-50% -50%;z-index:8;pointer-events:none;
+  font-family:var(--display);font-size:clamp(30px,10vw,56px);color:var(--gold);white-space:nowrap;
+  text-shadow:0 3px 0 var(--accent),0 8px 24px rgb(0 0 0/.25);opacity:0}
+#banner.show{animation:banner 1.7s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes banner{0%{opacity:0;scale:.3 .3;rotate:-8deg}18%{opacity:1;scale:1.1 1.1;rotate:3deg}30%{scale:1 1;rotate:0deg}80%{opacity:1}100%{opacity:0;scale:1.15 1.15}}
+
+.sw{position:absolute;left:0;top:0;width:min(34vw,170px);z-index:3;will-change:transform}
+.sw.purple{--spider:var(--violet);z-index:4}
+.sw.red{--spider:var(--red);z-index:4}
+.sw.blue{--spider:var(--blue);z-index:4}
+.sw.green{--spider:var(--green);z-index:4}
+.green .bubble b{color:var(--green)}
+.tickled .sp{animation:laugh .16s infinite}
+.tickled .legs-l{animation:wigL .16s infinite}.tickled .legs-r{animation:wigR .16s infinite}
+.sw.yuck{--spider:#5f8f2e}
+.sp{display:block;width:100%;background:none;border:0;padding:0;cursor:pointer;transform-origin:50% 0}
+.sp:focus-visible{outline:3px dashed var(--accent);outline-offset:6px;border-radius:50%}
+.sp svg{width:100%;height:auto;display:block;overflow:visible}
+.body{fill:var(--spider);transition:fill .3s}
+.leg{fill:none;stroke:var(--spider);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.eye{fill:#fff}.pupil{fill:#111}
+.lids{display:none;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round}
+.brow{stroke:#111;stroke-width:3;stroke-linecap:round;display:none}
+.purple .brow,.red .brow{display:inline}
+.legs-l,.legs-r{transform-origin:100px 100px}
+.asleep .eye,.asleep .pupil{display:none}
+.asleep .lids{display:inline}
+.asleep .sp{animation:sway 3.2s ease-in-out infinite}
+@keyframes sway{0%,100%{rotate:-4deg}50%{rotate:4deg}}
+.zzz{position:absolute;left:62%;top:10%;display:none;font-family:var(--display);color:var(--muted);pointer-events:none}
+.asleep .zzz{display:block}
+.zzz span{position:absolute;opacity:0;animation:zz 3s infinite}
+.zzz span:nth-child(2){animation-delay:1s;font-size:1.3em}
+.zzz span:nth-child(3){animation-delay:2s;font-size:1.7em}
+@keyframes zz{0%{opacity:0;translate:0 0}20%{opacity:1}100%{opacity:0;translate:30px -60px}}
+.ring{position:absolute;left:50%;top:50.6%;width:150%;aspect-ratio:1;translate:-50% -50%;border:3px dashed var(--accent);border-radius:50%;
+  opacity:.5;display:none;pointer-events:none;animation:spin 4s linear infinite}
+.ring::after{content:"";position:absolute;top:-11px;left:50%;border:9px solid transparent;border-left:14px solid var(--accent);border-right:0}
+.eyes .ring{display:block}
+
+.jump{animation:jump .7s cubic-bezier(.2,.8,.3,1)}
+.jump .legs-l{animation:wigL .7s}.jump .legs-r{animation:wigR .7s}
+.crawl .legs-l{animation:wigL .25s infinite}.crawl .legs-r{animation:wigR .25s infinite}
+.chomp{animation:chomp .18s 4}
+.stir{animation:stir .5s}
+.laugh{animation:laugh .16s 8}
+.laugh .legs-l{animation:wigL .16s 8}.laugh .legs-r{animation:wigR .16s 8}
+.sad{animation:sad .9s}
+.shake{animation:shake .1s 6}
+@keyframes jump{0%{translate:0 0;scale:1 1}12%{translate:0 10px;scale:1.12 .86}
+  45%{translate:0 -90px;scale:.92 1.1}70%{translate:0 0;scale:1.08 .92}85%{scale:.97 1.03}100%{translate:0 0;scale:1 1}}
+@keyframes wigL{0%,100%{rotate:0deg}50%{rotate:-14deg}}
+@keyframes wigR{0%,100%{rotate:0deg}50%{rotate:14deg}}
+@keyframes chomp{50%{scale:1.08 .9}}
+@keyframes stir{25%{rotate:-10deg}75%{rotate:10deg}}
+@keyframes laugh{0%,100%{translate:0 0;rotate:0deg}25%{translate:0 -8px;rotate:-6deg}75%{translate:0 -8px;rotate:6deg}}
+@keyframes sad{30%{translate:0 8px;scale:1.05 .92}100%{translate:0 0}}
+@keyframes shake{25%{translate:-6px 0}75%{translate:6px 0}}
+
+.bubble{position:absolute;bottom:calc(100% - 16px);left:55%;transform:scale(.4);transform-origin:0 100%;opacity:0;
+  background:var(--bubble);color:var(--fg);font-family:var(--display);font-size:clamp(12px,3.6vw,17px);
+  padding:10px 14px;border-radius:18px;width:max-content;max-width:min(230px,62vw);line-height:1.25;text-wrap:balance;box-shadow:0 6px 20px rgb(0 0 0/.15);
+  transition:transform .25s cubic-bezier(.3,1.6,.5,1),opacity .2s;pointer-events:none;z-index:6}
+.bubble::after{content:"";position:absolute;left:16px;bottom:-10px;border:10px solid transparent;border-top-color:var(--bubble);border-bottom:0}
+.bubble.show{opacity:1;transform:scale(1)}
+.bubble.flip{left:auto;right:55%;transform-origin:100% 100%}
+.bubble.flip::after{left:auto;right:16px}
+.bubble b{color:var(--accent);font-weight:400}
+.purple .bubble b{color:var(--violet)} .red .bubble b{color:var(--red)} .blue .bubble b{color:var(--blue)}
+.purple .brow,.red .brow,.blue .brow{display:inline}
+
+.bug{position:absolute;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;padding:0;border:0;background:none;
+  cursor:pointer;z-index:2;will-change:transform}
+.bug:focus-visible{outline:2px dashed var(--accent);border-radius:50%}
+.bug svg{width:100%;height:100%;overflow:visible;transition:scale .2s}
+.bug.caught svg{animation:wiggle .12s infinite}
+.bug.gone svg{scale:0}
+.bug.hunted::before{content:"";position:absolute;inset:2px;border:2px dashed var(--hc,var(--violet));border-radius:50%;opacity:.8;animation:spin 2s linear infinite}
+.flap{animation:flap .08s infinite alternate;transform-box:fill-box}
+.flapL{transform-origin:right center}.flapR{transform-origin:left center}
+.slow{animation-duration:.22s}
+.stink{animation:stink 1.4s ease-in-out infinite}
+.bug.poison::after{content:"";position:absolute;inset:-4px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(var(--poison) calc(var(--p,1)*360deg),var(--track) 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 5px),#000 calc(100% - 4px))}
+.bug.poison.caught::after{display:none}
+.bug.hurry svg{animation:hurry .3s infinite}
+@keyframes hurry{50%{scale:1.15 1.15}}
+.cloud{position:absolute;left:0;top:0;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;pointer-events:none;z-index:7;
+  background:radial-gradient(circle,rgb(70 120 230/.6),rgb(120 100 230/.25) 45%,transparent 70%);animation:cloud 1.4s ease-out forwards}
+@keyframes cloud{0%{scale:.2 .2;opacity:1}100%{scale:2.2 2.2;opacity:0}}
+.sw.poisoned{--spider:#2f5fb8}
+.poisoned .sp{animation:dizzy .7s ease-in-out infinite}
+@keyframes dizzy{0%,100%{rotate:-9deg}50%{rotate:9deg}}
+@keyframes flap{to{scale:.25 1}}
+@keyframes wiggle{50%{rotate:12deg}}
+@keyframes spin{to{rotate:360deg}}
+@keyframes stink{0%,100%{opacity:.2;translate:0 2px}50%{opacity:.9;translate:0 -3px}}
+
+footer{position:relative;z-index:5;padding-block:8px 18px;display:flex;gap:10px;align-items:center;justify-content:center}
+footer button{font:inherit;font-weight:800;font-size:14px;color:var(--fg);background:var(--bubble);border:1.5px solid var(--web);
+  border-radius:999px;padding:8px 14px;cursor:pointer}
+footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.jump,.chomp,.flap,.laugh,.sad,.stir,.shake,.ring,.zzz span{animation-duration:.01s}}
+
+/* ================= эпизод 2: комнаты ================= */
+:root{ --wall:#e4e9e0; --wallbed:#e6e0ef; --dot:rgb(122 60 201/.12); --floor:#d6c7ad; --tile:#cfe2e8; --grout:rgb(255 255 255/.65);
+  --porcelain:#ffffff; --line:rgb(27 28 24/.18); --wood:#a8794f; --wood2:#c99a6b; --water:#4ea3e6; --sheet:#f7f4ee;
+  --blanket:#e9a23b; --blanket2:#d18a26; --night:#1d2550; --paper:#fbf6ea }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --wall:#252830; --wallbed:#28243a; --dot:rgb(155 92 240/.14);
+  --floor:#3b342c; --tile:#22343b; --grout:rgb(255 255 255/.07); --porcelain:#e6eaee; --line:rgb(0 0 0/.35); --wood:#8a6040; --wood2:#a8794f;
+  --water:#4d9be0; --sheet:#d9dce2; --blanket:#d8912e; --blanket2:#b97821; --night:#0c1030; --paper:#efe7d4 }}
+:root[data-theme="dark"]{ --wall:#252830; --wallbed:#28243a; --dot:rgb(155 92 240/.14);
+  --floor:#3b342c; --tile:#22343b; --grout:rgb(255 255 255/.07); --porcelain:#e6eaee; --line:rgb(0 0 0/.35); --wood:#8a6040; --wood2:#a8794f;
+  --water:#4d9be0; --sheet:#d9dce2; --blanket:#d8912e; --blanket2:#b97821; --night:#0c1030; --paper:#efe7d4 }
+
+[hidden]{display:none!important}
+#banner{position:fixed;z-index:25}
+.room{position:absolute;inset:0;overflow:hidden;border-radius:18px}
+.room .wall{position:absolute;inset:0 0 22% 0;background:var(--wall)}
+.room .floor{position:absolute;left:0;right:0;bottom:0;height:22%;background:var(--floor)}
+.room.bath .wall{background-color:var(--tile);background-image:linear-gradient(var(--grout) 2px,transparent 2px),linear-gradient(90deg,var(--grout) 2px,transparent 2px);background-size:34px 34px}
+.room.bedroom .wall{background-color:var(--wallbed);background-image:radial-gradient(var(--dot) 2.5px,transparent 3px);background-size:28px 28px}
+.room.hall .wall{background:linear-gradient(transparent 68%,var(--wood2) 68% 70.5%,transparent 70.5%),var(--wall)}
+.room svg{display:block;width:100%;height:auto;overflow:visible}
+.obj{position:absolute;bottom:19%;translate:-50% 0;padding:0;border:0;background:none;cursor:pointer}
+.toilet{width:min(30vw,140px)} .sink{width:min(26vw,120px)}
+.toilet .lid-open{display:none} .toilet.open .lid-open{display:inline} .toilet.open .lid-closed{display:none}
+.swirl{opacity:0;transform-box:fill-box;transform-origin:center}
+.toilet.flush .swirl{animation:swirl 1.2s}
+@keyframes swirl{20%{opacity:1}100%{opacity:0;rotate:720deg;scale:.2 .2}}
+.sink .stream,.sink .suds{opacity:0;transition:opacity .2s} .sink.on .stream,.sink.on .suds{opacity:1}
+.tapme{animation:tapme 1.4s ease-in-out infinite}
+@keyframes tapme{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 10px var(--gold)) drop-shadow(0 0 3px var(--gold))}}
+
+.walker{left:50%;top:60%;translate:-50% -50%;width:min(28vw,130px);z-index:3;
+  transition:left .9s ease-in-out,top .9s ease-in-out,width .5s,opacity .6s,scale .6s}
+.walker.noanim{transition:none}
+.walker.big{width:min(58vw,260px)} .walker.inbed{width:min(22vw,100px)} .walker.parent{width:min(32vw,150px)}
+.walker.sitting .sp{scale:1 .86;translate:0 6%}
+.walker.vanish{opacity:0;scale:.4 .4}
+.walker.fly{animation:fly 1.2s cubic-bezier(.3,.7,.4,1)}
+@keyframes fly{0%{translate:-50% -50%}45%{translate:-50% calc(-50% - 230px);rotate:200deg}100%{translate:-50% -50%;rotate:360deg}}
+.hug{animation:hug .9s}
+@keyframes hug{30%{scale:1.14 .88}60%{scale:.95 1.06}}
+.sw.mom{--spider:#3a2740} .sw.dad{--spider:#20262f}
+.bow,.specs,.teeth{display:none} .mom .bow,.dad .specs,.grin .teeth{display:inline} .grin .mouth{display:none}
+.tooth{fill:var(--teeth,#fff)}
+
+.mirror{position:absolute;left:50%;top:5%;translate:-50% 0;width:min(70vw,300px);height:60%;border-radius:999px 999px 24px 24px;
+  background:linear-gradient(160deg,rgb(255 255 255/.6),rgb(200 225 240/.3));border:8px solid var(--wood)}
+.brush{position:absolute;left:0;top:0;width:min(32vw,140px);margin:-5.7% 0 0 -14%;pointer-events:none;z-index:6;transform-origin:14% 20%}
+.foam{position:absolute;left:0;top:0;width:14px;height:14px;margin:-7px;border-radius:50%;background:#fff;border:1.5px solid #cfe3f0;
+  pointer-events:none;z-index:7;animation:foam 1.1s forwards}
+@keyframes foam{to{opacity:0;translate:0 -18px;scale:1.5 1.5}}
+
+.showerhead{position:absolute;left:50%;top:0;translate:-50% 0;width:min(34vw,150px);pointer-events:none}
+.water{position:absolute;left:50%;top:calc(min(34vw,150px)*.6);bottom:26%;translate:-50% 0;width:min(34vw,150px);pointer-events:none;opacity:0;transition:opacity .3s;z-index:4;overflow:hidden}
+.water.on{opacity:1}
+.drop{position:absolute;top:-20px;width:3px;height:16px;border-radius:2px;background:var(--water);animation:drop .55s linear infinite}
+@keyframes drop{to{top:100%}}
+.tub{position:absolute;left:50%;bottom:13%;translate:-50% 0;width:min(72vw,320px);height:min(18vw,80px);background:var(--porcelain);
+  border:2px solid var(--line);border-radius:12px 12px 48px 48px;z-index:5}
+.valve{position:absolute;left:13%;top:34%;translate:-50% 0;width:min(16vw,70px);padding:0;border:0;background:none;cursor:pointer;z-index:5}
+.valve svg{transition:rotate .4s} .valve.on svg{rotate:120deg}
+.soap{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s)/-2);border-radius:50%;pointer-events:none;z-index:6;
+  background:radial-gradient(circle at 30% 30%,#fff,rgb(255 255 255/.55) 40%,rgb(170 205 255/.35));border:1.5px solid rgb(255 255 255/.95);
+  animation:pop .25s;transition:translate 1.2s ease-in,opacity 1.2s}
+.soap.rinse{translate:0 120px;opacity:0}
+
+.door{position:absolute;bottom:22%;translate:-50% 0;width:min(22vw,100px);aspect-ratio:.52;padding:0;border:6px solid var(--wood);border-bottom:0;
+  border-radius:10px 10px 0 0;background:none;cursor:pointer;perspective:500px}
+.door .inside{position:absolute;inset:0;background:var(--in)}
+.door[data-k="kitchen"]{--in:#f3c27a} .door[data-k="bath"]{--in:#9fd3ef} .door[data-k="bed"]{--in:#24305e}
+.door .panel{position:absolute;inset:0;background:var(--wood2);transform-origin:left center;transition:transform .5s}
+.door.open .panel{transform:rotateY(-80deg)}
+.door .knob{position:absolute;right:12%;top:50%;width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.door .sign{position:absolute;left:50%;bottom:calc(100% + 12px);translate:-50% 0;width:70%;aspect-ratio:1;border-radius:50%;background:var(--porcelain);
+  border:3px solid var(--wood);display:grid;place-items:center}
+.door .sign svg{width:72%}
+
+.window{position:absolute;left:18%;top:8%;translate:-50% 0;width:min(26vw,120px);aspect-ratio:1;border:6px solid var(--wood);border-radius:8px;overflow:hidden;background:var(--night)}
+.star{animation:tw 1.8s ease-in-out infinite alternate} .star:nth-child(odd){animation-delay:.9s}
+@keyframes tw{to{opacity:.25}}
+.bed{position:absolute;right:3%;bottom:15%;width:min(60vw,290px)}
+.blanket{position:absolute;left:0;top:0;width:min(44vw,210px);translate:-50% -50%;padding:0;border:0;background:none;cursor:pointer;z-index:4;
+  transition:left .8s ease-in-out,top .8s ease-in-out}
+.blanket.noanim{transition:none} .blanket.chair{z-index:2}
+.blanket svg{transform-origin:50% 100%}
+.blanket .chair-g{display:none} .blanket.chair .flat-g{display:none} .blanket.chair .chair-g{display:inline}
+.blanket.morph svg{animation:morph .6s} .blanket.squash svg{animation:squash .5s}
+@keyframes morph{30%{scale:1.3 .6}60%{scale:.8 1.3}100%{scale:1 1}}
+@keyframes squash{40%{scale:1.25 .55}70%{scale:.9 1.15}}
+.cover{position:absolute;left:0;top:0;width:min(52vw,250px);translate:-50% -50%;z-index:5;pointer-events:none}
+.cover .chair-g{display:none}
+.lamp{position:absolute;left:20%;bottom:18%;translate:-50% 0;width:min(18vw,80px);padding:0;border:0;background:none;cursor:pointer}
+.lamp .glow{transition:opacity .4s} .lamp.off .glow{opacity:0} .lamp.off .shade{fill:#a88d55}
+.room.dark::after{content:"";position:absolute;inset:0;background:rgb(8 12 36/.62);z-index:2;pointer-events:none;animation:fadein 1.2s}
+.room.dark .window{z-index:3;box-shadow:0 0 30px rgb(245 231 161/.45)}
+@keyframes fadein{from{opacity:0}}
+
+.book{position:absolute;left:50%;bottom:5%;translate:-50% 0;width:min(84vw,340px);aspect-ratio:2/1.1;display:flex;gap:4px;padding:6px;border:0;
+  background:var(--wood);border-radius:10px;cursor:pointer;perspective:800px;z-index:5}
+.book .pg{flex:1;min-width:0;background:var(--paper);border-radius:6px;display:grid;place-items:center;padding:8px;color:#2a2620;
+  font-family:var(--body);font-weight:800;font-size:clamp(12px,3.4vw,16px);line-height:1.3;text-align:center;text-wrap:balance}
+.book .pg svg{width:82%}
+.book .flipper{position:absolute;top:6px;bottom:6px;left:50%;width:calc(50% - 6px);background:var(--paper);border-radius:6px;transform-origin:left center;opacity:0;pointer-events:none}
+.book .flipper.go{animation:flip .45s ease-in-out}
+@keyframes flip{0%{opacity:1;transform:rotateY(0)}100%{opacity:1;transform:rotateY(-180deg)}}
+
+/* ================= главное меню ================= */
+.menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 16px}
+.menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
+.menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
+@media (min-width:560px){.cards{grid-template-columns:1fr 1fr}}
+.card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;font:inherit;color:var(--fg);background:var(--bubble);
+  border:2px solid var(--web);border-radius:22px;padding:14px;cursor:pointer;transition:transform .15s}
+.card:active{transform:scale(.97)} .card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.card svg{width:100%;height:auto;border-radius:14px;display:block;margin-bottom:6px}
+.card .ep{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card .nm{font-family:var(--display);font-size:clamp(17px,4.8vw,21px);line-height:1.15}
+.card .st{font-weight:800;font-size:14px;color:var(--accent)}
+</style>
+</head>
+<body>
+<svg id="web" viewBox="0 0 400 400" preserveAspectRatio="xMinYMin slice" aria-hidden="true">
+  <line x1="0" y1="0" x2="260" y2="0"/><line x1="0" y1="0" x2="240" y2="90"/>
+  <line x1="0" y1="0" x2="180" y2="180"/><line x1="0" y1="0" x2="90" y2="240"/><line x1="0" y1="0" x2="0" y2="260"/>
+  <path d="M60 0 Q52 20 55 21 Q40 38 42 42 Q22 52 21 55 Q20 58 0 60"/>
+  <path d="M120 0 Q105 40 111 42 Q82 77 85 85 Q45 103 42 111 Q40 117 0 120"/>
+  <path d="M185 0 Q162 62 171 65 Q125 118 131 131 Q70 160 65 171 Q62 180 0 185"/>
+  <path d="M250 0 Q220 84 232 88 Q170 160 177 177 Q95 215 88 232 Q84 244 0 250"/>
+</svg>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header class="hud" id="hud" aria-live="polite">
+  <div class="steps" id="steps"></div>
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="task"></h1>
+  <p class="hint" id="hint"></p>
+  <div class="bars" id="bars">
+    <div class="bar"><i id="barMe"></i></div>
+    <div class="bar rival" id="barRivalWrap" hidden><i id="barR"></i></div>
+  </div>
+  <div class="count" id="count"></div>
+  <button id="replay" hidden>Играть снова</button>
+</header>
+
+<main class="stage" id="stage" hidden>
+  <svg id="threads" aria-hidden="true"></svg>
+</main>
+<main class="stage" id="stage2" hidden><div class="room" id="room"></div></main>
+<div id="banner"></div>
+
+<footer>
+  <button id="menuBtn">☰ Меню</button>
+  <button id="sound" aria-pressed="true">🔊 Звук</button>
+  <button id="restart">↺ Сначала</button>
+</footer>
+
+<div class="menu" id="menu">
+  <div class="sub">Игра про паука</div>
+  <h2>Чёрный паук</h2>
+  <div class="cards">
+    <button class="card" id="m1">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="var(--track)"/>
+        <path d="M0 0 L120 110 M0 0 L200 50 M0 0 L60 110 M30 0 Q22 26 0 30 M70 0 Q55 60 0 70" stroke="var(--web)" stroke-width="2" fill="none"/>
+        <line x1="100" y1="0" x2="100" y2="38" stroke="var(--muted)" stroke-width="2"/>
+        <g stroke="var(--spider)" stroke-width="5" stroke-linecap="round" fill="none"><path d="M90 52 L70 36 L58 48 M90 58 L66 54 L54 68 M90 64 L68 72 L60 88 M110 52 L130 36 L142 48 M110 58 L134 54 L146 68 M110 64 L132 72 L140 88"/></g>
+        <ellipse cx="100" cy="66" rx="17" ry="15" fill="var(--spider)"/><circle cx="100" cy="48" r="13" fill="var(--spider)"/>
+        <circle cx="95" cy="46" r="4.5" fill="#fff"/><circle cx="105" cy="46" r="4.5" fill="#fff"/><circle cx="96" cy="47" r="2.2" fill="#111"/><circle cx="106" cy="47" r="2.2" fill="#111"/>
+        <g transform="translate(160 70)"><ellipse cx="-7" cy="-8" rx="8" ry="5" fill="var(--wing)"/><ellipse cx="7" cy="-8" rx="8" ry="5" fill="var(--wing)"/><ellipse rx="6" ry="9" fill="#3d4048"/><circle cy="-9" r="5" fill="#3d4048"/></g>
+        <g transform="translate(40 80)"><circle cy="-8" r="5" fill="#222"/><path d="M0 -8 C-11 -8 -12 12 0 13 C12 12 11 -8 0 -8Z" fill="#e23b2e"/><circle cx="-4" r="2" fill="#222"/><circle cx="4" cy="4" r="2" fill="#222"/></g>
+      </svg>
+      <span class="ep">Эпизод 1</span><span class="nm">Знакомство</span><span class="st" id="m1s"></span>
+    </button>
+    <button class="card" id="m2">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="var(--night)"/>
+        <path d="M44 14 a17 17 0 1 0 11 26 a14 14 0 1 1 -11 -26Z" fill="#f5e7a1"/>
+        <circle class="star" cx="90" cy="18" r="2" fill="#fff"/><circle class="star" cx="130" cy="30" r="1.6" fill="#fff"/><circle class="star" cx="170" cy="14" r="2" fill="#fff"/><circle class="star" cx="76" cy="40" r="1.4" fill="#fff"/>
+        <rect x="40" y="62" width="14" height="44" rx="4" fill="#a8794f"/><rect x="46" y="80" width="130" height="16" rx="5" fill="#a8794f"/>
+        <rect x="50" y="68" width="124" height="16" rx="7" fill="#f7f4ee"/>
+        <circle cx="78" cy="62" r="11" fill="#141412"/><circle cx="74" cy="60" r="3.4" fill="#fff"/><circle cx="82" cy="60" r="3.4" fill="#fff"/>
+        <path d="M70 66 Q98 56 172 64 L170 86 Q120 92 72 86Z" fill="#e9a23b"/>
+        <text x="96" y="50" fill="#fff" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="12">z Z</text>
+      </svg>
+      <span class="ep">Эпизод 2</span><span class="nm">Чёрный паук идёт спать</span><span class="st" id="m2s"></span>
+    </button>
+  </div>
+</div>
+
+<template id="spiderTpl">
+  <div class="sw">
+    <div class="ring"></div>
+    <div class="zzz"><span>z</span><span>z</span><span>Z</span></div>
+    <div class="bubble"></div>
+    <button class="sp">
+      <svg viewBox="0 0 200 170">
+        <g class="legs-l">
+          <path class="leg" d="M80 92 L44 60 L18 84"/>
+          <path class="leg" d="M78 100 L36 84 L8 112"/>
+          <path class="leg" d="M78 110 L38 116 L16 148"/>
+          <path class="leg" d="M82 118 L52 140 L40 166"/>
+        </g>
+        <g class="legs-r">
+          <path class="leg" d="M120 92 L156 60 L182 84"/>
+          <path class="leg" d="M122 100 L164 84 L192 112"/>
+          <path class="leg" d="M122 110 L162 116 L184 148"/>
+          <path class="leg" d="M118 118 L148 140 L160 166"/>
+        </g>
+        <ellipse class="body" cx="100" cy="122" rx="34" ry="30"/>
+        <circle class="body" cx="100" cy="86" r="26"/>
+        <circle class="eye" cx="90" cy="82" r="9"/><circle class="eye" cx="110" cy="82" r="9"/>
+        <circle class="pupil pl" cx="91" cy="84" r="4.5"/><circle class="pupil pr" cx="111" cy="84" r="4.5"/>
+        <g class="lids"><path d="M82 82 Q90 88 98 82"/><path d="M102 82 Q110 88 118 82"/></g>
+        <path class="brow" d="M81 70 L96 75 M119 70 L104 75"/>
+        <path class="mouth" d="M92 98 Q100 104 108 98" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <g class="teeth"><path class="tooth" d="M86 95 Q100 120 114 95 Z" stroke="#fff" stroke-width="1"/><path d="M93 96 v6 M100 96 v8 M107 96 v6" stroke="rgb(0 0 0/.25)" stroke-width="1.5"/></g>
+        <g class="bow"><path d="M100 61 L84 52 V70Z M100 61 L116 52 V70Z" fill="#ff5a9b"/><circle cx="100" cy="61" r="5" fill="#ff86b0"/></g>
+        <g class="specs" fill="none" stroke="#d9b13a" stroke-width="2.5"><circle cx="90" cy="82" r="11"/><circle cx="110" cy="82" r="11"/><path d="M101 82 h-2"/><path d="M87 97 q6 5 13 0 q7 5 13 0" stroke="#a89a8e" stroke-width="4" stroke-linecap="round"/></g>
+      </svg>
+    </button>
+  </div>
+</template>
+
+<script>
+const $=id=>document.getElementById(id);
+const stage=$('stage'), threads=$('threads');
+const rect=()=>stage.getBoundingClientRect();
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const rand=(a,b)=>a+Math.random()*(b-a);
+const TAU=Math.PI*2;
+let soundOn=true, ac;
+
+/* ================= звук ================= */
+/* Речь идёт по очереди: фраза не обрывает другую. У каждого паука в очереди
+   не больше одной ждущей фразы, а устаревшие (старше 3 с) пропускаются. */
+const sq=[]; let speaking=false, spId=0, spTimer=0;
+function speak(text,pitch=.4,rate=1,who='B',voiceIdx=0){
+  if(!soundOn||!('speechSynthesis' in window)) return;
+  for(let i=sq.length-1;i>=0;i--) if(sq[i].who===who) sq.splice(i,1);
+  sq.push({text,pitch,rate,who,voiceIdx,t:performance.now()});
+  if(!speaking) nextSpeech();
+}
+function nextSpeech(){
+  clearTimeout(spTimer);
+  let it; while((it=sq.shift())&&performance.now()-it.t>3000);
+  if(!it){speaking=false;return}
+  speaking=true; const id=++spId, done=()=>{if(id===spId)nextSpeech()};
+  const u=new SpeechSynthesisUtterance(it.text);
+  u.lang='ru-RU'; u.pitch=it.pitch; u.rate=it.rate;
+  const ru=speechSynthesis.getVoices().filter(v=>/^ru/i.test(v.lang));
+  if(ru.length) u.voice=ru[Math.min(it.voiceIdx,ru.length-1)];
+  u.onend=done; u.onerror=done;
+  spTimer=setTimeout(done,1200+it.text.length*120); // на случай, если onend не придёт
+  speechSynthesis.resume();
+  speechSynthesis.speak(u);
+}
+function stopSpeech(){sq.length=0;spId++;speaking=false;clearTimeout(spTimer);if('speechSynthesis' in window)speechSynthesis.cancel()}
+/* iOS разрешает голос и звук только после настоящего касания (touchend/click).
+   Тапы теперь ловятся через pointerdown, поэтому «разблокируем» речь отдельно. */
+let unlocked=false;
+function unlockAudio(){
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume()}catch(e){}
+  if(unlocked||!('speechSynthesis' in window)) return;
+  unlocked=true;
+  const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang='ru-RU';
+  speechSynthesis.speak(u);
+}
+['touchend','click','keydown'].forEach(t=>addEventListener(t,unlockAudio,{capture:true}));
+function tone(f,dur,type='triangle',delay=0,vol=.07,f2){
+  if(!soundOn) return;
+  try{
+    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+delay;
+    o.type=type;o.frequency.setValueAtTime(f,t);
+    if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur+.05);
+    o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur+.06);
+  }catch(e){}
+}
+const sfx={
+  jump:()=>tone(180,.15,'square',0,.07,520),
+  chomp:()=>{tone(300,.12,'sawtooth',0,.06,90);tone(280,.12,'sawtooth',.18,.06,80)},
+  tick:n=>tone(520+n*70,.09,'sine',0,.08),
+  yuck:()=>{tone(160,.35,'sawtooth',0,.07,70)},
+  laugh:()=>[0,.14,.28,.42].forEach((d,i)=>tone(700-i*60,.09,'triangle',d,.07,500-i*60)),
+  snore:()=>tone(90,.4,'sine',0,.08,60),
+  fanfare:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',i*.1,.09));tone(1319,.5,'sine',.42,.06);tone(1568,.6,'sine',.55,.05)},
+  whoosh:()=>tone(900,.3,'sine',0,.04,200),
+  click:()=>tone(600,.05,'square',0,.05,300),
+  flush:()=>{tone(700,1.1,'sine',0,.06,90);tone(400,1,'triangle',.1,.04,120)},
+  water:()=>{for(let i=0;i<10;i++)tone(rand(900,1800),.05,'sine',i*.09,.025)},
+  boing:()=>{tone(140,.25,'sine',0,.1,620);tone(620,.3,'sine',.25,.07,300)},
+  magic:()=>[660,880,990,1320,1760].forEach((f,i)=>tone(f,.2,'sine',i*.07,.05)),
+  page:()=>tone(1500,.12,'triangle',0,.03,500),
+  door:()=>tone(220,.3,'sawtooth',0,.03,160),
+  love:()=>[523,659,784].forEach((f,i)=>tone(f,.4,'sine',i*.12,.05)),
+  lullaby:()=>[659,587,523,587,659,659,659].forEach((f,i)=>tone(f,.45,'sine',i*.42,.05)),
+  poison:()=>{tone(1200,.25,'sawtooth',0,.03,300);[0,.18,.36].forEach((d,i)=>tone(260-i*40,.2,'sine',.25+d,.08,200-i*40))}
+};
+$('sound').addEventListener('click',()=>{
+  soundOn=!soundOn; $('sound').setAttribute('aria-pressed',soundOn);
+  $('sound').textContent=soundOn?'🔊 Звук':'🔇 Без звука';
+  if(!soundOn) stopSpeech();
+});
+
+/* ================= конфетти ================= */
+const fx=$('fx'), ctx=fx.getContext('2d'); let parts=[];
+const CONF=['#d8432f','#7a3cc9','#e8a816','#4fae5a','#3d8fe0','#ff7ab0'];
+function burst(x,y,n=60,power=9){
+  for(let i=0;i<n;i++){const a=rand(0,TAU),p=rand(power*.3,power);
+    parts.push({x,y,vx:Math.cos(a)*p,vy:Math.sin(a)*p-power*.5,r:rand(0,TAU),vr:rand(-.3,.3),w:rand(6,11),h:rand(4,7),c:pick(CONF),life:rand(60,110)})}
+}
+function drawFx(){
+  const dpr=devicePixelRatio||1;
+  if(fx.width!==innerWidth*dpr||fx.height!==innerHeight*dpr){fx.width=innerWidth*dpr;fx.height=innerHeight*dpr}
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,innerWidth,innerHeight);
+  parts=parts.filter(p=>p.life-->0);
+  for(const p of parts){p.vy+=p.g??.25;p.vx*=.985;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;
+    ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=Math.min(1,p.life/30);
+    ctx.fillStyle=p.c;
+    if(p.heart){const s=p.w/20;ctx.beginPath();ctx.moveTo(0,6*s);ctx.bezierCurveTo(-14*s,-4*s,-6*s,-14*s,0,-6*s);
+      ctx.bezierCurveTo(6*s,-14*s,14*s,-4*s,0,6*s);ctx.fill()}
+    else ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+    ctx.restore()}
+}
+function hearts(x,y,n=16){
+  for(let i=0;i<n;i++) parts.push({x,y,vx:rand(-2.5,2.5),vy:rand(-4,-1.5),g:-.03,r:rand(-.3,.3),vr:rand(-.02,.02),
+    w:rand(16,26),h:0,c:pick(['#ff5a8a','#ff86b0','#e8436f']),life:rand(70,110),heart:true});
+}
+function banner(text){const b=$('banner');b.textContent=text;b.classList.remove('show');void b.offsetWidth;b.classList.add('show')}
+
+/* ================= пауки ================= */
+const spiders=[];
+function makeSpider(cls,anchor,label){
+  const node=$('spiderTpl').content.firstElementChild.cloneNode(true);
+  if(cls) node.classList.add(cls);
+  node.querySelector('.sp').setAttribute('aria-label',label);
+  stage.appendChild(node);
+  const line=document.createElementNS('http://www.w3.org/2000/svg','line'); threads.appendChild(line);
+  const s={wrap:node,btn:node.querySelector('.sp'),bubble:node.querySelector('.bubble'),line,
+    mouth:node.querySelector('.mouth'),pl:node.querySelector('.pl'),pr:node.querySelector('.pr'),
+    anchor,anchorT:anchor,x:0,y:0,state:'home',target:null,hideT:0,timer:0,init:false};
+  spiders.push(s); return s;
+}
+function destroy(s){clearTimeout(s.timer);s.wrap.remove();s.line.remove();spiders.splice(spiders.indexOf(s),1)}
+const B=makeSpider('',.5,'Чёрный паук');
+const H=()=>B.wrap.offsetWidth*170/200;
+function home(s){const r=rect();return{x:r.width*s.anchor,y:Math.max(H()*.35+54,r.height*.2)}}
+function restart(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
+function say(s,html,ms=1800){
+  s.bubble.innerHTML=html;
+  if(s.stageEl){ // эпизод 2: позиция из разметки
+    const st=s.stageEl.getBoundingClientRect(), wr=s.wrap.getBoundingClientRect();
+    s.bubble.classList.toggle('flip',wr.left+wr.width/2-st.left>st.width*.5);
+  } else s.bubble.classList.toggle('flip',s.x>rect().width*.5);
+  restart(s.bubble,'show');
+  if(s.mouth){s.mouth.setAttribute('d','M90 96 Q100 112 110 96 Z');s.mouth.setAttribute('fill','#fff')}
+  clearTimeout(s.hideT);
+  s.hideT=setTimeout(()=>{s.bubble.classList.remove('show');
+    if(s.mouth){s.mouth.setAttribute('d','M92 98 Q100 104 108 98');s.mouth.setAttribute('fill','none')}},ms);
+}
+const bold=t=>t.replace(/^([^!?…]+[!?…])/,'<b>$1</b>');
+function talk(s,text,pitch,ms){if(episode!==1)return;say(s,bold(text),ms);speak(text,pitch??(s===B?.4:s.cfg.pitch),s===B?1.1:1.2,s===B?'B':s.cfg.cls,s===B?0:1)}
+/* облачко не вылезает за края сцены */
+function clampBubble(s,W){
+  const bb=s.bubble; if(!bb.classList.contains('show')) return;
+  const left=s.x-s.wrap.offsetWidth/2+bb.offsetLeft, w=bb.offsetWidth;
+  let shift=0;
+  if(left+w>W-6) shift=W-6-(left+w);
+  if(left+shift<6) shift=6-left;
+  bb.style.translate=`${shift}px 0`;
+}
+function spiderCenter(s){const r=s.btn.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height*.55}}
+
+/* ---- соперники ---- */
+const RIVALS={
+  purple:{cls:'purple',label:'Фиолетовый паук',speed:2.3,dmin:1800,dmax:3600,pitch:1.7,color:'var(--violet)',
+    hi:'Это моя еда!',bye:'Пока-пока!',laugh:['Ха-ха-ха! Не успел!','Хи-хи! Моя!','Ха-ха! Я быстрее!'],
+    sad:['Эх! Не успел','Ну вот…','Ах ты!'],poke:['Не догонишь!','Хи-хи!','Я фиолетовый!']},
+  red:{cls:'red',label:'Красный паук',name:'Красный',speed:3.4,dmin:900,dmax:1900,pitch:1.05,color:'var(--red)',
+    hi:'Я самый быстрый!',bye:'Я ещё вернусь!',laugh:['Ха! Я быстрее!','Хо-хо! Опять моя!','Ха-ха! Догоняй!'],
+    sad:['Что?!','Ррр!','Ах так?!'],poke:['Не тронь!','Я быстрый!','Ррр!']},
+  green:{cls:'green',label:'Зелёный паук',name:'Зелёный',speed:3,dmin:1200,dmax:2600,pitch:1.4,color:'var(--green)',
+    hi:'Привет! Я зелёный! Я люблю щекотать!',bye:'Пока! Хи-хи!',laugh:['Хи-хи! Эту я хотел!','Ням! Моя!','Хи-хи-хи! Вкусно!'],
+    sad:['Ой! А я её хотел!','Эх, не успел!'],poke:['Хи-хи!']},
+  blue:{cls:'blue',label:'Синий паук',name:'Синий',speed:4.6,dmin:600,dmax:1300,pitch:.75,color:'var(--blue)',
+    hi:'Красный медленный! Я быстрее всех!',bye:'Не может быть…',laugh:['Ха! Я быстрее всех!','Хе-хе! Слишком медленно!','Вжух! Моя!'],
+    sad:['Не может быть!'],poke:['Я самый быстрый!','Вжух!','Не может быть!']}
+};
+let R=null;
+function summonRival(key){
+  if(episode!==1) return;
+  const cfg=RIVALS[key], s=makeSpider(cfg.cls,.73,cfg.label);
+  s.cfg=cfg; s.init=true; s.x=rect().width*.73; s.y=-H()*1.5; s.state='enter';
+  s.onArrive=()=>{talk(s,cfg.hi);planRival()};
+  s.btn.addEventListener('click',()=>{
+    if(cfg.cls==='blue'){brysh(s);return}
+    if(cfg.cls==='green'){tickle(s);return}
+    restart(s.btn,'laugh');talk(s,pick(cfg.poke))});
+  B.anchorT=.27; R=s; sfx.whoosh();
+}
+function dismissRival(now){
+  if(!R) return; const s=R; R=null; clearTimeout(s.timer);
+  if(s.tickling){clearTimeout(s.tickleT);s.tickling=false;B.tickled=false;B.wrap.classList.remove('tickled')}
+  if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+  B.anchorT=.5;
+  if(now){destroy(s);return}
+  talk(s,s.cfg.bye); setTimeout(()=>{s.state='leave';sfx.whoosh()},900);
+}
+function planRival(){
+  const s=R; if(!s||s.feast||s.tickling) return; clearTimeout(s.timer);
+  s.timer=setTimeout(()=>{
+    if(R!==s||s.state!=='home') return;
+    const w=rect().width, free=bugs.filter(b=>!b.caught&&!b.dead&&!b.K.bad&&!b.K.poison&&b.x>20&&b.x<w-20);
+    if(!free.length){planRival();return}
+    free.sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
+    const b=free[0]; s.target=b; s.state='hunt';
+    b.el.style.setProperty('--hc',s.cfg.color); b.el.classList.add('hunted');
+  },rand(s.cfg.dmin,s.cfg.dmax));
+}
+
+/* ================= насекомые ================= */
+const KINDS={
+  fly:{name:'муха',says:['Ам! Вкусная муха!','Ням! Муха!'],speed:2.4,svg:`
+    <ellipse class="flap flapL" cx="22" cy="20" rx="12" ry="7" fill="var(--wing)"/>
+    <ellipse class="flap flapR" cx="38" cy="20" rx="12" ry="7" fill="var(--wing)"/>
+    <ellipse cx="30" cy="32" rx="9" ry="13" fill="#3d4048"/>
+    <circle cx="30" cy="18" r="7" fill="#3d4048"/>
+    <circle cx="26" cy="16" r="3.5" fill="#c8302a"/><circle cx="34" cy="16" r="3.5" fill="#c8302a"/>`},
+  ladybug:{name:'божья коровка',says:['Хрум! Божья коровка!','Ам! Красненькая!'],speed:1.2,svg:`
+    <circle cx="30" cy="16" r="8" fill="#222"/>
+    <path d="M30 14 C14 14 12 46 30 48 C48 46 46 14 30 14Z" fill="#e23b2e"/>
+    <line x1="30" y1="15" x2="30" y2="48" stroke="#222" stroke-width="2"/>
+    <circle cx="22" cy="26" r="3.5" fill="#222"/><circle cx="38" cy="26" r="3.5" fill="#222"/>
+    <circle cx="23" cy="38" r="3" fill="#222"/><circle cx="37" cy="38" r="3" fill="#222"/>
+    <circle cx="27" cy="12" r="1.8" fill="#fff"/><circle cx="33" cy="12" r="1.8" fill="#fff"/>`},
+  mosquito:{name:'комар',says:['Попался, комар!','Ам! Больше не укусишь!'],speed:3,svg:`
+    <g stroke="#555a63" stroke-width="1.6" fill="none"><path d="M28 30 L14 44 M30 32 L24 50 M32 32 L38 50 M34 30 L48 44 M29 28 L12 34 M33 28 L50 34"/></g>
+    <ellipse class="flap flapL" cx="20" cy="22" rx="11" ry="4" fill="var(--wing)"/>
+    <ellipse class="flap flapR" cx="40" cy="22" rx="11" ry="4" fill="var(--wing)"/>
+    <ellipse cx="31" cy="32" rx="3.5" ry="12" fill="#6b5a48"/>
+    <circle cx="31" cy="18" r="4" fill="#6b5a48"/><line x1="31" y1="15" x2="31" y2="4" stroke="#6b5a48" stroke-width="1.5"/>`},
+  butterfly:{name:'бабочка',says:['Ам! Бабочка!','Ням-ням, бабочка!'],speed:1.6,svg:`
+    <g class="flap flapL slow"><ellipse cx="18" cy="22" rx="14" ry="12" fill="#f2a530"/><ellipse cx="20" cy="40" rx="10" ry="9" fill="#e86b9a"/><circle cx="16" cy="22" r="4" fill="#fff6"/></g>
+    <g class="flap flapR slow"><ellipse cx="42" cy="22" rx="14" ry="12" fill="#f2a530"/><ellipse cx="40" cy="40" rx="10" ry="9" fill="#e86b9a"/><circle cx="44" cy="22" r="4" fill="#fff6"/></g>
+    <ellipse cx="30" cy="30" rx="3" ry="15" fill="#2b2b2b"/>
+    <path d="M29 16 Q24 6 21 5 M31 16 Q36 6 39 5" stroke="#2b2b2b" stroke-width="1.5" fill="none"/>`},
+  wasp:{name:'оса',bad:true,yuck:['Ай! Оса колется!','Фу! Оса!'],speed:2.6,svg:`
+    <ellipse class="flap flapL" cx="21" cy="22" rx="11" ry="6" fill="var(--wing)"/>
+    <ellipse class="flap flapR" cx="39" cy="22" rx="11" ry="6" fill="var(--wing)"/>
+    <ellipse cx="30" cy="34" rx="9" ry="14" fill="#f5c518"/>
+    <path d="M22 30 h16 M22 38 h16 M25 45 h10" stroke="#222" stroke-width="4"/>
+    <path d="M27 47 L30 56 L33 47Z" fill="#222"/>
+    <circle cx="30" cy="18" r="6.5" fill="#222"/>
+    <path d="M25 14 L29 16 M35 14 L31 16" stroke="#f5c518" stroke-width="2" stroke-linecap="round"/>`},
+  bluebug:{name:'синяя вонючка',poison:true,says:['Хрум! Яд обезврежен!','Ам! Успел!','Ням! Не успела пшикнуть!'],speed:1.1,svg:`
+    <path class="stink" d="M10 22 q4 -4 0 -8 q-4 -4 0 -8 M50 22 q4 -4 0 -8 q-4 -4 0 -8" stroke="#8a7cf0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M27 9 L22 2 M33 9 L38 2" stroke="#1d3f7a" stroke-width="1.6"/>
+    <path d="M30 14 L45 23 L41 46 L30 53 L19 46 L15 23Z" fill="#3d7fd9"/>
+    <path d="M30 23 L38 27 L30 41 L22 27Z" fill="#2a5fae"/>
+    <circle cx="23" cy="35" r="2" fill="#bcd6ff"/><circle cx="37" cy="35" r="2" fill="#bcd6ff"/><circle cx="30" cy="46" r="2" fill="#bcd6ff"/>
+    <circle cx="30" cy="12" r="5" fill="#1f4a8a"/>`},
+  stinkbug:{name:'вонючка',bad:true,yuck:['Бее! Вонючка!','Фу! Как воняет!'],speed:1.3,svg:`
+    <path class="stink" d="M10 20 q4 -4 0 -8 q-4 -4 0 -8 M50 20 q4 -4 0 -8 q-4 -4 0 -8" stroke="#8fc45a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M27 9 L22 2 M33 9 L38 2" stroke="#2f4f22" stroke-width="1.6"/>
+    <path d="M30 14 L45 23 L41 46 L30 53 L19 46 L15 23Z" fill="#6aa84f"/>
+    <path d="M30 23 L38 27 L30 41 L22 27Z" fill="#4e8a37"/>
+    <circle cx="30" cy="12" r="5" fill="#3f6f2c"/>`}
+};
+const TASTY=Object.keys(KINDS).filter(k=>!KINDS[k].bad&&!KINDS[k].poison), BAD=Object.keys(KINDS).filter(k=>KINDS[k].bad);
+const bugs=[];
+const FUSE=7000; // сколько живёт синяя вонючка до «пшика»
+let spawnOn=false, maxBugs=0, badChance=0, poisonChance=0;
+function spawnBug(){
+  const roll=Math.random();
+  const r=rect(), k=roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
+  const el=document.createElement('button');
+  el.className='bug'; el.setAttribute('aria-label',K.bad?K.name+' — невкусная!':K.name);
+  el.innerHTML=`<svg viewBox="0 0 60 60">${K.svg}</svg>`;
+  stage.appendChild(el);
+  const fromLeft=Math.random()<.5;
+  const b={el,k,K,x:fromLeft?-30:r.width+30,y:r.height*.38+Math.random()*(r.height*.52),
+    a:fromLeft?0:Math.PI,t:Math.random()*100,caught:false,dead:false};
+  if(K.poison){b.fuse=performance.now()+FUSE+1200;el.classList.add('poison');el.setAttribute('aria-label','синяя вонючка — съешь её быстрее!')}
+  el.addEventListener('pointerdown',e=>{e.preventDefault();hunt(b)});
+  el.addEventListener('click',e=>{if(e.detail===0)hunt(b)});
+  bugs.push(b);
+}
+/* синяя вонючка не съедена вовремя — пшик, паук отравился */
+function puff(x,y){
+  const c=document.createElement('div'); c.className='cloud';
+  c.style.transform=`translate(${x}px,${y}px)`; stage.appendChild(c);
+  setTimeout(()=>c.remove(),1500);
+}
+function explode(b){
+  puff(b.x,b.y); removeBug(b);
+  setTimeout(()=>puff(B.x,B.y+H()*.3),250);
+  poisonSpider();
+}
+let poisonT=0;
+function poisonSpider(){
+  B.poisoned=true; B.wrap.classList.add('poisoned');
+  const free=q=>{q.caught=false;q.el.classList.remove('caught')};
+  if(B.target){free(B.target);B.target=null}
+  huntQueue.forEach(free); huntQueue.length=0;
+  if(B.state==='hunt'||B.state==='eating') B.state='return';
+  talk(B,pick(['Ой… мне плохо…','Ой-ой, кружится голова…','Фу! Синий яд!']),.3);
+  sfx.poison();
+  if(LEVELS[level]?.key==='poison') addProg(-1);
+  clearTimeout(poisonT);
+  poisonT=setTimeout(()=>{B.poisoned=false;B.wrap.classList.remove('poisoned');talk(B,'Фух, полегчало!')},3200);
+}
+function cureSpider(){clearTimeout(poisonT);B.poisoned=false;B.wrap.classList.remove('poisoned')}
+setInterval(()=>{if(spawnOn&&bugs.length<maxBugs) spawnBug()},800);
+function removeBug(b){
+  b.dead=true; b.el.classList.add('gone');
+  setTimeout(()=>b.el.remove(),250);
+  const i=bugs.indexOf(b); if(i>=0) bugs.splice(i,1);
+}
+function clearBugs(){for(const b of [...bugs]){b.dead=true;b.el.remove()} bugs.length=0}
+
+/* Тапы не теряются: если паук занят, букашка встаёт в очередь и он ловит её следующей */
+const huntQueue=[];
+function hunt(b){
+  if(b.dead||b.caught||level===0||B.poisoned||B.scared||B.tickled||!['home','return','eating','hunt'].includes(B.state)) return;
+  b.caught=true; b.el.classList.add('caught');
+  if(B.state==='hunt'||B.state==='eating') huntQueue.push(b);
+  else {B.target=b; B.state='hunt'}
+}
+function nextHunt(){
+  while(huntQueue.length){const b=huntQueue.shift(); if(!b.dead){B.target=b;B.state='hunt';return true}}
+  return false;
+}
+function blackCatch(b){
+  B.target=null; B.state='eating'; removeBug(b);
+  if(R&&R.target===b){
+    R.target=null; R.state='return'; restart(R.btn,'sad');
+    setTimeout(()=>{if(R)talk(R,pick(R.cfg.sad))},700);
+  }
+  if(b.K.bad){
+    restart(B.btn,'shake'); restart(B.wrap,'yuck'); setTimeout(()=>B.wrap.classList.remove('yuck'),1300);
+    talk(B,pick(b.K.yuck),.6); sfx.yuck();
+    if(['yuck','poison'].includes(LEVELS[level]?.key)) addProg(-1);
+  }else{
+    restart(B.btn,'chomp'); sfx.chomp();
+    const lk=LEVELS[level]?.key, eating=['eat','purple','red','yuck','poison','blue','green'];
+    const finishing=eating.includes(lk)&&!busy&&prog+1>=LEVELS[level].goal;
+    if(!finishing) talk(B,pick(b.K.says),.5); // на последней букашке говорит фразу победы
+    if(eating.includes(lk)) addProg(1);
+  }
+  setTimeout(()=>{if(B.state==='eating'&&!nextHunt())B.state='return'},350);
+}
+/* Тронул зелёного паука: он подползает к чёрному и щекочет его */
+function tickle(s){
+  if(s.tickling||s.state==='enter'||s.state==='leave') return;
+  s.tickling=true; s.tickleOn=false; clearTimeout(s.timer);
+  if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+  s.state='tickle'; talk(s,'Щекотушки!');
+}
+function startTickle(s){
+  s.tickleOn=true; B.tickled=true; B.wrap.classList.add('tickled');
+  const free=q=>{q.caught=false;q.el.classList.remove('caught')};
+  if(B.target){free(B.target);B.target=null}
+  huntQueue.forEach(free); huntQueue.length=0;
+  if(B.state==='hunt'||B.state==='eating') B.state='return';
+  talk(B,pick(['Ха-ха-ха! Щекотно!','Ой, хи-хи! Хватит!','Ха-ха! Не могу!']),undefined,2600);
+  [0,700,1400,2100].forEach(d=>setTimeout(()=>{if(B.tickled)sfx.laugh()},d));
+  s.tickleT=setTimeout(()=>endTickle(s),2800);
+}
+function endTickle(s){
+  clearTimeout(s.tickleT); s.tickling=false; s.tickleOn=false;
+  B.tickled=false; B.wrap.classList.remove('tickled');
+  if(spiders.includes(s)){s.state='return';talk(s,'Хи-хи! Защекотал!')}
+  setTimeout(()=>talk(B,'Ух… насмеялся!'),900);
+}
+/* Тронул синего паука: «Брысь!», чёрный убегает вверх, синий съедает всех букашек */
+function brysh(s){
+  if(s.feast||s.state==='enter'||s.state==='leave') return;
+  s.feast=true; clearTimeout(s.timer);
+  if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+  restart(s.btn,'shake'); talk(s,'Брысь!',.6); sfx.yuck();
+  // чёрный пугается и удирает
+  B.scared=true;
+  const free=q=>{q.caught=false;q.el.classList.remove('caught')};
+  if(B.target){free(B.target);B.target=null}
+  huntQueue.forEach(free); huntQueue.length=0;
+  B.state='flee';
+  setTimeout(()=>talk(B,pick(['Ой-ой! Убегаю!','Ай! Страшно!'])),500);
+  s.feastList=bugs.filter(b=>!b.dead&&!b.K.bad&&!b.K.poison);
+  clearTimeout(s.feastT); s.feastT=setTimeout(()=>endFeast(s),9000);
+  setTimeout(()=>feastNext(s),700);
+}
+function feastNext(s){
+  if(!spiders.includes(s)||!s.feast) return;
+  const next=s.feastList.find(b=>!b.dead&&!b.caught);
+  if(next){s.target=next;s.state='hunt';next.el.style.setProperty('--hc',s.cfg.color);next.el.classList.add('hunted')}
+  else endFeast(s);
+}
+function endFeast(s){
+  if(!s.feast) return;
+  s.feast=false; clearTimeout(s.feastT);
+  if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+  if(spiders.includes(s)){
+    s.state='return'; restart(s.btn,'laugh'); sfx.laugh();
+    talk(s,s.feastList.length?'Ха-ха! Всё моё!':'Ха-ха! Испугался!');
+  }
+  setTimeout(()=>{B.scared=false;if(B.state==='flee')B.state='return';
+    setTimeout(()=>talk(B,s.feastList.length?'Эх… всех съел…':'Фух, он ушёл'),400)},1200);
+}
+function raceScore(){
+  if(!LEVELS[level]?.race||busy) return false;
+  rprog++; render();
+  if(rprog<LEVELS[level].goal) return false;
+  busy=true;
+  setTimeout(()=>banner('Ещё раз!'),900);
+  setTimeout(()=>{prog=0;rprog=0;busy=false;render();talk(B,'Ну всё, теперь я!')},2600);
+  return true;
+}
+function rivalCatch(s,b){
+  if(s.feast){
+    s.target=null; s.state='eating'; removeBug(b); restart(s.btn,'chomp'); sfx.chomp();
+    say(s,'<b>Ам!</b>',600);
+    if(raceScore()) setTimeout(()=>talk(s,'Ха-ха-ха! Я победил!'),300);
+    setTimeout(()=>feastNext(s),250);
+    return;
+  }
+  s.target=null; s.state='eating'; removeBug(b); restart(s.btn,'chomp'); sfx.chomp();
+  let won=false;
+  if(LEVELS[level]?.race&&!busy){rprog++;render();won=rprog>=LEVELS[level].goal}
+  setTimeout(()=>{
+    if(!spiders.includes(s)) return;
+    restart(s.btn,'laugh'); sfx.laugh();
+    talk(s,won?'Ха-ха-ха! Я победил!':pick(s.cfg.laugh).replace('Моя','Моя '+b.K.name),undefined,2200);
+    restart(B.btn,'sad');
+    setTimeout(()=>say(B,bold(pick(['Эй! Это моя!','Нечестно!','Ну погоди!'])),1500),900);
+  },450);
+  if(won){
+    busy=true;
+    setTimeout(()=>banner('Ещё раз!'),900);
+    setTimeout(()=>{prog=0;rprog=0;busy=false;render();talk(B,'Ну всё, теперь я!')},2600);
+  }
+  setTimeout(()=>{if(s.state==='eating')s.state='return'},1900);
+}
+
+/* ================= этапы ================= */
+const LEVELS=[
+  {key:'wake',title:'Разбуди паука',hint:'Потыкай в него пальцем',goal:3,unit:'',done:'Ааа! Я проснулся! Я чёрный паук!'},
+  {key:'eyes',title:'Разминка: покрути глазками',hint:'Води пальцем по кругу вокруг паука',goal:2,unit:'круга',done:'Глазки размяты!'},
+  {key:'jump',title:'Разминка: попрыгай',hint:'Нажимай на паука',goal:5,unit:'прыжков',done:'Я готов!'},
+  {key:'eat',title:'Пора обедать!',hint:'Тапай по букашкам — паук их поймает',goal:5,unit:'',done:'Вкусно! Ещё хочу!'},
+  {key:'purple',title:'Фиолетовый ворует еду',hint:'Успей съесть 7 раньше него',goal:7,unit:'',done:'Я обогнал Фиолетового!'},
+  {key:'red',race:'red',title:'Гонка с Красным',hint:'Съешь 8 раньше, чем он',goal:8,unit:'',done:'Я быстрее Красного!'},
+  {key:'yuck',title:'Осторожно, невкусные!',hint:'Не ешь ос и зелёных вонючек. Нужно 8 вкусных',goal:8,unit:'',done:'Я всё различаю!'},
+  {key:'poison',title:'Синие ядовитые вонючки',hint:'Съешь синюю, пока не кончилось колечко, иначе паук отравится. Нужно 8',goal:8,unit:'',done:'Я победил яд!'},
+  {key:'blue',race:'blue',title:'Гонка с Синим',hint:'Он быстрее Красного! Съешь 8 раньше него',goal:8,unit:'',done:'Я быстрее всех пауков!'},
+  {key:'green',rival:'green',title:'Зелёный щекотун',hint:'Съешь 8. Зелёный тоже ест букашек, а если его тронуть — защекочет!',goal:8,unit:'',done:'Я всех победил!'}
+];
+let level=0, prog=0, rprog=0, eyeAcc=0, busy=false;
+const COUNT_WORDS=['Раз!','Два!','Три!','Четыре!','Пять!','Шесть!','Семь!'];
+function save(){try{localStorage.setItem('spider-level',level)}catch(e){}}
+window.claude?.hot?.snapshot?.(()=>({level,episode,l2}));
+
+$('steps').innerHTML=LEVELS.map(()=>'<i></i>').join('');
+function render(){
+  [...$('steps').children].forEach((d,i)=>{d.className=i<level?'done':i===level?'now':''});
+  const fin=level>=LEVELS.length;
+  $('replay').textContent='Играть снова';
+  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin;
+  if(fin){$('eyebrow').textContent='Все этапы пройдены';$('task').textContent='Ты чемпион!';
+    $('hint').textContent='Лови букашек сколько хочешь или сыграй снова';return}
+  const L=LEVELS[level];
+  $('eyebrow').textContent=`Эпизод 1 · этап ${level+1} из ${LEVELS.length}`;
+  $('task').textContent=L.title; $('hint').textContent=L.hint;
+  const turns=eyeAcc/TAU;
+  const frac=L.key==='eyes'?turns/L.goal:prog/L.goal;
+  $('barMe').style.width=Math.min(100,frac*100)+'%';
+  $('barRivalWrap').hidden=!L.race;
+  if(L.race) $('barR').style.background=RIVALS[L.race].color;
+  $('barR').style.width=Math.min(100,rprog/L.goal*100)+'%';
+  $('count').innerHTML=L.race?`Ты <b>${prog}</b> : <em style="color:${RIVALS[L.race].color}">${rprog}</em> ${RIVALS[L.race].name}`
+    :L.key==='eyes'?`<b>${Math.min(L.goal,Math.floor(turns))}</b> / ${L.goal} ${L.unit}`
+    :`<b>${prog}</b> / ${L.goal}${L.unit?' '+L.unit:''}`;
+}
+function addProg(n){
+  const L=LEVELS[level]; if(!L||busy) return;
+  prog=Math.max(0,prog+n); render();
+  if(n>0) sfx.tick(prog);
+  if(prog>=L.goal) complete();
+}
+function complete(){
+  busy=true; const L=LEVELS[level];
+  const c=spiderCenter(B); burst(c.x,c.y,70,10);
+  setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,40,8);burst(innerWidth*.8,innerHeight*.35,40,8)},250);
+  sfx.fanfare(); banner(pick(['Отлично!','Супер!','Молодец!','Класс!','Ура!']));
+  B.wrap.classList.remove('eyes','asleep');
+  restart(B.btn,'jump'); talk(B,L.done,.45,2200);
+  setTimeout(()=>{busy=false;enterLevel(level+1)},2300);
+}
+function enterLevel(i){
+  if(episode!==1){level=i;save();return} // отложенный переход, а игрок уже ушёл в меню
+  level=i; prog=0; rprog=0; eyeAcc=0; lastA=null; save();
+  const key=LEVELS[i]?.key||'final';
+  B.wrap.classList.toggle('asleep',key==='wake');
+  B.wrap.classList.toggle('eyes',key==='eyes');
+  render(); restart($('hud'),'pop');
+  poisonChance=0;
+  switch(key){
+    case 'poison': spawnOn=true; maxBugs=5; badChance=.2; poisonChance=.35;
+      setTimeout(()=>talk(B,'Синие вонючки! Их надо съесть, пока не пшикнули!'),1200); break;
+    case 'wake': spawnOn=false; break;
+    case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Покрути их!'),200); break;
+    case 'jump': spawnOn=false; setTimeout(()=>talk(B,'Теперь попрыгаем!'),200); break;
+    case 'eat': spawnOn=true; maxBugs=3; badChance=0; setTimeout(()=>talk(B,'Ух, проголодался!'),200); break;
+    case 'purple': spawnOn=true; maxBugs=4; badChance=0; if(!R) summonRival('purple'); break;
+    case 'red': case 'blue': case 'green': {
+      const want=LEVELS[i].race||LEVELS[i].rival, still=()=>level===i&&!R; spawnOn=true; maxBugs=4; badChance=0;
+      if(R&&R.cfg.cls!==want){dismissRival();setTimeout(()=>{if(still())summonRival(want)},1800)}
+      else if(!R){if(key==='red')summonRival(want);else setTimeout(()=>{if(still())summonRival(want)},1200)}
+      if(key==='blue') setTimeout(()=>talk(B,'Ещё один паук? Синий!'),300);
+      if(key==='green') setTimeout(()=>talk(B,'Ой, а этот зелёный!'),300);
+      break}
+    case 'yuck': spawnOn=true; maxBugs=5; badChance=.4; dismissRival();
+      setTimeout(()=>talk(B,'Осторожно! Осы и вонючки невкусные!'),1200); break;
+    default: spawnOn=true; maxBugs=5; badChance=.2; poisonChance=.15; dismissRival();
+      sfx.fanfare(); banner('Чемпион!');
+      for(let k=0;k<5;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.2,.5)*innerHeight,60,11),k*300);
+      setTimeout(()=>talk(B,'Ура! Я самый сытый паук!',.45,2500),400);
+  }
+}
+
+/* ---- нажатия на чёрного паука (pointerdown — без задержки клика) ---- */
+function tapBlack(){
+  if(B.state!=='home') return;
+  const key=LEVELS[level]?.key;
+  if(B.poisoned){say(B,'<b>Ой…</b>',900);return}
+  if(B.scared){say(B,'<b>Я боюсь!</b>',900);return}
+  if(B.tickled){say(B,'<b>Ха-ха!</b> Щекотно!',900);return}
+  if(key==='wake'&&!busy){
+    if(prog+1>=LEVELS[0].goal){addProg(1);return}
+    addProg(1); restart(B.btn,'stir'); sfx.snore();
+    say(B,pick(['Ммм…','Хррр…','Ещё пять минуточек…']),1300); return;
+  }
+  restart(B.btn,'jump'); sfx.jump();
+  if(key==='jump'&&!busy){talk(B,COUNT_WORDS[prog]||'Хоп!');addProg(1)}
+  else if(!busy) talk(B,'Я чёрный паук!');
+}
+B.btn.addEventListener('pointerdown',e=>{e.preventDefault();tapBlack()});
+B.btn.addEventListener('click',e=>{if(e.detail===0)tapBlack()});
+
+/* ---- разминка глаз: круги пальцем вокруг паука ---- */
+let pointer=null, lastA=null;
+addEventListener('pointermove',e=>{
+  pointer={x:e.clientX,y:e.clientY};
+  if(episode!==1||LEVELS[level]?.key!=='eyes'||busy) return;
+  if(e.pointerType==='touch'&&e.buttons===0) return;
+  const c=spiderCenter(B), dx=e.clientX-c.x, dy=e.clientY-c.y;
+  if(Math.hypot(dx,dy)<B.wrap.offsetWidth*.22){lastA=null;return}
+  const a=Math.atan2(dy,dx);
+  if(lastA!==null){
+    let d=a-lastA; while(d>Math.PI)d-=TAU; while(d<-Math.PI)d+=TAU;
+    if(Math.abs(d)<1){
+      const before=Math.floor(eyeAcc/(TAU/4));
+      eyeAcc+=Math.abs(d);
+      if(Math.floor(eyeAcc/(TAU/4))>before) sfx.tick(Math.floor(eyeAcc/(TAU/4)));
+      render();
+      if(eyeAcc>=LEVELS[level].goal*TAU) complete();
+    }
+  }
+  lastA=a;
+});
+addEventListener('pointerup',()=>{lastA=null});
+addEventListener('pointercancel',()=>{lastA=null});
+
+/* ================= игровой цикл ================= */
+function update(s,h){
+  s.anchor+=(s.anchorT-s.anchor)*.05;
+  const o=home(s);
+  if(!s.init){s.x=o.x;s.y=o.y;s.init=true}
+  switch(s.state){
+    case 'home': s.x=o.x; s.y=o.y; break;
+    case 'enter': s.x=o.x; s.y+=(o.y-s.y)*.06;
+      if(Math.abs(o.y-s.y)<1.5){s.y=o.y;s.state='home';s.onArrive&&s.onArrive()} break;
+    case 'leave': s.x=o.x; s.y+=(-h*2-s.y)*.05; if(s.y<-h*1.3){destroy(s);return false} break;
+    case 'tickle': {
+      const tx=B.x+B.wrap.offsetWidth*.55, ty=B.y, dx=tx-s.x, dy=ty-s.y, d=Math.hypot(dx,dy);
+      if(s.tickleOn){s.x=tx+Math.sin(performance.now()/40)*7;s.y=ty}
+      else if(d<9) startTickle(s);
+      else{const v=Math.min(7,d);s.x+=dx/d*v;s.y+=dy/d*v}
+      break}
+    case 'flee': s.x+=(o.x-s.x)*.12; s.y+=(-h*.2-s.y)*.12; break;
+    case 'hunt': {
+      const b=s.target;
+      if(!b||b.dead){s.target=null;if(s.feast)feastNext(s);else s.state='return';break}
+      const tx=b.x, ty=b.y-h*.22, dx=tx-s.x, dy=ty-s.y, d=Math.hypot(dx,dy);
+      if(s===B){s.x+=dx*.2;s.y+=dy*.2;if(d<8)blackCatch(b)}
+      else if(d<10&&!b.caught) rivalCatch(s,b);
+      else if(d>1){const v=Math.min(s.feast?8:s.cfg.speed,d);s.x+=dx/d*v;s.y+=dy/d*v}
+      break}
+    case 'return': s.x+=(o.x-s.x)*.08; s.y+=(o.y-s.y)*.08;
+      if(Math.hypot(o.x-s.x,o.y-s.y)<2){s.x=o.x;s.y=o.y;s.state='home';if(s===R)planRival()} break;
+  }
+  s.btn.classList.toggle('crawl',['hunt','return','enter','leave','flee','tickle'].includes(s.state));
+  return true;
+}
+function frame(){
+  const r=rect(), h=H(), now=performance.now();
+  for(const b of bugs.filter(b=>b.K.poison&&!b.caught&&!b.dead)){
+    const rem=b.fuse-now;
+    b.el.style.setProperty('--p',Math.max(0,Math.min(1,rem/FUSE)));
+    b.el.classList.toggle('hurry',rem<2000);
+    if(rem<=0) explode(b);
+  }
+  for(const b of bugs){
+    if(b.caught){b.el.style.transform=`translate(${b.x}px,${b.y}px)`;continue}
+    b.t+=.02;
+    b.a+=Math.sin(b.t*1.7+b.x*.01)*.05+(Math.random()-.5)*.08;
+    const m=40, top=r.height*.32;
+    if(b.x<m&&Math.cos(b.a)<0||b.x>r.width-m&&Math.cos(b.a)>0) b.a=Math.PI-b.a;
+    if(b.y<top&&Math.sin(b.a)<0||b.y>r.height-m&&Math.sin(b.a)>0) b.a=-b.a;
+    for(const s of spiders){
+      const dx=b.x-s.x, dy=b.y-(s.y+h*.4), d=Math.hypot(dx,dy);
+      if(d<h*.8) b.a+=(Math.atan2(dy,dx)-b.a)*.08;
+    }
+    const sp=b.K.speed*(level>=6?1.2:1);
+    b.x+=Math.cos(b.a)*sp; b.y+=Math.sin(b.a)*sp;
+    b.x=Math.min(Math.max(b.x,-30),r.width+30); b.y=Math.min(Math.max(b.y,20),r.height-20);
+    const turn=b.k==='ladybug'||b.k==='stinkbug';
+    b.el.style.transform=`translate(${b.x}px,${b.y}px) rotate(${turn?b.a*57.3+90:0}deg) scaleX(${turn?1:(Math.cos(b.a)<0?-1:1)})`;
+  }
+  for(const s of [...spiders]){
+    if(!update(s,h)) continue;
+    s.wrap.style.transform=`translate(${s.x-s.wrap.offsetWidth/2}px,${s.y-h*.35}px)`;
+    s.line.setAttribute('x1',r.width*s.anchor);s.line.setAttribute('y1',-5);
+    s.line.setAttribute('x2',s.x);s.line.setAttribute('y2',s.y);
+    clampBubble(s,r.width);
+  }
+  drawFx();
+  requestAnimationFrame(frame);
+}
+
+/* глаза */
+setInterval(()=>{
+  const eyesLevel=LEVELS[level]?.key==='eyes';
+  for(const s of spiders){
+    let p=null, d=3;
+    if(s===B&&B.poisoned){const a=performance.now()/90;p={x:Math.cos(a),y:Math.sin(a)};d=4.5}
+    else if(s===B&&eyesLevel&&pointer){const c=spiderCenter(B);p={x:pointer.x-c.x,y:pointer.y-c.y};d=5}
+    else{
+      let t=s.target;
+      if(!t&&bugs.length){let best=1e9;for(const b of bugs){const q=Math.hypot(b.x-s.x,b.y-s.y);if(q<best){best=q;t=b}}}
+      if(t) p={x:t.x-s.x,y:t.y-(s.y+H()*.1)};
+      else if(R&&s===B) p={x:R.x-B.x,y:0};
+    }
+    if(!p) continue;
+    const a=Math.atan2(p.y,p.x);
+    s.pl.setAttribute('cx',90+Math.cos(a)*d);s.pl.setAttribute('cy',82+Math.sin(a)*d);
+    s.pr.setAttribute('cx',110+Math.cos(a)*d);s.pr.setAttribute('cy',82+Math.sin(a)*d);
+  }
+},50);
+
+/* ================= старт / перезапуск ================= */
+function resetAll(){
+  clearBugs(); huntQueue.length=0; dismissRival(true); cureSpider();
+  for(const s of [...spiders]) if(s!==B) destroy(s);
+  B.target=null; B.state='home'; B.anchorT=.5; B.scared=false; B.tickled=false; B.wrap.classList.remove('tickled'); busy=false;
+}
+$('restart').addEventListener('click',()=>{if(episode===2){enter2(0);return}resetAll();enterLevel(0)});
+$('replay').addEventListener('click',()=>{if(episode===2){showMenu();return}resetAll();enterLevel(0)});
+
+requestAnimationFrame(frame);
+
+/* =====================================================================
+   МЕНЮ И ЭПИЗОДЫ
+   ===================================================================== */
+let episode=0;
+const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catch(e){return d}};
+const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+function showScreen(ep){
+  episode=ep;
+  $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep!==2;
+}
+function showMenu(){
+  stopSpeech();
+  if(episode===1){resetAll();spawnOn=false}
+  if(episode===2) leave2();
+  showScreen(0);
+  const a=lsGet('spider-level',0), b=lsGet('spider-ep2',0);
+  $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
+  $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
+}
+function startEp1(){
+  showScreen(1);
+  $('steps').innerHTML=LEVELS.map(()=>'<i></i>').join('');
+  resetAll();
+  enterLevel(Math.min(Math.max(0,lsGet('spider-level',0)|0),LEVELS.length));
+}
+function startEp2(){
+  showScreen(2);
+  let l=Math.max(0,lsGet('spider-ep2',0)|0); if(l>=EP2.length) l=0;
+  enter2(l);
+}
+$('m1').addEventListener('click',()=>{unlockAudio();startEp1()});
+$('m2').addEventListener('click',()=>{unlockAudio();startEp2()});
+$('menuBtn').addEventListener('click',showMenu);
+
+/* =====================================================================
+   ЭПИЗОД 2 — ЧЁРНЫЙ ПАУК ИДЁТ СПАТЬ
+   ===================================================================== */
+const room=$('room');
+const EP2=[
+  {key:'toilet', title:'Сходи в туалет',        goal:3, unit:'',        done:'Чистые лапки!'},
+  {key:'teeth',  title:'Почисти зубы',          goal:10,unit:'',        done:'Зубки блестят!'},
+  {key:'shower', title:'Помойся в душе',        goal:15,unit:'пузырей', done:'Брр! Чистый-пречистый!'},
+  {key:'doors',  title:'Найди спальню',         goal:1, unit:'',        done:'Вот моя спальня!'},
+  {key:'blanket',title:'Говорящее одеяло',      goal:3, unit:'прыжка',  done:'Какое весёлое одеяло!'},
+  {key:'book',   title:'Почитай книжку',        goal:6, unit:'стр.',    done:'Ха-ха! Смешная сказка!'},
+  {key:'hugs',   title:'Обними маму и папу',    goal:2, unit:'',        done:'Я вас люблю!'},
+  {key:'sleep',  title:'Спокойной ночи',        goal:1, unit:'',        done:''}
+];
+let l2=0,p2=0,busy2=false,hint2='',sceneId=0,S2=null,talkers2=[],ptr2=null,handlers2={};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const rr=()=>room.getBoundingClientRect();
+function anchor(el,fx,fy){const r=el.getBoundingClientRect(),s=rr();return{x:r.left-s.left+r.width*fx,y:r.top-s.top+r.height*fy}}
+function put(t,p){t.wrap.style.left=p.x+'px';t.wrap.style.top=p.y+'px'}
+function walk(t,p,ms=950){t.btn.classList.add('crawl');put(t,p);return wait(ms).then(()=>t.btn.classList.remove('crawl'))}
+function standPos(fx,t){const s=rr(),h=t.wrap.offsetWidth*.85;return{x:s.width*fx,y:s.height*.8-h*.5}}
+function talk2(t,text,ms){say(t,bold(text),ms);speak(text,t.pitch,t.rate,t.who,t.voice)}
+function tapme(el,on){if(el)el.classList.toggle('tapme',on)}
+function mix(a,b,t){t=Math.max(0,Math.min(1,t));const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);
+  return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+function clampDom(s){
+  const bb=s.bubble; if(!bb||!bb.classList.contains('show')) return;
+  const st=rr(), wr=s.wrap.getBoundingClientRect(), left=wr.left-st.left+bb.offsetLeft, w=bb.offsetWidth;
+  let shift=0; if(left+w>st.width-6) shift=st.width-6-(left+w); if(left+shift<6) shift=6-left;
+  bb.style.translate=`${shift}px 0`;
+}
+function makeWalker(cls,opts={}){
+  const node=$('spiderTpl').content.firstElementChild.cloneNode(true);
+  node.classList.add('walker','noanim'); (cls||'').split(' ').filter(Boolean).forEach(c=>node.classList.add(c));
+  room.appendChild(node);
+  const t={wrap:node,btn:node.querySelector('.sp'),bubble:node.querySelector('.bubble'),mouth:node.querySelector('.mouth'),
+    pl:node.querySelector('.pl'),pr:node.querySelector('.pr'),stageEl:room,pitch:.4,rate:1.1,who:'B',voice:0,...opts};
+  node.querySelector('.sp').setAttribute('aria-label',opts.label||'Чёрный паук');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>node.classList.remove('noanim')));
+  talkers2.push(t); return t;
+}
+function makeMain(cls){
+  const t=makeWalker(cls);
+  t.btn.addEventListener('pointerdown',e=>{
+    if(handlers2.move) return; // в сценах с рисованием пальцем тап по пауку — часть игры
+    e.preventDefault(); if(busy2) return;
+    if(t.wrap.classList.contains('asleep')){say(t,'<b>Хррр…</b>',1000);return}
+    restart(t.btn,'jump'); sfx.jump(); talk2(t,pick(['Я чёрный паук!','Хи-хи, щекотно!','Скоро спать!']));
+  });
+  return t;
+}
+function talkerFor(el,opts){const t={wrap:el,bubble:el.querySelector('.bubble'),stageEl:room,...opts};talkers2.push(t);return t}
+function placeEl(el,p,instant){if(instant)el.classList.add('noanim');el.style.left=p.x+'px';el.style.top=p.y+'px';
+  if(instant)requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove('noanim')))}
+
+function render2(){
+  $('steps').innerHTML=EP2.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
+  const fin=l2>=EP2.length;
+  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin; $('replay').textContent='В меню';
+  $('barRivalWrap').hidden=true;
+  if(fin){$('eyebrow').textContent='Эпизод 2 пройден';$('task').textContent='Спокойной ночи!';$('hint').textContent='Чёрный паук сладко спит';return}
+  const L=EP2[l2];
+  $('eyebrow').textContent=`Эпизод 2 · этап ${l2+1} из ${EP2.length}`;
+  $('task').textContent=L.title; $('hint').textContent=hint2;
+  $('barMe').style.width=Math.min(100,p2/L.goal*100)+'%';
+  $('count').innerHTML=`<b>${Math.min(p2,L.goal)}</b> / ${L.goal}${L.unit?' '+L.unit:''}`;
+}
+function setHint(t){hint2=t;render2()}
+function add2(n,auto=true){
+  if(busy2) return; p2=Math.max(0,p2+n); render2(); if(n>0) sfx.tick(p2);
+  if(auto&&p2>=EP2[l2].goal) celebrate2();
+}
+function celebrate2(){
+  busy2=true; const L=EP2[l2], r=S2.wrap.getBoundingClientRect();
+  burst(r.left+r.width/2,r.top+r.height/2,70,10);
+  setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,40,8);burst(innerWidth*.8,innerHeight*.35,40,8)},250);
+  sfx.fanfare(); banner(pick(['Отлично!','Супер!','Молодец!','Класс!','Ура!']));
+  if(L.done) talk2(S2,L.done,2200);
+  const sid=sceneId; setTimeout(()=>{if(sid===sceneId){busy2=false;enter2(l2+1)}},2600);
+}
+function leave2(){sceneId++;room.innerHTML='';talkers2=[];S2=null;handlers2={};busy2=false}
+function enter2(i){
+  l2=i; p2=0; busy2=false; lsSet('spider-ep2',i);
+  sceneId++; talkers2=[]; handlers2={}; room.innerHTML=''; room.className='room';
+  $('steps').innerHTML='';
+  if(i>=EP2.length){render2();return}
+  hint2=''; render2(); restart($('hud'),'pop');
+  const sid=sceneId, alive=()=>sid===sceneId;
+  requestAnimationFrame(()=>{if(alive()) SCENES[EP2[i].key](alive)});
+}
+
+/* ---- указатель в сценах с рисованием ---- */
+const pt2=e=>{const s=rr();return{x:e.clientX-s.left,y:e.clientY-s.top}};
+$('stage2').addEventListener('pointerdown',e=>{handlers2.down?.(e,pt2(e))});
+addEventListener('pointermove',e=>{if(episode!==2)return;ptr2={x:e.clientX,y:e.clientY};handlers2.move?.(e,pt2(e))});
+addEventListener('pointerup',e=>{if(episode===2)handlers2.up?.(e)});
+addEventListener('pointercancel',e=>{if(episode===2)handlers2.up?.(e)});
+
+/* облачка в пределах сцены и глаза, следящие за пальцем */
+(function loop2(){
+  if(episode===2){
+    for(const t of talkers2) clampDom(t);
+    if(S2&&ptr2&&S2.pl&&!S2.wrap.classList.contains('asleep')){
+      const r=S2.btn.getBoundingClientRect(), a=Math.atan2(ptr2.y-(r.top+r.height*.5),ptr2.x-(r.left+r.width/2));
+      S2.pl.setAttribute('cx',90+Math.cos(a)*3);S2.pl.setAttribute('cy',82+Math.sin(a)*3);
+      S2.pr.setAttribute('cx',110+Math.cos(a)*3);S2.pr.setAttribute('cy',82+Math.sin(a)*3);
+    }
+  }
+  requestAnimationFrame(loop2);
+})();
+
+/* ---- картинки ---- */
+const SVG={
+  toilet:`<svg viewBox="0 0 120 150"><rect x="22" y="4" width="76" height="52" rx="8" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <circle cx="60" cy="18" r="7" fill="#bcd3e6" stroke="var(--line)" stroke-width="2"/>
+    <rect class="lid-open" x="26" y="18" width="68" height="46" rx="20" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <path d="M10 70 H110 Q110 110 74 116 L78 146 H42 L46 116 Q10 110 10 70Z" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <ellipse cx="60" cy="70" rx="50" ry="10" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <ellipse cx="60" cy="71" rx="36" ry="6" fill="var(--water)" opacity=".45"/>
+    <ellipse class="swirl" cx="60" cy="71" rx="30" ry="5" fill="none" stroke="var(--water)" stroke-width="3" stroke-dasharray="10 6"/>
+    <ellipse class="lid-closed" cx="60" cy="66" rx="50" ry="11" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/></svg>`,
+  sink:`<svg viewBox="0 0 110 150"><rect x="48" y="60" width="14" height="88" rx="4" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <path d="M6 40 H104 Q100 72 55 74 Q10 72 6 40Z" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
+    <path d="M50 40 V22 Q50 14 60 14 H74 V22" fill="none" stroke="#9aa7b2" stroke-width="6" stroke-linecap="round"/>
+    <rect class="stream" x="71" y="24" width="5" height="26" rx="2" fill="var(--water)"/>
+    <g class="suds" fill="#fff" stroke="#cfe3f0"><circle cx="40" cy="42" r="6"/><circle cx="52" cy="38" r="5"/><circle cx="64" cy="42" r="6"/><circle cx="30" cy="38" r="4"/></g></svg>`,
+  brush:`<svg viewBox="0 0 140 40"><rect x="30" y="16" width="108" height="10" rx="5" fill="#3ab0a0"/><rect x="4" y="12" width="36" height="16" rx="5" fill="#dff1ee"/>
+    <rect x="6" y="2" width="32" height="12" rx="3" fill="#fff" stroke="#9cc" stroke-width="1.5"/></svg>`,
+  shower:`<svg viewBox="0 0 120 64"><path d="M112 0 V18 Q112 28 102 28 H66" fill="none" stroke="#9aa7b2" stroke-width="8" stroke-linecap="round"/>
+    <path d="M36 24 H84 L94 40 H26Z" fill="#b9c4cc"/><g fill="#7f8c96"><circle cx="40" cy="36" r="1.6"/><circle cx="52" cy="36" r="1.6"/><circle cx="64" cy="36" r="1.6"/><circle cx="76" cy="36" r="1.6"/></g></svg>`,
+  valve:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="#c9d3da" stroke="var(--line)" stroke-width="2"/>
+    <rect x="26" y="4" width="8" height="52" rx="4" fill="#9aa7b2"/><rect x="4" y="26" width="52" height="8" rx="4" fill="#9aa7b2"/>
+    <circle cx="30" cy="30" r="8" fill="#d8432f"/><circle cx="30" cy="30" r="3.5" fill="#3d8fe0"/></svg>`,
+  window:`<svg viewBox="0 0 100 100"><path d="M64 14 a20 20 0 1 0 14 30 a16 16 0 1 1 -14 -30Z" fill="#f5e7a1"/>
+    <circle class="star" cx="22" cy="24" r="2.2" fill="#fff"/><circle class="star" cx="36" cy="60" r="1.8" fill="#fff"/><circle class="star" cx="80" cy="74" r="2" fill="#fff"/><circle class="star" cx="18" cy="82" r="1.6" fill="#fff"/>
+    <path d="M50 0 V100 M0 50 H100" stroke="var(--wood)" stroke-width="5"/></svg>`,
+  bed:`<svg viewBox="0 0 220 130"><rect x="0" y="10" width="22" height="115" rx="6" fill="var(--wood)"/><rect x="198" y="50" width="18" height="75" rx="5" fill="var(--wood)"/>
+    <rect x="10" y="78" width="200" height="22" rx="6" fill="var(--wood)"/><rect x="14" y="58" width="192" height="26" rx="10" fill="var(--sheet)"/>
+    <ellipse cx="50" cy="56" rx="28" ry="11" fill="var(--sheet)" stroke="var(--line)" stroke-width="1.5"/>
+    <rect x="16" y="100" width="10" height="25" fill="var(--wood)"/><rect x="194" y="100" width="10" height="25" fill="var(--wood)"/></svg>`,
+  blanket:(sleepy)=>`<svg viewBox="0 0 200 130"><g class="flat-g">
+    <path d="M8 50 Q28 40 48 50 T88 50 T128 50 T168 50 T196 48 L192 108 Q172 118 152 108 T112 108 T72 108 T32 108 T10 106Z" fill="var(--blanket)"/>
+    <path d="M20 79 H186 M60 54 V106 M110 54 V106 M150 54 V106" stroke="rgb(255 255 255/.35)" stroke-width="2" stroke-dasharray="5 5"/>
+    ${sleepy?`<path d="M80 74 q8 6 16 0 M108 74 q8 6 16 0" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/>`
+      :`<ellipse cx="88" cy="73" rx="7" ry="8" fill="#fff"/><ellipse cx="116" cy="73" rx="7" ry="8" fill="#fff"/><circle cx="89" cy="75" r="3.5" fill="#222"/><circle cx="117" cy="75" r="3.5" fill="#222"/>`}
+    <path d="M92 90 Q102 99 112 90" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+    <g class="chair-g"><rect x="50" y="4" width="100" height="80" rx="24" fill="var(--blanket)"/>
+    <rect x="22" y="56" width="30" height="62" rx="14" fill="var(--blanket2)"/><rect x="148" y="56" width="30" height="62" rx="14" fill="var(--blanket2)"/>
+    <rect x="40" y="78" width="120" height="40" rx="14" fill="var(--blanket)"/>
+    <path d="M60 64 H140 M100 10 V78" stroke="rgb(255 255 255/.35)" stroke-width="2" stroke-dasharray="5 5"/>
+    <ellipse cx="88" cy="34" rx="7" ry="8" fill="#fff"/><ellipse cx="112" cy="34" rx="7" ry="8" fill="#fff"/><circle cx="89" cy="36" r="3.5" fill="#222"/><circle cx="113" cy="36" r="3.5" fill="#222"/>
+    <path d="M86 50 Q100 62 114 50" stroke="#222" stroke-width="3" fill="none" stroke-linecap="round"/></g></svg>`,
+  lamp:`<svg viewBox="0 0 80 140"><circle class="glow" cx="40" cy="44" r="38" fill="#ffe28a" opacity=".35"/>
+    <rect x="0" y="82" width="80" height="58" rx="6" fill="var(--wood)"/><path d="M8 108 H72" stroke="rgb(0 0 0/.2)" stroke-width="2"/><circle cx="40" cy="98" r="3" fill="var(--gold)"/>
+    <rect x="35" y="58" width="10" height="26" fill="#8f8a80"/><path class="shade" d="M16 60 H64 L54 28 H26Z" fill="#f2c46b"/></svg>`,
+  sign_kitchen:`<svg viewBox="0 0 100 100"><path d="M38 30 q6 -10 0 -20 M56 30 q6 -10 0 -20" stroke="#999" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="20" y="42" width="60" height="38" rx="8" fill="#d8432f"/><rect x="14" y="36" width="72" height="9" rx="4" fill="#a83322"/></svg>`,
+  sign_bath:`<svg viewBox="0 0 100 100"><path d="M50 10 C30 40 22 52 22 64 a28 28 0 0 0 56 0 C78 52 70 40 50 10Z" fill="#3d8fe0"/><ellipse cx="40" cy="62" rx="5" ry="9" fill="#fff" opacity=".5"/></svg>`,
+  sign_bed:`<svg viewBox="0 0 100 100"><path d="M60 14 a36 36 0 1 0 24 54 a29 29 0 1 1 -24 -54Z" fill="#f2c046"/>
+    <path d="M26 18 l3.5 8 8.5 1 -6 6 1.5 8.5 -7.5 -4 -7.5 4 1.5 -8.5 -6 -6 8.5 -1z" fill="#f2c046"/></svg>`
+};
+const mini=(x,y,s=1)=>`<g transform="translate(${x} ${y}) scale(${s})"><g stroke="#141412" stroke-width="4" stroke-linecap="round" fill="none"><path d="M-6 0 L-22 -12 L-32 -2 M-6 6 L-26 6 L-34 18 M6 0 L22 -12 L32 -2 M6 6 L26 6 L34 18"/></g><ellipse cx="0" cy="10" rx="13" ry="12" fill="#141412"/><circle cx="0" cy="-5" r="10" fill="#141412"/><circle cx="-4" cy="-6" r="3.5" fill="#fff"/><circle cx="4" cy="-6" r="3.5" fill="#fff"/></g>`;
+const PAGES=[
+  {pic:`<svg viewBox="0 0 100 80">${mini(50,38)}</svg>`,text:'Сказка про паука'},
+  {pic:`<svg viewBox="0 0 100 80">${mini(50,38)}</svg>`,text:'Жил-был когда-то паук.'},
+  {pic:`<svg viewBox="0 0 100 80"><rect x="8" y="34" width="46" height="44" fill="#e9c58f"/><path d="M2 36 L31 10 L60 36Z" fill="#c8553d"/><rect x="24" y="52" width="14" height="26" fill="#a8794f"/><rect x="40" y="42" width="9" height="9" fill="#9fd3ef"/>
+    <path d="M54 36 L98 36 M54 36 L96 60 M54 36 L80 78 M54 36 L54 78 M68 36 Q70 46 62 52 Q58 56 54 54 M84 36 Q86 54 72 66 Q62 72 54 70" stroke="#8f958a" stroke-width="1.5" fill="none"/>${mini(78,48,.4)}</svg>`,
+   text:'Однажды он сплёл паутину возле дома.'},
+  {pic:`<svg viewBox="0 0 100 80"><rect x="52" y="52" width="30" height="28" rx="10" fill="#e86b9a"/><circle cx="48" cy="26" r="7" fill="#7a4a2a"/><circle cx="86" cy="26" r="7" fill="#7a4a2a"/><circle cx="67" cy="34" r="19" fill="#7a4a2a"/><circle cx="67" cy="38" r="15" fill="#f4c9a0"/><circle cx="61" cy="36" r="2.2" fill="#222"/><circle cx="73" cy="36" r="2.2" fill="#222"/><path d="M61 44 Q67 49 73 44" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M54 60 L30 54" stroke="#f4c9a0" stroke-width="7" stroke-linecap="round"/>${mini(18,50,.45)}</svg>`,
+   text:'Какая-то девочка его потрогала.'},
+  {pic:`<svg viewBox="0 0 100 80"><path d="M100 62 H52 Q40 62 40 52 Q40 46 48 46 H74" stroke="#f4c9a0" stroke-width="16" stroke-linecap="round" fill="none"/><rect x="84" y="50" width="16" height="26" fill="#e86b9a"/>${mini(58,34,.6)}</svg>`,
+   text:'Он сразу же запрыгнул ей на ручку!'},
+  {pic:`<svg viewBox="0 0 100 80"><path d="M100 26 H70" stroke="#f4c9a0" stroke-width="14" stroke-linecap="round"/><path d="M62 22 Q40 4 28 44" stroke="#8f958a" stroke-width="2" stroke-dasharray="4 4" fill="none"/>${mini(28,58,.55)}</svg>`,
+   text:'А потом спрыгнул.'},
+  {pic:`<svg viewBox="0 0 100 80"><rect x="52" y="52" width="30" height="28" rx="10" fill="#e86b9a"/><circle cx="48" cy="26" r="7" fill="#7a4a2a"/><circle cx="86" cy="26" r="7" fill="#7a4a2a"/><circle cx="67" cy="34" r="19" fill="#7a4a2a"/><circle cx="67" cy="38" r="15" fill="#f4c9a0"/><circle cx="61" cy="36" r="2.2" fill="#222"/><circle cx="73" cy="36" r="2.2" fill="#222"/><ellipse cx="67" cy="46" rx="5" ry="6" fill="#7a1f1f"/><path d="M52 58 L40 40 M82 58 L94 40" stroke="#f4c9a0" stroke-width="7" stroke-linecap="round"/>${mini(18,62,.4)}<text x="4" y="20" fill="#d8432f" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="12">А-а-а!</text></svg>`,
+   text:'Девочка заметила: «А-а-а! Пауки!»'}
+];
+
+/* ---- сцены ---- */
+const BED_ROOM=`<div class="wall"></div><div class="floor"></div><div class="window">${SVG.window}</div>`;
+const SCENES={
+  /* 1. Туалет */
+  toilet(alive){
+    room.className='room bath';
+    room.innerHTML=`<div class="wall"></div><div class="floor"></div>
+      <button class="obj toilet" id="r-toilet" style="left:28%" aria-label="Унитаз">${SVG.toilet}</button>
+      <button class="obj sink" id="r-sink" style="left:76%" aria-label="Раковина">${SVG.sink}</button>`;
+    const toilet=$('r-toilet'), sink=$('r-sink');
+    S2=makeMain(); put(S2,standPos(.53,S2));
+    let step=0; setHint('Нажми на унитаз'); tapme(toilet,true);
+    setTimeout(()=>alive()&&talk2(S2,'Ой, мне срочно надо!'),300);
+    toilet.onclick=async()=>{
+      if(step===0){
+        step=-1; tapme(toilet,false); toilet.classList.add('open'); sfx.click();
+        await walk(S2,anchor(toilet,.5,.36)); if(!alive())return;
+        S2.wrap.classList.add('sitting'); talk2(S2,'Так… Пш-ш-ш…');
+        await wait(1900); if(!alive())return;
+        talk2(S2,'Фух! Готово!'); add2(1);
+        step=1; setHint('Смой воду — нажми на унитаз ещё раз'); tapme(toilet,true);
+      } else if(step===1){
+        step=-1; tapme(toilet,false); S2.wrap.classList.remove('sitting');
+        await walk(S2,standPos(.52,S2),700); if(!alive())return;
+        toilet.classList.add('flush'); sfx.flush(); talk2(S2,'Буль-буль! Смыто!');
+        await wait(1300); if(!alive())return;
+        toilet.classList.remove('flush','open'); add2(1);
+        step=2; setHint('Помой лапки — нажми на раковину'); tapme(sink,true);
+      }
+    };
+    sink.onclick=async()=>{
+      if(step!==2) return; step=-1; tapme(sink,false);
+      await walk(S2,anchor(sink,.5,.12)); if(!alive())return;
+      sink.classList.add('on'); sfx.water(); talk2(S2,'Мою лапки! Все восемь!');
+      await wait(2000); if(!alive())return;
+      sink.classList.remove('on'); add2(1);
+    };
+  },
+
+  /* 2. Зубы */
+  teeth(alive){
+    room.className='room bath';
+    room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="mirror"></div><div class="brush" id="r-brush">${SVG.brush}</div>`;
+    const s=rr(); S2=makeMain('big grin'); put(S2,{x:s.width*.5,y:s.height*.42});
+    S2.wrap.style.setProperty('--teeth','#d9c060');
+    const brush=$('r-brush'), rest={x:s.width*.8,y:s.height*.74};
+    const moveBrush=p=>{brush.style.translate=`${p.x}px ${p.y}px`};
+    moveBrush(rest);
+    setHint('Води щёткой по зубам туда-сюда');
+    setTimeout(()=>alive()&&talk2(S2,'Ааа! Почисти мне зубки!'),300);
+    let lastX=null,dir=0,turnX=0,done=false;
+    const foam=p=>{const f=document.createElement('div');f.className='foam';f.style.translate=`${p.x+rand(-10,10)}px ${p.y+rand(-6,6)}px`;room.appendChild(f);setTimeout(()=>f.remove(),1200)};
+    handlers2={
+      down(e,p){if(!done)moveBrush(p)},
+      move(e,p){
+        if(done||!(e.buttons&1)) return; moveBrush(p);
+        const r=S2.wrap.getBoundingClientRect(), st=rr(), mx=r.left-st.left+r.width*.5, my=r.top-st.top+r.height*.6;
+        if(Math.abs(p.x-mx)>r.width*.38||Math.abs(p.y-my)>r.height*.28){lastX=null;return}
+        if(Math.random()<.2) foam(p);
+        if(lastX!==null){
+          const d=p.x-lastX;
+          if(Math.abs(d)>2){const nd=Math.sign(d);
+            if(nd!==dir){ if(dir!==0&&Math.abs(p.x-turnX)>14) stroke(p); dir=nd; turnX=p.x }}
+        }
+        lastX=p.x;
+      },
+      up(){lastX=null;dir=0;if(!done)moveBrush(rest)}
+    };
+    function stroke(p){
+      foam(p);foam(p); tone(800+p2*50,.05,'sine',0,.04); add2(1,false);
+      S2.wrap.style.setProperty('--teeth',mix('#d9c060','#ffffff',p2/EP2[l2].goal));
+      if(p2===4) talk2(S2,'Щекотно!'); if(p2===7) talk2(S2,'Ещё чуть-чуть!');
+      if(p2>=EP2[l2].goal){done=true;moveBrush(rest);
+        const r=S2.wrap.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height*.6,24,5); celebrate2()}
+    }
+  },
+
+  /* 3. Душ */
+  shower(alive){
+    room.className='room bath';
+    room.innerHTML=`<div class="wall"></div><div class="floor"></div>
+      <div class="showerhead">${SVG.shower}</div><div class="water" id="r-water"></div><div class="tub" id="r-tub"></div>
+      <button class="valve" id="r-valve" aria-label="Кран">${SVG.valve}</button>`;
+    const water=$('r-water'), valve=$('r-valve'), tub=$('r-tub');
+    for(let i=0;i<14;i++){const d=document.createElement('i');d.className='drop';d.style.left=rand(4,94)+'%';d.style.animationDelay=rand(0,.55)+'s';water.appendChild(d)}
+    S2=makeMain(); put(S2,anchor(tub,.5,-.5));
+    let step=0,last=null; setHint('Включи воду — нажми на кран'); tapme(valve,true);
+    setTimeout(()=>alive()&&talk2(S2,'Пора мыться!'),300);
+    valve.onclick=async()=>{
+      if(step===0){step=1;tapme(valve,false);valve.classList.add('on');water.classList.add('on');sfx.water();
+        talk2(S2,'Ой, водичка тёплая!'); setHint('Намыль паука — води пальцем по нему')}
+      else if(step===2){step=3;tapme(valve,false);
+        room.querySelectorAll('.soap').forEach((b,i)=>setTimeout(()=>b.classList.add('rinse'),i*30)); sfx.water();
+        await wait(1500); if(!alive())return;
+        valve.classList.remove('on'); water.classList.remove('on'); restart(S2.btn,'shake'); celebrate2()}
+    };
+    handlers2={move(e,p){
+      if(step!==1||!(e.buttons&1)) return;
+      const r=S2.wrap.getBoundingClientRect(), st=rr(), L=r.left-st.left, T=r.top-st.top;
+      if(p.x<L||p.x>L+r.width||p.y<T||p.y>T+r.height) return;
+      if(last&&Math.hypot(p.x-last.x,p.y-last.y)<18) return; last=p;
+      const b=document.createElement('div'); b.className='soap'; b.style.setProperty('--s',rand(16,30)+'px');
+      b.style.left=p.x+'px'; b.style.top=p.y+'px'; room.appendChild(b);
+      tone(rand(900,1500),.04,'sine',0,.03); add2(1,false);
+      if(p2===8) talk2(S2,'Хи-хи! Пена!');
+      if(p2>=EP2[l2].goal){step=2;setHint('Смой пену — нажми на кран');tapme(valve,true);talk2(S2,'Сколько пены! Смывай!')}
+    }};
+  },
+
+  /* 4. Двери */
+  doors(alive){
+    room.className='room hall';
+    const kinds=[{k:'kitchen',say:'Это кухня! Тут вкусно, но спать нельзя.'},{k:'bath',say:'Это ванная! Я уже помылся.'},{k:'bed'}].sort(()=>Math.random()-.5);
+    room.innerHTML=`<div class="wall"></div><div class="floor"></div>`+kinds.map((d,i)=>
+      `<button class="door" data-k="${d.k}" style="left:${20+i*30}%" aria-label="Дверь"><span class="inside"></span><span class="panel"><i class="knob"></i></span><span class="sign">${SVG['sign_'+d.k]}</span></button>`).join('');
+    S2=makeMain(); put(S2,standPos(.5,S2));
+    setHint('Найди дверь, где нарисована луна');
+    setTimeout(()=>alive()&&talk2(S2,'Где же моя спальня?'),300);
+    let lock=false;
+    room.querySelectorAll('.door').forEach(door=>door.onclick=async()=>{
+      if(lock) return; lock=true; const d=kinds.find(x=>x.k===door.dataset.k);
+      door.classList.add('open'); sfx.door();
+      await walk(S2,{x:anchor(door,.5,0).x,y:standPos(0,S2).y},800); if(!alive())return;
+      if(d.k!=='bed'){talk2(S2,d.say);await wait(1800);if(!alive())return;door.classList.remove('open');lock=false;return}
+      talk2(S2,'Ура, нашёл!'); S2.wrap.classList.add('vanish');
+      await wait(700); if(!alive())return; add2(1);
+    });
+  },
+
+  /* 5. Говорящее одеяло */
+  blanket(alive){
+    room.className='room bedroom';
+    room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>
+      <button class="blanket" id="r-blanket" aria-label="Говорящее одеяло"><div class="bubble"></div>${SVG.blanket(false)}</button>`;
+    const bed=$('r-bed'), bl=$('r-blanket');
+    const BL=talkerFor(bl,{pitch:1.35,rate:1.05,who:'blanket',voice:1});
+    const onBed=()=>anchor(bed,.6,.48);
+    placeEl(bl,onBed(),true);
+    S2=makeMain(); put(S2,standPos(.2,S2));
+    let step=0; setHint('Поздоровайся с одеялом — нажми на него'); tapme(bl,true);
+    setTimeout(()=>alive()&&talk2(S2,'Пора в кроватку!'),300);
+    bl.onclick=async()=>{
+      if(step===0){
+        step=-1; tapme(bl,false); restart(bl,'morph');
+        talk2(BL,'Привет, паучок! Я говорящее одеяло!',2400);
+        await wait(1600); if(!alive())return;
+        restart(S2.btn,'jump'); talk2(S2,'Ой! Одеяло разговаривает!');
+        await wait(2300); if(!alive())return;
+        bl.classList.add('chair'); restart(bl,'morph'); sfx.magic();
+        const s=rr(); placeEl(bl,{x:s.width*.52,y:s.height*.8-bl.offsetHeight*.46});
+        await wait(900); if(!alive())return;
+        talk2(BL,'Садись на этот стул!'); step=1; setHint('Посади паука на стул — нажми на стул'); tapme(bl,true);
+      } else if(step===1){
+        step=-1; tapme(bl,false);
+        await walk(S2,anchor(bl,.5,.4)); if(!alive())return;
+        S2.wrap.classList.add('sitting'); await wait(450); if(!alive())return;
+        restart(bl,'squash'); S2.wrap.classList.remove('sitting'); restart(S2.wrap,'fly'); sfx.boing();
+        talk2(BL,pick(['Опля!','Ха-ха! Лети!','Подбросило!']));
+        await wait(1250); if(!alive())return;
+        talk2(S2,pick(['Ух ты! Ещё!','Вот это прыжок!','Ха-ха, щекотно!'])); add2(1,false);
+        if(p2>=EP2[l2].goal){
+          await wait(1300); if(!alive())return;
+          talk2(BL,'Всё-всё, пора спать!'); bl.classList.remove('chair'); restart(bl,'morph'); placeEl(bl,onBed());
+          await walk(S2,standPos(.2,S2)); if(!alive())return;
+          celebrate2();
+        } else {step=1; tapme(bl,true)}
+      }
+    };
+  },
+
+  /* 6. Книжка */
+  book(alive){
+    room.className='room bedroom';
+    room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>
+      <button class="book" id="r-book" style="left:36%;width:min(62vw,270px)" aria-label="Книжка"><span class="pg" id="r-pl"></span><span class="pg" id="r-pr"></span><span class="flipper" id="r-flip"></span></button>`;
+    const bed=$('r-bed'), book=$('r-book');
+    S2=makeMain(); put(S2,anchor(bed,.74,.1));
+    let idx=0,lock=false;
+    const show=i=>{const P=PAGES[i];$('r-pl').innerHTML=P.pic||PAGES[i-1]?.pic||'';$('r-pr').textContent=P.text};
+    show(0);
+    setHint('Нажми на книжку — переверни страницу'); tapme(book,true);
+    setTimeout(()=>alive()&&talk2(S2,'Почитаем сказку?'),300);
+    book.onclick=async()=>{
+      if(lock||idx>=PAGES.length-1) return; lock=true;
+      restart($('r-flip'),'go'); sfx.page(); await wait(300); if(!alive())return;
+      idx++; show(idx); talk2(S2,PAGES[idx].text,2600);
+      if(idx>=PAGES.length-1) tapme(book,false);
+      add2(1); await wait(900); lock=false;
+    };
+  },
+
+  /* 7. Обнимашки */
+  hugs(alive){
+    room.className='room bedroom';
+    room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>`;
+    const mom=makeWalker('mom parent',{pitch:1.5,rate:1,who:'mom',voice:1,label:'Мама'});
+    const dad=makeWalker('dad parent',{pitch:.55,rate:.95,who:'dad',voice:0,label:'Папа'});
+    S2=makeMain();
+    put(mom,standPos(.17,mom)); put(dad,standPos(.83,dad)); put(S2,standPos(.5,S2));
+    setHint('Нажми на маму и на папу'); tapme(mom.btn,true); tapme(dad.btn,true);
+    setTimeout(()=>alive()&&talk2(S2,'Мама! Папа! Я иду спать!'),300);
+    const done={}; let lock=false;
+    async function hug(p,key,line,reply){
+      if(done[key]||lock) return; lock=true; done[key]=true; tapme(p.btn,false);
+      const pr=p.wrap.getBoundingClientRect(), st=rr(), side=key==='mom'?1:-1;
+      await walk(S2,{x:pr.left-st.left+pr.width/2+side*pr.width*.55,y:standPos(0,S2).y}); if(!alive())return;
+      restart(p.btn,'hug'); restart(S2.btn,'hug'); sfx.love();
+      const c=S2.wrap.getBoundingClientRect(); hearts(c.left+c.width/2-side*c.width*.3,c.top+c.height*.3,18);
+      talk2(p,line,2400); await wait(2000); if(!alive())return;
+      talk2(S2,reply); await wait(1300); if(!alive())return;
+      lock=false; add2(1);
+    }
+    const bind=(p,...a)=>{p.btn.addEventListener('pointerdown',e=>{e.preventDefault();hug(p,...a)});p.btn.addEventListener('click',e=>{if(e.detail===0)hug(p,...a)})};
+    bind(mom,'mom','Спокойной ночи, сыночек! Люблю тебя!','И я тебя, мама!');
+    bind(dad,'dad','Сладких снов, паучок!','Спокойной ночи, папа!');
+  },
+
+  /* 8. Спать */
+  sleep(alive){
+    room.className='room bedroom';
+    room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>
+      <button class="lamp" id="r-lamp" aria-label="Лампа">${SVG.lamp}</button>
+      <div class="cover" id="r-cover"><div class="bubble"></div>${SVG.blanket(true)}</div>`;
+    const bed=$('r-bed'), lamp=$('r-lamp'), cover=$('r-cover');
+    S2=makeMain('inbed'); put(S2,anchor(bed,.26,.3)); placeEl(cover,anchor(bed,.55,.46),true);
+    const CV=talkerFor(cover,{pitch:1.35,rate:.9,who:'blanket',voice:1});
+    setHint('Выключи свет — нажми на лампу'); tapme(lamp,true);
+    setTimeout(()=>alive()&&talk2(S2,'Как хорошо в кроватке…'),300);
+    let off=false;
+    lamp.onclick=async()=>{
+      if(off) return; off=true; tapme(lamp,false); lamp.classList.add('off'); room.classList.add('dark'); sfx.click();
+      add2(1,false);
+      await wait(700); if(!alive())return;
+      talk2(S2,'Спокойной ночи…',2000);
+      await wait(2100); if(!alive())return;
+      S2.wrap.classList.add('asleep'); sfx.lullaby();
+      talk2(CV,'Сладких снов, паучок…',2800);
+      await wait(2400); if(!alive())return;
+      banner('Спокойной ночи!');
+      const w=room.querySelector('.window').getBoundingClientRect();
+      for(let k=0;k<3;k++) setTimeout(()=>hearts(w.left+w.width/2,w.top+w.height,10),k*400);
+      l2=EP2.length; lsSet('spider-ep2',l2); render2();
+    };
+  }
+};
+
+/* ---- старт ---- */
+const hot=window.claude?.hot?.data;
+if(hot?.episode===1) startEp1();
+else if(hot?.episode===2){showScreen(2);enter2(Math.min(hot.l2|0,EP2.length-1))}
+else showMenu();
+</script>
+</body>
+</html>
