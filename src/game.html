@@ -506,6 +506,8 @@ const sq=[]; let speaking=false, spId=0, spTimer=0;
 function speak(text,pitch=.4,rate=1,who='B',voiceIdx=0){
   if(!soundOn||!('speechSynthesis' in window)) return;
   for(let i=sq.length-1;i>=0;i--) if(sq[i].who===who) sq.splice(i,1);
+  // вслух: без кавычек и тире, иначе некоторые голоса произносят сами знаки («бэкслэш»)
+  text=text.replace(/[«»„“”"\\]/g,'').replace(/\s+[—–]\s+/g,', ').replace(/,\s*,/g,',').replace(/([!?.…]),/g,'$1').trim();
   sq.push({text,pitch,rate,who,voiceIdx,t:performance.now()});
   if(!speaking) nextSpeech();
 }
