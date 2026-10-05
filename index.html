@@ -44,7 +44,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
 .steps i.now{background:var(--accent);transform:scale(1.35)}
 .eyebrow{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);line-height:1.15;margin:0;text-wrap:balance}
-.hint{color:var(--muted);margin:0;font-size:15px;font-weight:600;text-wrap:balance}
+.hint{color:var(--muted);margin:0;font-size:15px;font-weight:600;line-height:1.3;min-height:2.6em;text-wrap:balance}
 .bars{width:100%;max-width:280px;display:flex;flex-direction:column;gap:4px;margin-top:2px}
 .bar{height:12px;border-radius:999px;background:var(--track);overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .35s cubic-bezier(.3,1.4,.5,1)}
@@ -330,6 +330,31 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .beach{position:absolute;left:-10%;right:-10%;bottom:0;height:52%;background:var(--sand);border-radius:50% 50% 0 0/22% 22% 0 0;z-index:1}
 .palm{position:absolute;right:6%;bottom:30%;width:min(40vw,170px);z-index:2}
 
+/* ================= эпизод 4: сказка ================= */
+.storybook{position:absolute;left:50%;bottom:3%;translate:-50% 0;width:min(94%,400px);box-sizing:border-box;background:var(--paper);border:6px solid var(--wood);border-radius:16px;
+  padding:8px;cursor:pointer;z-index:5;color:#2a2620;font:inherit;text-align:left;display:block}
+.storybook:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.storybook .pgin{display:flex;flex-direction:column;gap:8px}
+.storybook.turn .pgin{animation:pageturn .45s ease-out}
+@keyframes pageturn{from{opacity:0;translate:16px 0}}
+.storybook svg{width:100%;height:auto;border-radius:9px;display:block}
+.storybook .tx{font-family:var(--body);font-weight:800;font-size:clamp(14px,4vw,17px);line-height:1.35;min-height:5.4em;text-wrap:pretty}
+.storybook .pn{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#8a7f6a}
+.storybook .nx{background:var(--accent);color:#fff;border-radius:999px;padding:6px 14px;font-size:14px}
+.tp{cursor:pointer;transform-box:fill-box;transform-origin:center}
+.tp.boing{animation:boing .6s cubic-bezier(.3,1.5,.5,1)}
+.tp[data-k="star"].boing{animation:twirl .8s ease-out}
+.tp[data-k="moon"].boing,.tp[data-k="thread"].boing,.tp[data-k="web"].boing{animation:sway2 .7s ease-in-out}
+.tp[data-k="wind"].boing{animation:gust .7s ease-in-out}
+.tp[data-k="moth"].boing{animation:flutter .15s 5}
+@keyframes boing{35%{scale:1.3 1.3;translate:0 -4px}}
+@keyframes twirl{40%{scale:1.45 1.45}100%{rotate:360deg}}
+@keyframes sway2{25%{rotate:-5deg}75%{rotate:5deg}}
+@keyframes gust{50%{translate:14px 0}}
+@keyframes flutter{50%{scale:.75 1}}
+.spark{transform-box:fill-box;transform-origin:center;animation:spark .7s ease-out forwards;pointer-events:none}
+@keyframes spark{from{scale:.2 .2;opacity:1}to{scale:1.6 1.6;opacity:0;rotate:90deg}}
+
 /* ================= главное меню ================= */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
@@ -427,6 +452,18 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <text x="74" y="66" fill="#fff" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="13">2+3</text>
       </svg>
       <span class="ep">Эпизод 3</span><span class="nm">Чёрный паук и море</span><span class="st" id="m3s"></span>
+    </button>
+    <button class="card" id="m4">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#31428a"/>
+        <circle class="star" cx="30" cy="20" r="1.8" fill="#fff"/><circle class="star" cx="70" cy="12" r="1.4" fill="#fff"/><circle class="star" cx="180" cy="30" r="1.8" fill="#fff"/><circle class="star" cx="150" cy="14" r="1.4" fill="#fff"/>
+        <path d="M100 62 L100 10 M100 62 L160 34 M100 62 L160 96 M100 62 L100 110 M100 62 L40 96 M100 62 L40 34 M76 51 Q100 36 124 51 Q132 62 124 74 Q100 88 76 74 Q68 62 76 51" stroke="#cfd6e8" stroke-width="1.5" fill="none"/>
+        <path d="M100 38 L105.6 54.3 L122.8 54.6 L109.1 65 L114.1 81.4 L100 71.6 L85.9 81.4 L90.9 65 L77.2 54.6 L94.4 54.3Z" fill="#ffe27a" stroke="#f5b83a" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="95" cy="60" r="2" fill="#5a4a1a"/><circle cx="105" cy="60" r="2" fill="#5a4a1a"/><path d="M95 66 Q100 70 105 66" stroke="#5a4a1a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <g stroke="#141412" stroke-width="3" stroke-linecap="round" fill="none"><path d="M150 74 L140 68 L134 74 M150 78 L138 80 M160 74 L170 68 L176 74 M160 78 L172 80"/></g>
+        <ellipse cx="155" cy="79" rx="9" ry="8" fill="#141412"/><circle cx="155" cy="68" r="7" fill="#141412"/><circle cx="152.5" cy="67" r="2.4" fill="#fff"/><circle cx="157.5" cy="67" r="2.4" fill="#fff"/>
+      </svg>
+      <span class="ep">Эпизод 4 · сказка на ночь</span><span class="nm">Паучок и звёздочка</span><span class="st" id="m4s"></span>
     </button>
   </div>
 </div>
@@ -1132,6 +1169,7 @@ function showMenu(){
   $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
+  const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
 }
 function startEp1(){
   showScreen(1);
@@ -1147,6 +1185,7 @@ function startStory(n,at){
 $('m1').addEventListener('click',()=>{unlockAudio();startEp1()});
 $('m2').addEventListener('click',()=>{unlockAudio();startStory(2)});
 $('m3').addEventListener('click',()=>{unlockAudio();startStory(3)});
+$('m4').addEventListener('click',()=>{unlockAudio();startStory(4)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1171,8 +1210,15 @@ const EP3=[
   {key:'stones4',title:'Не упади в воду',      goal:5, unit:'камней', done:'Берег! Я допрыгал!'},
   {key:'shore',  title:'На берегу',            goal:4, unit:'',       done:''}
 ];
+const EP4=[
+  {key:'tale1',title:'Глава 1. Гостья с неба', goal:6, unit:'стр.', done:'Что же будет дальше?'},
+  {key:'tale2',title:'Глава 2. Дорога наверх',  goal:6, unit:'стр.', done:'Ух, как высоко!'},
+  {key:'tale3',title:'Глава 3. Дома',           goal:6, unit:'стр.', done:'Какая добрая сказка!'},
+  {key:'sleep',title:'Спокойной ночи',          goal:1, unit:'',     done:''}
+];
 const STORIES={
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
+  4:{n:4,levels:EP4,store:'spider-ep4',fin:['Спокойной ночи!','Паучок спит, а звёздочка светит над ним']},
   3:{n:3,levels:EP3,store:'spider-ep3',fin:['Друзья!','Паук вернулся на лодку и считает волны']}
 };
 let EPS=STORIES[2], EPX=EP2;
@@ -1871,6 +1917,126 @@ SCENES.shore=function(alive){
     l2=EPX.length; lsSet(EPS.store,l2); render2();
   };
 };
+
+/* =====================================================================
+   ЭПИЗОД 4 — СКАЗКА НА НОЧЬ «ПАУЧОК И ЗВЁЗДОЧКА»
+   ===================================================================== */
+const T={ // кирпичики для картинок, поле 160 × 90
+  night:(dark)=>`<rect width="160" height="90" fill="${dark?'#1b2452':'#31428a'}"/>`+[[14,12],[40,26],[66,8],[92,20],[120,10],[146,24],[30,50],[150,54],[8,74]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${i%2?1:1.4}" fill="#fff" opacity=".8"/>`).join(''),
+  star:(cx,cy,R,mood)=>{let d='';for(let i=0;i<10;i++){const r=i%2?R*.46:R,a=-Math.PI/2+i*Math.PI/5;d+=(i?'L':'M')+(cx+r*Math.cos(a)).toFixed(1)+' '+(cy+r*Math.sin(a)).toFixed(1)}
+    const e=R*.2, m=mood==='sad'?`M${cx-e} ${cy+R*.36} Q${cx} ${cy+R*.18} ${cx+e} ${cy+R*.36}`:`M${cx-e} ${cy+R*.22} Q${cx} ${cy+R*.42} ${cx+e} ${cy+R*.22}`;
+    return `<circle cx="${cx}" cy="${cy}" r="${R*1.5}" fill="#ffe27a" opacity=".18"/><path d="${d}Z" fill="#ffe27a" stroke="#f5b83a" stroke-width="${Math.max(.8,R*.08)}" stroke-linejoin="round"/>`+
+      (R>5?`<circle cx="${cx-e}" cy="${cy}" r="${R*.09}" fill="#5a4a1a"/><circle cx="${cx+e}" cy="${cy}" r="${R*.09}" fill="#5a4a1a"/><path d="${m}" stroke="#5a4a1a" stroke-width="${R*.08}" fill="none" stroke-linecap="round"/>`:'')+
+      (mood==='sad'?`<path d="M${cx-e} ${cy+R*.14} q-${R*.1} ${R*.2} 0 ${R*.28} q${R*.1} -${R*.08} 0 -${R*.28}Z" fill="#9fd3ff"/>`:'')},
+  web:(x,y,r)=>{let d='';for(let i=0;i<8;i++){const a=i*Math.PI/4;d+=`M${x} ${y} L${(x+r*Math.cos(a)).toFixed(1)} ${(y+r*Math.sin(a)).toFixed(1)} `}
+    for(const k of [.4,.7,1]){for(let i=0;i<=8;i++){const a=i*Math.PI/4;d+=(i?'L':'M')+(x+r*k*Math.cos(a)).toFixed(1)+' '+(y+r*k*Math.sin(a)).toFixed(1)+' '}}
+    return `<path d="${d}" stroke="#cfd6e8" stroke-width=".9" fill="none" opacity=".9"/>`},
+  roof:()=>`<path d="M0 0 H160 V10 L0 30Z" fill="#6b4a32"/><path d="M0 30 L160 10" stroke="#8a6444" stroke-width="3"/>`,
+  sp:(x,y,s=.5,sleep)=>mini(x,y,s)+(sleep?`<path d="M${x-6*s} ${y-6*s} q${2*s} ${3*s} ${4*s} 0 M${x+2*s} ${y-6*s} q${2*s} ${3*s} ${4*s} 0" stroke="#141412" stroke-width="${5*s}" fill="none"/><path d="M${x-6*s} ${y-5*s} q${2*s} ${3*s} ${4*s} 0 M${x+2*s} ${y-5*s} q${2*s} ${3*s} ${4*s} 0" stroke="#fff" stroke-width="${1.6*s}" fill="none"/>`:''),
+  thread:(x,y1,y2,bend=0)=>`<path d="M${x} ${y1} Q${x+bend} ${(y1+y2)/2} ${x} ${y2}" stroke="#e8ecf5" stroke-width="1.2" fill="none"/>`,
+  fly:(x,y,s=1)=>`<circle cx="${x}" cy="${y+3*s}" r="${11*s}" fill="#fff27a" opacity=".3"/><ellipse cx="${x-4*s}" cy="${y-4*s}" rx="${5*s}" ry="${3*s}" fill="#dfeaff" opacity=".8"/><ellipse cx="${x+4*s}" cy="${y-4*s}" rx="${5*s}" ry="${3*s}" fill="#dfeaff" opacity=".8"/>
+    <ellipse cx="${x}" cy="${y}" rx="${3.2*s}" ry="${4*s}" fill="#4a3a2a"/><ellipse cx="${x}" cy="${y+4.5*s}" rx="${3.4*s}" ry="${3.6*s}" fill="#fff27a"/>`,
+  moth:(x,y,s=1)=>`<path d="M${x} ${y} Q${x-22*s} ${y-22*s} ${x-30*s} ${y-4*s} Q${x-24*s} ${y+8*s} ${x} ${y+4*s}Z M${x} ${y} Q${x+22*s} ${y-22*s} ${x+30*s} ${y-4*s} Q${x+24*s} ${y+8*s} ${x} ${y+4*s}Z" fill="#d9cdb8"/>
+    <path d="M${x} ${y+3*s} Q${x-16*s} ${y+18*s} ${x-18*s} ${y+6*s}Z M${x} ${y+3*s} Q${x+16*s} ${y+18*s} ${x+18*s} ${y+6*s}Z" fill="#c2b29a"/><circle cx="${x-16*s}" cy="${y-6*s}" r="${3*s}" fill="#a8957a"/><circle cx="${x+16*s}" cy="${y-6*s}" r="${3*s}" fill="#a8957a"/>
+    <ellipse cx="${x}" cy="${y+3*s}" rx="${3.5*s}" ry="${11*s}" fill="#7a6a55"/><path d="M${x-1*s} ${y-7*s} q-${4*s} -${7*s} -${8*s} -${6*s} M${x+1*s} ${y-7*s} q${4*s} -${7*s} ${8*s} -${6*s}" stroke="#7a6a55" stroke-width="${1.2*s}" fill="none"/>`,
+  moon:(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r*1.35}" fill="#f5e7a1" opacity=".2"/><circle cx="${x}" cy="${y}" r="${r}" fill="#f5e7a1"/><circle cx="${x-r*.3}" cy="${y-r*.4}" r="${r*.12}" fill="#e2d184"/><circle cx="${x+r*.45}" cy="${y+r*.35}" r="${r*.16}" fill="#e2d184"/>
+    <circle cx="${x-r*.28}" cy="${y-r*.05}" r="${r*.07}" fill="#5a4a1a"/><circle cx="${x+r*.22}" cy="${y-r*.05}" r="${r*.07}" fill="#5a4a1a"/><path d="M${x-r*.3} ${y+r*.28} Q${x} ${y+r*.55} ${x+r*.28} ${y+r*.28}" stroke="#5a4a1a" stroke-width="${r*.07}" fill="none" stroke-linecap="round"/>`,
+  town:()=>`<path d="M0 90 V76 l8 -12 l8 12 l6 -16 l8 16 l7 -11 l8 11 V90Z" fill="#16331f"/><path d="M52 90 Q80 74 104 90Z" fill="#3d6fb5" opacity=".7"/>
+    <path d="M106 90 V70 h10 V60 h12 v14 h9 V66 h12 V90Z" fill="#0f1533"/>`+[[109,74],[119,64],[124,72],[140,70],[145,78],[130,80]].map(([x,y])=>`<rect x="${x}" y="${y}" width="3" height="3" fill="#ffd166"/>`).join(''),
+  house:()=>`<path d="M0 90 V70 L26 52 L52 70 V90Z" fill="#6b4a32"/><rect x="36" y="48" width="7" height="14" fill="#8a6444"/><path d="M64 90 V78 q8 -22 16 0 V90Z" fill="#16331f"/><rect x="18" y="74" width="9" height="9" fill="#ffd166"/>`,
+  wind:()=>`<path d="M10 30 q30 -12 54 0 q10 5 4 10 q-6 4 -9 -2 M70 62 q34 -10 60 2 q10 5 4 10 q-6 3 -8 -3 M20 70 q16 -6 30 0" stroke="#aebbe6" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".8"/>`,
+  wrap:g=>`<svg viewBox="0 0 160 90">${g}</svg>`
+};
+// всё, что нарисовано кирпичиками, можно потрогать
+for(const k of ['star','web','sp','thread','fly','moth','moon','town','house','wind'])
+  T[k]=(f=>(...a)=>`<g class="tp" data-k="${k}">${f(...a)}</g>`)(T[k]);
+const POKES={
+  star:{say:['Дзынь!','Звёздочка мигает!','Как блестит!'],snd:()=>sfx.magic()},
+  sp:{say:['Это паучок!','Хи-хи, щекотно!','Паучок прыгает!'],snd:()=>sfx.jump()},
+  fly:{say:['Светлячок светит!','Огонёк!'],snd:()=>{tone(1200,.12,'sine',0,.06);tone(1600,.2,'sine',.1,.05)}},
+  moth:{say:['Мотылёк машет крыльями!','Вжух!'],snd:()=>sfx.whoosh()},
+  moon:{say:['Луна улыбается!','Привет, луна!'],snd:()=>sfx.love()},
+  web:{say:['Паутинка звенит!','Дзынь-дзынь!'],snd:()=>[880,660,990].forEach((f,i)=>tone(f,.25,'triangle',i*.06,.04))},
+  thread:{say:['Ниточка качается!'],snd:()=>tone(500,.3,'triangle',0,.05,900)},
+  wind:{say:['У-у-у! Ветер!'],snd:()=>{sfx.whoosh();setTimeout(()=>sfx.whoosh(),250)}},
+  town:{say:['Тсс! Город спит.','В окошках горит свет.'],snd:()=>sfx.click()},
+  house:{say:['Тук-тук! Все спят.','Это дом паучка.'],snd:()=>{sfx.click();setTimeout(()=>sfx.click(),160)}}
+};
+const TALE=[
+  // Глава 1
+  {t:'Под крышей старого дома жил маленький паучок. Каждый вечер он плёл паутинку и смотрел на звёзды.',
+   p:()=>T.night()+T.roof()+T.web(64,50,30)+T.sp(64,50)+T.star(132,30,5)+T.star(112,52,3.5)},
+  {t:'Однажды ночью с неба что-то упало. Дзынь! Прямо в его паутинку.',
+   p:()=>T.night()+T.roof()+T.web(64,54,30)+T.sp(40,70,.4)+`<path d="M150 6 L84 44" stroke="#ffe27a" stroke-width="3" stroke-dasharray="2 5" stroke-linecap="round" opacity=".8"/>`+T.star(78,48,9,'sad')},
+  {t:'Это была маленькая звёздочка. Она светилась, как фонарик, и тихонько плакала.',
+   p:()=>T.night()+T.web(80,46,40)+T.star(80,46,17,'sad')+T.sp(126,66,.42)},
+  {t:'«Я засмотрелась на твою паутинку и упала, — сказала звёздочка. — Как же мне теперь вернуться домой?»',
+   p:()=>T.night()+T.web(52,50,34)+T.star(52,50,14,'sad')+T.sp(112,54,.55)+`<path d="M52 30 L52 6" stroke="#ffe27a" stroke-width="1.5" stroke-dasharray="2 4"/><text x="60" y="14" fill="#ffe27a" font-size="12" font-family="Nunito,sans-serif" font-weight="800">?</text>`},
+  {t:'Паучок подумал, почесал лапкой затылок и сказал: «Не плачь. Я сплету ниточку до самого неба!»',
+   p:()=>T.night()+T.web(40,58,26)+T.star(40,58,11)+T.sp(104,52,.7)+T.thread(104,0,40)+`<circle cx="128" cy="26" r="9" fill="#fff" opacity=".9"/><circle cx="118" cy="38" r="3" fill="#fff" opacity=".9"/><path d="M128 31 V21" stroke="#31428a" stroke-width="1.5"/>`+T.star(128,21,3)},
+  {t:'И он принялся за работу. Плёл, плёл, плёл… Ниточка становилась всё длиннее и длиннее.',
+   p:()=>T.night()+T.house()+T.thread(96,0,62,10)+T.sp(96,66,.5)+T.star(122,74,7)+T.star(96,6,3)},
+  // Глава 2
+  {t:'Паучок посадил звёздочку себе на спину и полез вверх. Выше крыши, выше трубы, выше деревьев.',
+   p:()=>T.night()+T.house()+T.thread(100,0,90)+T.sp(100,40,.5)+T.star(100,28,7)},
+  {t:'Вдруг подул ветер. У-у-у! Ниточка закачалась, и стало совсем темно.',
+   p:()=>T.night(true)+T.wind()+T.thread(90,0,90,26)+T.sp(102,46,.5)+T.star(102,34,6,'sad')},
+  {t:'«Кто тут качается в темноте?» — спросил светлячок. «Это я, паучок. Я несу звёздочку домой».',
+   p:()=>T.night(true)+T.thread(52,0,90,8)+T.sp(56,48,.5)+T.star(56,36,6)+T.fly(118,42,1.5)},
+  {t:'«Я посвечу вам!» — сказал светлячок и полетел рядом. Стало светло и совсем не страшно.',
+   p:()=>T.night()+`<circle cx="92" cy="44" r="46" fill="#fff27a" opacity=".14"/>`+T.thread(70,0,90)+T.sp(70,46,.55)+T.star(70,33,6.5)+T.fly(104,36,1.3)},
+  {t:'Но ниточка кончилась. А до неба было ещё далеко. Паучок очень устал.',
+   p:()=>T.night()+T.moon(134,18,9)+T.thread(70,52,90)+`<path d="M70 52 l-3 -5 M70 52 l1 -6 M70 52 l4 -4" stroke="#e8ecf5" stroke-width="1"/>`+T.sp(70,62,.5)+T.star(70,50,6,'sad')+T.fly(98,58,1)},
+  {t:'Тут прилетел большой ночной мотылёк. «Садитесь ко мне на спину, — сказал он. — Я лечу к луне».',
+   p:()=>T.night()+T.moon(140,16,8)+T.moth(96,40,1.5)+T.thread(36,56,90)+T.sp(36,62,.45)+T.star(36,51,5.5)+T.fly(58,74,.9)},
+  // Глава 3
+  {t:'Они летели над тёмным лесом, над речкой, над спящим городом. Выше и выше.',
+   p:()=>T.night()+T.town()+T.moth(74,36,1.2)+T.sp(74,30,.3)+T.star(74,22,4.5)+T.fly(108,44,.9)},
+  {t:'Луна увидела их и улыбнулась: «Вот ты где, малышка! А мы тебя обыскались».',
+   p:()=>T.night()+T.moon(112,40,30)+T.moth(42,58,.9)+T.sp(42,53,.26)+T.star(42,46,4)},
+  {t:'Луна протянула свой серебряный лучик, и звёздочка взбежала по нему на небо.',
+   p:()=>T.night()+`<path d="M122 26 L36 84 L52 86Z" fill="#f5e7a1" opacity=".35"/>`+T.moon(130,22,16)+T.star(84,46,8)+T.moth(34,74,.8)+T.sp(34,70,.24)},
+  {t:'«Спасибо, паучок! — крикнула она. — Я буду светить над твоей паутинкой каждую ночь».',
+   p:()=>T.night()+T.moon(22,18,10)+`<g stroke="#ffe27a" stroke-width="1.5" stroke-linecap="round" opacity=".8"><path d="M96 4 v6 M96 52 v6 M70 31 h6 M116 31 h6 M78 13 l4 4 M110 45 l4 4 M114 13 l-4 4 M82 45 l-4 4"/></g>`+T.star(96,31,15)+T.moth(52,72,.9)+T.sp(52,67,.28)},
+  {t:'Мотылёк отнёс паучка домой, под крышу. Светлячок помахал им огоньком.',
+   p:()=>T.night()+T.roof()+T.web(56,56,26)+T.moth(104,50,1)+T.sp(104,45,.3)+T.fly(140,66,1.1)+T.star(132,22,5)},
+  {t:'Паучок лёг в свою паутинку, посмотрел на звёздочку и уснул. Спокойной ночи, паучок.',
+   p:()=>T.night()+T.roof()+T.web(70,56,30)+T.sp(70,56,.55,true)+T.star(124,28,9)+`<text x="88" y="42" fill="#fff" font-size="10" font-family="Rubik Mono One,Arial Black,sans-serif">z Z</text>`}
+];
+function taleScene(alive,from,count){
+  room.className='room bedroom';
+  room.innerHTML=BED_ROOM+`<button class="storybook" id="r-sb" aria-label="Книжка со сказкой. Нажми, чтобы перевернуть страницу"><div class="pgin" id="r-pg" aria-live="polite"></div></button>`;
+  const sb=$('r-sb'); let idx=0, lock=true;
+  const render=i=>{const P=TALE[from+i];
+    $('r-pg').innerHTML=T.wrap(P.p())+`<div class="tx">${P.t}</div><div class="pn"><span class="nx">${i<count-1?'Дальше ›':'Конец главы ›'}</span><span>${from+i+1} / ${TALE.length}</span></div>`};
+  const read=i=>{speak(TALE[from+i].t,.5,.92,'B',0); lock=true; setTimeout(()=>{lock=false},900)};
+  render(0);
+  S2=makeMain('small'); const p=anchor(sb,.8,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p); // сидит на верхнем краю книжки
+  setHint('Нажимай на картинку, там всё живое. Чтобы читать дальше, нажми на текст');
+  setTimeout(()=>alive()&&read(0),600);
+  function poke(g){
+    const P=POKES[g.dataset.k]; if(!P) return;
+    restart(g,'boing'); P.snd();
+    const text=pick(P.say); say(S2,bold(text),1400); speak(text,.75,1.1,'poke',0);
+  }
+  function sparkle(svg,e){ // нажали мимо всех: на небе вспыхивает искорка
+    const r=svg.getBoundingClientRect(), x=(e.clientX-r.left)/r.width*160, y=(e.clientY-r.top)/r.height*90;
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g'); g.setAttribute('class','spark');
+    g.innerHTML=`<path d="M${x} ${y-6} L${x+1.5} ${y-1.5} L${x+6} ${y} L${x+1.5} ${y+1.5} L${x} ${y+6} L${x-1.5} ${y+1.5} L${x-6} ${y} L${x-1.5} ${y-1.5}Z" fill="#fff"/>`;
+    svg.appendChild(g); setTimeout(()=>g.remove(),700); tone(rand(1400,2000),.1,'sine',0,.04);
+  }
+  sb.onclick=e=>{
+    const g=e.target.closest('.tp'), svg=e.target.closest('svg');
+    if(g){poke(g);return}
+    if(svg&&e.clientX){sparkle(svg,e);return}   // по картинке страницы не листаются
+    if(lock||busy2) return; sfx.page();
+    if(idx<count-1){idx++; add2(1,false); render(idx); restart(sb,'turn'); read(idx)}
+    else add2(1);
+  };
+}
+SCENES.tale1=alive=>taleScene(alive,0,6);
+SCENES.tale2=alive=>taleScene(alive,6,6);
+SCENES.tale3=alive=>taleScene(alive,12,6);
 
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
