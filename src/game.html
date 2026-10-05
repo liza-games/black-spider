@@ -271,6 +271,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .boat.far{left:80%;top:22%;width:min(22vw,90px);z-index:1;animation:bob 2.6s ease-in-out infinite,sail 30s linear forwards}
 @keyframes bob{50%{translate:-50% 5px;rotate:1.2deg}}
 @keyframes sail{to{left:110%}}
+.boat.back{left:150%;top:17%;width:min(62vw,250px);transition:left 2.6s ease-out}
+.boat.back.arrive{left:56%}
+.boat .hit{position:absolute;inset:0;border:0;background:none;padding:0;cursor:pointer}
+.boat .hit:disabled{cursor:default}
 .basket{position:absolute;left:13%;top:44%;translate:-50% 0;width:17%;padding:0;border:0;background:none;cursor:pointer}
 .pa{position:absolute;width:30px;height:30px;translate:-50% -50%;pointer-events:none}
 .stone{position:absolute;translate:-50% -50%;width:min(17vw,76px);aspect-ratio:1.7;border-radius:50%/60% 60% 40% 40%;
@@ -1147,11 +1151,11 @@ const EP3=[
   {key:'stones2',title:'Вычитание: наперегонки с рыбой', goal:5, unit:'камней', done:'Я быстрее рыбы!'},
   {key:'stones3',title:'Умножение',            goal:5, unit:'камней', done:'Я умею умножать!'},
   {key:'stones4',title:'Не упади в воду',      goal:5, unit:'камней', done:'Берег! Я допрыгал!'},
-  {key:'shore',  title:'На берегу',            goal:3, unit:'',       done:''}
+  {key:'shore',  title:'На берегу',            goal:4, unit:'',       done:''}
 ];
 const STORIES={
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
-  3:{n:3,levels:EP3,store:'spider-ep3',fin:['Спасён!','Чёрный паук греется на солнышке']}
+  3:{n:3,levels:EP3,store:'spider-ep3',fin:['Друзья!','Паук вернулся на лодку и считает волны']}
 };
 let EPS=STORIES[2], EPX=EP2;
 let l2=0,p2=0,busy2=false,hint2='',sceneId=0,S2=null,talkers2=[],ptr2=null,handlers2={};
@@ -1782,28 +1786,59 @@ SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:true,strict:tr
 /* 5. Берег */
 SCENES.shore=function(alive){
   room.className='room sea';
-  room.innerHTML=SEA_BG+`<div class="beach"></div><div class="palm">${SVG.palm}</div>`;
-  S2=makeMain(); const s=rr(); put(S2,{x:s.width*.4,y:s.height*.68});
+  room.innerHTML=SEA_BG+`<div class="boat back" id="r-boat">${SVG.boat}<button class="hit" id="r-hit" aria-label="Лодка" disabled></button>
+    <div class="pa" id="pa-dad" style="left:36.7%;top:30%"><div class="bubble"></div></div>
+    <div class="pa" id="pa-mom" style="left:58.3%;top:30%"><div class="bubble"></div></div>
+    <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
+    <div class="beach"></div><div class="palm">${SVG.palm}</div>`;
+  const boat=$('r-boat'), hit=$('r-hit');
+  const DAD=talkerFor($('pa-dad'),{pitch:.55,rate:.95,who:'dad',voice:0}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+        GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
+  S2=makeMain(); const s=rr(); put(S2,{x:s.width*.4,y:s.height*.7});
   setHint('Паук весь мокрый! Нажимай на него, пусть отряхнётся');
   handlers2={move(){}}; // свой обработчик нажатий вместо обычного прыжка
   tapme(S2.btn,true);
   setTimeout(()=>alive()&&talk2(S2,'Брр! Я весь мокрый!'),300);
-  let done=false;
+  let step=0;
   const shakeOff=()=>{
-    if(done) return;
+    if(step!==0) return;
     const r=S2.wrap.getBoundingClientRect(); wetDrops(r.left+r.width/2,r.top+r.height/2);
     restart(S2.btn,'shake'); sfx.water(); add2(1,false);
-    if(p2<EPX[l2].goal){talk2(S2,pick(['Бр-р-р!','Ещё разок!','Брызги летят!']));return}
-    done=true; tapme(S2.btn,false);
-    setTimeout(()=>{ if(!alive())return;
-      restart(S2.btn,'jump'); sfx.fanfare(); banner('Спасён!');
-      talk2(S2,'Ура! Я на берегу! Я чёрный паук!',2800);
-      for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
-      l2=EPX.length; lsSet(EPS.store,l2); render2();
-    },600);
+    if(p2<3){talk2(S2,pick(['Бр-р-р!','Ещё разок!','Брызги летят!']));return}
+    step=1; tapme(S2.btn,false); peopleCome();
   };
   S2.btn.addEventListener('pointerdown',e=>{e.preventDefault();shakeOff()});
   S2.btn.addEventListener('click',e=>{if(e.detail===0)shakeOff()});
+  // люди с лодки приплывают и зовут паука обратно
+  async function peopleCome(){
+    talk2(S2,'Фух! Обсох!'); setHint('Ой, кто это плывёт?');
+    await wait(900); if(!alive())return;
+    boat.classList.add('arrive'); sfx.whoosh();
+    await wait(2700); if(!alive())return;
+    talk2(GIRL,'Паучок! Прости нас!',2200);
+    await wait(2300); if(!alive())return;
+    talk2(MOM,'Мы видели, как ты считал!',2400);
+    await wait(2500); if(!alive())return;
+    talk2(DAD,'Ты так классно умеешь считать! Вернись к нам!',3200);
+    await wait(3200); if(!alive())return;
+    restart(S2.btn,'jump'); talk2(S2,'Хм… А в море больше не бросите?',2400);
+    await wait(2500); if(!alive())return;
+    talk2(GIRL,'Никогда! Честное слово!',2000);
+    step=2; hit.disabled=false; tapme(boat,true); setHint('Нажми на лодку, и паук вернётся к друзьям');
+  }
+  hit.onclick=async()=>{
+    if(step!==2) return; step=3; tapme(boat,false); hit.disabled=true;
+    talk2(S2,'Ладно! Плыву с вами!'); sfx.jump();
+    S2.wrap.classList.add('small'); restart(S2.wrap,'fly'); put(S2,anchor(boat,.2,.5));
+    await wait(1300); if(!alive())return;
+    add2(1,false); talk2(GIRL,'Ура! Паук с нами!',2200); sfx.love();
+    const r=boat.getBoundingClientRect(); hearts(r.left+r.width/2,r.top+r.height*.3,16);
+    await wait(1800); if(!alive())return;
+    restart(S2.btn,'jump'); sfx.fanfare(); banner('Друзья!');
+    talk2(S2,'Я чёрный паук! Я умею считать!',2800);
+    for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
+    l2=EPX.length; lsSet(EPS.store,l2); render2();
+  };
 };
 
 /* ---- старт ---- */
