@@ -269,8 +269,44 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .book .flipper.go{animation:flip .45s ease-in-out}
 @keyframes flip{0%{opacity:1;transform:rotateY(0)}100%{opacity:1;transform:rotateY(-180deg)}}
 
+/* ================= эпизод 3: море ================= */
+:root{ --sky:#bfe6f5; --sea:#3d8fd1; --sea2:#2f78b8; --stone:#8d9499; --stone2:#6f777d; --sand:#ecd9a0; --sun:#f7d04a; --ok:#3fa652 }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --sky:#1c2f4a; --sea:#17456f; --sea2:#123758; --stone:#6c747a; --stone2:#4f565b; --sand:#8f7f52; --sun:#e9c75a; --ok:#4cc764 }}
+:root[data-theme="dark"]{ --sky:#1c2f4a; --sea:#17456f; --sea2:#123758; --stone:#6c747a; --stone2:#4f565b; --sand:#8f7f52; --sun:#e9c75a; --ok:#4cc764 }
+.room.sea{background:linear-gradient(var(--sky) 0 34%,var(--sea) 34% 70%,var(--sea2))}
+.sea .surf{position:absolute;left:0;right:0;top:calc(34% - 5px);height:10px;background:radial-gradient(circle at 10px -4px,var(--sky) 9px,transparent 10px) 0 0/20px 10px}
+.sea .ripple{position:absolute;left:0;right:0;height:8px;opacity:.3;background:radial-gradient(circle at 12px 12px,transparent 9px,#fff 10px,transparent 11px) 0 0/24px 8px;animation:ripple 3s linear infinite}
+@keyframes ripple{to{background-position:24px 0}}
+.sun{position:absolute;left:12%;top:5%;width:min(13vw,56px);aspect-ratio:1;border-radius:50%;background:var(--sun);box-shadow:0 0 0 8px rgb(247 208 74/.25)}
+.boat{position:absolute;left:54%;top:9%;translate:-50% 0;width:min(84vw,330px);animation:bob 2.6s ease-in-out infinite;z-index:2}
+.boat.far{left:80%;top:22%;width:min(22vw,90px);z-index:1;animation:bob 2.6s ease-in-out infinite,sail 30s linear forwards}
+@keyframes bob{50%{translate:-50% 5px;rotate:1.2deg}}
+@keyframes sail{to{left:110%}}
+.basket{position:absolute;left:13%;top:44%;translate:-50% 0;width:17%;padding:0;border:0;background:none;cursor:pointer}
+.pa{position:absolute;width:30px;height:30px;translate:-50% -50%;pointer-events:none}
+.stone{position:absolute;translate:-50% -50%;width:min(17vw,76px);aspect-ratio:1.7;border-radius:50%/60% 60% 40% 40%;
+  background:radial-gradient(ellipse at 35% 25%,rgb(255 255 255/.35),transparent 55%),var(--stone);box-shadow:0 5px 0 var(--stone2),0 9px 0 rgb(255 255 255/.25);z-index:2}
+.stone.flag::after{content:"";position:absolute;left:62%;bottom:60%;width:3px;height:26px;background:var(--wood);box-shadow:8px -8px 0 5px var(--accent)}
+.stone.land{width:min(30vw,130px);aspect-ratio:1.2;border-radius:50% 50% 0 0;background:var(--sand);box-shadow:none}
+.walker.small{width:min(20vw,90px)}
+.quiz{position:absolute;left:50%;bottom:3%;translate:-50% 0;width:min(94%,360px);box-sizing:border-box;background:var(--bubble);border-radius:20px;padding:10px 12px 12px;
+  display:flex;flex-direction:column;align-items:center;gap:7px;z-index:6;box-shadow:0 6px 20px rgb(0 0 0/.18)}
+.quiz .ex{font-family:var(--display);font-size:clamp(26px,8.5vw,38px);line-height:1;font-variant-numeric:tabular-nums}
+.quiz .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:14px}
+.quiz .dots i{width:13px;height:13px;border-radius:50%;background:var(--accent)}
+.quiz .dots i.b{background:var(--gold)} .quiz .dots i.gap{width:8px;background:none}
+.quiz .dots i.x{background:none;border:2px dashed var(--muted);box-sizing:border-box}
+.quiz .ans{display:flex;gap:10px;width:100%}
+.quiz .ans button{flex:1;min-width:0;font-family:var(--display);font-size:clamp(22px,7vw,30px);padding:10px 0;border-radius:14px;border:2px solid var(--web);
+  background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums}
+.quiz .ans button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.quiz .ans button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.quiz .ans button.no{opacity:.35;animation:shake .1s 4}
+.beach{position:absolute;left:-10%;right:-10%;bottom:0;height:52%;background:var(--sand);border-radius:50% 50% 0 0/22% 22% 0 0;z-index:1}
+.palm{position:absolute;right:6%;bottom:30%;width:min(40vw,170px);z-index:2}
+
 /* ================= главное меню ================= */
-.menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px 16px}
+.menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
@@ -279,6 +315,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
   border:2px solid var(--web);border-radius:22px;padding:14px;cursor:pointer;transition:transform .15s}
 .card:active{transform:scale(.97)} .card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .card svg{width:100%;height:auto;border-radius:14px;display:block;margin-bottom:6px}
+@media (max-width:559px){
+  .card{display:grid;grid-template-columns:42% 1fr;column-gap:12px;align-content:center;padding:10px}
+  .card svg{grid-row:1/4;margin:0;align-self:center}
+}
 .card .ep{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .card .nm{font-family:var(--display);font-size:clamp(17px,4.8vw,21px);line-height:1.15}
 .card .st{font-weight:800;font-size:14px;color:var(--accent)}
@@ -349,6 +389,19 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <text x="96" y="50" fill="#fff" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="12">z Z</text>
       </svg>
       <span class="ep">Эпизод 2</span><span class="nm">Чёрный паук идёт спать</span><span class="st" id="m2s"></span>
+    </button>
+    <button class="card" id="m3">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#bfe6f5"/><circle cx="170" cy="22" r="13" fill="#f7d04a"/>
+        <rect y="48" width="200" height="62" fill="#3d8fd1"/>
+        <path d="M0 62 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#fff" stroke-opacity=".45" stroke-width="2" fill="none"/>
+        <path d="M112 36 H176 L166 54 H122Z" fill="#a8794f"/><circle cx="132" cy="28" r="7" fill="#f0c39a"/><circle cx="150" cy="28" r="7" fill="#f0c39a"/><circle cx="165" cy="31" r="5" fill="#f0c39a"/>
+        <ellipse cx="34" cy="92" rx="24" ry="10" fill="#8d9499"/><ellipse cx="88" cy="80" rx="20" ry="9" fill="#8d9499"/><ellipse cx="134" cy="94" rx="18" ry="8" fill="#8d9499"/>
+        <g stroke="#141412" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M28 78 L16 70 L8 78 M28 82 L14 84 M40 78 L52 70 L60 78 M40 82 L54 84"/></g>
+        <ellipse cx="34" cy="82" rx="10" ry="9" fill="#141412"/><circle cx="34" cy="70" r="8" fill="#141412"/><circle cx="31" cy="69" r="2.8" fill="#fff"/><circle cx="37" cy="69" r="2.8" fill="#fff"/>
+        <text x="74" y="66" fill="#fff" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="13">2+3</text>
+      </svg>
+      <span class="ep">Эпизод 3</span><span class="nm">Чёрный паук и море</span><span class="st" id="m3s"></span>
     </button>
   </div>
 </div>
@@ -1030,8 +1083,8 @@ function resetAll(){
   for(const s of [...spiders]) if(s!==B) destroy(s);
   B.target=null; B.state='home'; B.anchorT=.5; B.scared=false; B.tickled=false; B.wrap.classList.remove('tickled'); busy=false;
 }
-$('restart').addEventListener('click',()=>{if(episode===2){enter2(0);return}resetAll();enterLevel(0)});
-$('replay').addEventListener('click',()=>{if(episode===2){showMenu();return}resetAll();enterLevel(0)});
+$('restart').addEventListener('click',()=>{if(episode>=2){enter2(0);return}resetAll();enterLevel(0)});
+$('replay').addEventListener('click',()=>{if(episode>=2){showMenu();return}resetAll();enterLevel(0)});
 
 requestAnimationFrame(frame);
 
@@ -1043,16 +1096,17 @@ const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catc
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function showScreen(ep){
   episode=ep;
-  $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep!==2;
+  $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep<2;
 }
 function showMenu(){
   stopSpeech();
   if(episode===1){resetAll();spawnOn=false}
-  if(episode===2) leave2();
+  if(episode>=2) leave2();
   showScreen(0);
-  const a=lsGet('spider-level',0), b=lsGet('spider-ep2',0);
+  const a=lsGet('spider-level',0), b=lsGet('spider-ep2',0), c=lsGet('spider-ep3',0);
   $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
+  $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
 }
 function startEp1(){
   showScreen(1);
@@ -1060,13 +1114,14 @@ function startEp1(){
   resetAll();
   enterLevel(Math.min(Math.max(0,lsGet('spider-level',0)|0),LEVELS.length));
 }
-function startEp2(){
-  showScreen(2);
-  let l=Math.max(0,lsGet('spider-ep2',0)|0); if(l>=EP2.length) l=0;
+function startStory(n,at){
+  EPS=STORIES[n]; EPX=EPS.levels; showScreen(n);
+  let l=at??Math.max(0,lsGet(EPS.store,0)|0); if(l>=EPX.length) l=at==null?0:EPX.length-1;
   enter2(l);
 }
 $('m1').addEventListener('click',()=>{unlockAudio();startEp1()});
-$('m2').addEventListener('click',()=>{unlockAudio();startEp2()});
+$('m2').addEventListener('click',()=>{unlockAudio();startStory(2)});
+$('m3').addEventListener('click',()=>{unlockAudio();startStory(3)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1083,6 +1138,18 @@ const EP2=[
   {key:'hugs',   title:'Обними маму и папу',    goal:2, unit:'',        done:'Я вас люблю!'},
   {key:'sleep',  title:'Спокойной ночи',        goal:1, unit:'',        done:''}
 ];
+const EP3=[
+  {key:'boat',   title:'На лодке',             goal:1, unit:'',       done:''},
+  {key:'stones1',title:'Прыгай по камням',     goal:5, unit:'камней', done:'Я умею считать!'},
+  {key:'stones2',title:'Камни подальше',       goal:5, unit:'камней', done:'Ещё немножко!'},
+  {key:'stones3',title:'Последние камни',      goal:5, unit:'камней', done:'Берег! Я доплыл!'},
+  {key:'shore',  title:'На берегу',            goal:3, unit:'',       done:''}
+];
+const STORIES={
+  2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
+  3:{n:3,levels:EP3,store:'spider-ep3',fin:['Спасён!','Чёрный паук греется на солнышке']}
+};
+let EPS=STORIES[2], EPX=EP2;
 let l2=0,p2=0,busy2=false,hint2='',sceneId=0,S2=null,talkers2=[],ptr2=null,handlers2={};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const rr=()=>room.getBoundingClientRect();
@@ -1125,13 +1192,13 @@ function placeEl(el,p,instant){if(instant)el.classList.add('noanim');el.style.le
   if(instant)requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove('noanim')))}
 
 function render2(){
-  $('steps').innerHTML=EP2.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
-  const fin=l2>=EP2.length;
+  $('steps').innerHTML=EPX.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
+  const fin=l2>=EPX.length;
   $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin; $('replay').textContent='В меню';
   $('barRivalWrap').hidden=true;
-  if(fin){$('eyebrow').textContent='Эпизод 2 пройден';$('task').textContent='Спокойной ночи!';$('hint').textContent='Чёрный паук сладко спит';return}
-  const L=EP2[l2];
-  $('eyebrow').textContent=`Эпизод 2 · этап ${l2+1} из ${EP2.length}`;
+  if(fin){$('eyebrow').textContent=`Эпизод ${EPS.n} пройден`;$('task').textContent=EPS.fin[0];$('hint').textContent=EPS.fin[1];return}
+  const L=EPX[l2];
+  $('eyebrow').textContent=`Эпизод ${EPS.n} · этап ${l2+1} из ${EPX.length}`;
   $('task').textContent=L.title; $('hint').textContent=hint2;
   $('barMe').style.width=Math.min(100,p2/L.goal*100)+'%';
   $('count').innerHTML=`<b>${Math.min(p2,L.goal)}</b> / ${L.goal}${L.unit?' '+L.unit:''}`;
@@ -1139,10 +1206,10 @@ function render2(){
 function setHint(t){hint2=t;render2()}
 function add2(n,auto=true){
   if(busy2) return; p2=Math.max(0,p2+n); render2(); if(n>0) sfx.tick(p2);
-  if(auto&&p2>=EP2[l2].goal) celebrate2();
+  if(auto&&p2>=EPX[l2].goal) celebrate2();
 }
 function celebrate2(){
-  busy2=true; const L=EP2[l2], r=S2.wrap.getBoundingClientRect();
+  busy2=true; const L=EPX[l2], r=S2.wrap.getBoundingClientRect();
   burst(r.left+r.width/2,r.top+r.height/2,70,10);
   setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,40,8);burst(innerWidth*.8,innerHeight*.35,40,8)},250);
   sfx.fanfare(); banner(pick(['Отлично!','Супер!','Молодец!','Класс!','Ура!']));
@@ -1151,25 +1218,25 @@ function celebrate2(){
 }
 function leave2(){sceneId++;room.innerHTML='';talkers2=[];S2=null;handlers2={};busy2=false}
 function enter2(i){
-  l2=i; p2=0; busy2=false; lsSet('spider-ep2',i);
+  l2=i; p2=0; busy2=false; lsSet(EPS.store,i);
   sceneId++; talkers2=[]; handlers2={}; room.innerHTML=''; room.className='room';
   $('steps').innerHTML='';
-  if(i>=EP2.length){render2();return}
+  if(i>=EPX.length){render2();return}
   hint2=''; render2(); restart($('hud'),'pop');
   const sid=sceneId, alive=()=>sid===sceneId;
-  requestAnimationFrame(()=>{if(alive()) SCENES[EP2[i].key](alive)});
+  requestAnimationFrame(()=>{if(alive()) SCENES[EPX[i].key](alive)});
 }
 
 /* ---- указатель в сценах с рисованием ---- */
 const pt2=e=>{const s=rr();return{x:e.clientX-s.left,y:e.clientY-s.top}};
 $('stage2').addEventListener('pointerdown',e=>{handlers2.down?.(e,pt2(e))});
-addEventListener('pointermove',e=>{if(episode!==2)return;ptr2={x:e.clientX,y:e.clientY};handlers2.move?.(e,pt2(e))});
-addEventListener('pointerup',e=>{if(episode===2)handlers2.up?.(e)});
-addEventListener('pointercancel',e=>{if(episode===2)handlers2.up?.(e)});
+addEventListener('pointermove',e=>{if(episode<2)return;ptr2={x:e.clientX,y:e.clientY};handlers2.move?.(e,pt2(e))});
+addEventListener('pointerup',e=>{if(episode>=2)handlers2.up?.(e)});
+addEventListener('pointercancel',e=>{if(episode>=2)handlers2.up?.(e)});
 
 /* облачка в пределах сцены и глаза, следящие за пальцем */
 (function loop2(){
-  if(episode===2){
+  if(episode>=2){
     for(const t of talkers2) clampDom(t);
     if(S2&&ptr2&&S2.pl&&!S2.wrap.classList.contains('asleep')){
       const r=S2.btn.getBoundingClientRect(), a=Math.atan2(ptr2.y-(r.top+r.height*.5),ptr2.x-(r.left+r.width/2));
@@ -1317,9 +1384,9 @@ const SCENES={
     };
     function stroke(p){
       foam(p);foam(p); tone(800+p2*50,.05,'sine',0,.04); add2(1,false);
-      S2.wrap.style.setProperty('--teeth',mix('#d9c060','#ffffff',p2/EP2[l2].goal));
+      S2.wrap.style.setProperty('--teeth',mix('#d9c060','#ffffff',p2/EPX[l2].goal));
       if(p2===4) talk2(S2,'Щекотно!'); if(p2===7) talk2(S2,'Ещё чуть-чуть!');
-      if(p2>=EP2[l2].goal){done=true;moveBrush(rest);
+      if(p2>=EPX[l2].goal){done=true;moveBrush(rest);
         const r=S2.wrap.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height*.6,24,5); celebrate2()}
     }
   },
@@ -1352,7 +1419,7 @@ const SCENES={
       b.style.left=p.x+'px'; b.style.top=p.y+'px'; room.appendChild(b);
       tone(rand(900,1500),.04,'sine',0,.03); add2(1,false);
       if(p2===8) talk2(S2,'Хи-хи! Пена!');
-      if(p2>=EP2[l2].goal){step=2;setHint('Смой пену — нажми на кран');tapme(valve,true);talk2(S2,'Сколько пены! Смывай!')}
+      if(p2>=EPX[l2].goal){step=2;setHint('Смой пену — нажми на кран');tapme(valve,true);talk2(S2,'Сколько пены! Смывай!')}
     }};
   },
 
@@ -1407,7 +1474,7 @@ const SCENES={
         talk2(BL,pick(['Опля!','Ха-ха! Лети!','Подбросило!']));
         await wait(1250); if(!alive())return;
         talk2(S2,pick(['Ух ты! Ещё!','Вот это прыжок!','Ха-ха, щекотно!'])); add2(1,false);
-        if(p2>=EP2[l2].goal){
+        if(p2>=EPX[l2].goal){
           await wait(1300); if(!alive())return;
           talk2(BL,'Всё-всё, пора спать!'); bl.classList.remove('chair'); restart(bl,'morph'); placeEl(bl,onBed());
           await walk(S2,standPos(.2,S2)); if(!alive())return;
@@ -1488,15 +1555,153 @@ const SCENES={
       banner('Спокойной ночи!');
       const w=room.querySelector('.window').getBoundingClientRect();
       for(let k=0;k<3;k++) setTimeout(()=>hearts(w.left+w.width/2,w.top+w.height,10),k*400);
-      l2=EP2.length; lsSet('spider-ep2',l2); render2();
+      l2=EPX.length; lsSet(EPS.store,l2); render2();
     };
   }
+};
+
+/* ---- эпизод 3: картинки ---- */
+const SEA_BG=`<div class="surf"></div><div class="ripple" style="top:48%"></div><div class="ripple" style="top:62%;animation-duration:4s"></div><div class="sun"></div>`;
+const PEOPLE=`<rect x="88" y="92" width="44" height="40" rx="10" fill="#3d6fb5"/><circle cx="110" cy="72" r="20" fill="#f0c39a"/><path d="M90 70 a20 20 0 0 1 40 0 q-20 -12 -40 0Z" fill="#4a3424"/>
+  <circle cx="103" cy="74" r="2.4" fill="#222"/><circle cx="117" cy="74" r="2.4" fill="#222"/><path d="M103 83 q7 5 14 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="153" y="94" width="44" height="38" rx="10" fill="#e0683c"/><circle cx="175" cy="74" r="24" fill="#8a4b2a"/><rect x="151" y="74" width="48" height="26" rx="8" fill="#8a4b2a"/><circle cx="175" cy="76" r="18" fill="#f0c39a"/>
+  <circle cx="168" cy="76" r="2.4" fill="#222"/><circle cx="182" cy="76" r="2.4" fill="#222"/><path d="M168 85 q7 5 14 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <rect x="219" y="102" width="34" height="30" rx="9" fill="#e86b9a"/><circle cx="218" cy="78" r="7" fill="#7a4a2a"/><circle cx="254" cy="78" r="7" fill="#7a4a2a"/><circle cx="236" cy="84" r="17" fill="#7a4a2a"/><circle cx="236" cy="88" r="14" fill="#f4c9a0"/>
+  <circle cx="231" cy="87" r="2.2" fill="#222"/><circle cx="241" cy="87" r="2.2" fill="#222"/><path d="M231 94 q5 4 10 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+SVG.boat=`<svg viewBox="0 0 300 190">${PEOPLE}<path d="M14 120 H286 L256 176 Q150 188 44 176Z" fill="var(--wood2)"/><path d="M30 146 Q150 158 270 146" stroke="rgb(0 0 0/.18)" stroke-width="3" fill="none"/>
+  <rect x="8" y="112" width="284" height="14" rx="7" fill="var(--wood)"/></svg>`;
+SVG.basket=`<svg viewBox="0 0 60 50"><path d="M6 20 H54 L48 48 H12Z" fill="#c9a25a"/><path d="M10 30 H50 M12 40 H48 M20 20 V48 M30 20 V48 M40 20 V48" stroke="#9c7a3a" stroke-width="2"/><rect x="2" y="14" width="56" height="9" rx="4" fill="#b38a45"/><path d="M18 14 Q30 -4 42 14" stroke="#9c7a3a" stroke-width="4" fill="none"/></svg>`;
+SVG.palm=`<svg viewBox="0 0 170 220"><path d="M78 220 Q70 140 92 70 L104 74 Q88 140 98 220Z" fill="#a8794f"/>
+  <g fill="#3fa652"><path d="M96 72 Q40 40 6 70 Q50 60 96 80Z"/><path d="M96 72 Q60 10 20 14 Q66 30 92 78Z"/><path d="M96 72 Q110 10 156 8 Q122 30 102 78Z"/><path d="M96 72 Q150 44 168 78 Q132 62 98 82Z"/><path d="M96 72 Q120 100 110 130 Q104 100 90 80Z"/></g>
+  <circle cx="92" cy="78" r="8" fill="#7a4a2a"/><circle cx="104" cy="82" r="7" fill="#8a5a36"/></svg>`;
+
+function splash2(p){const c=document.createElement('div');c.className='cloud';c.style.transform=`translate(${p.x}px,${p.y}px) scale(.6)`;room.appendChild(c);setTimeout(()=>c.remove(),1500)}
+function onStone(el){const p=anchor(el,.5,.2);p.y-=S2.wrap.offsetWidth*.32;return p}
+function wetDrops(x,y,n=22){for(let i=0;i<n;i++){const a=rand(0,TAU),v=rand(3,8);
+  parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,r:0,vr:0,w:rand(5,8),h:rand(8,12),c:pick(['#4ea3e6','#8cc8f5','#3d8fd1']),life:rand(30,50)})}}
+
+/* 1. Лодка */
+SCENES.boat=function(alive){
+  room.className='room sea';
+  room.innerHTML=SEA_BG+`<div class="boat" id="r-boat">${SVG.boat}<button class="basket" id="r-basket" aria-label="Корзинка">${SVG.basket}</button>
+    <div class="pa" id="pa-dad" style="left:36.7%;top:30%"><div class="bubble"></div></div>
+    <div class="pa" id="pa-mom" style="left:58.3%;top:30%"><div class="bubble"></div></div>
+    <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
+    <div class="stone" id="r-st0" style="left:16%;top:80%"></div>`;
+  const basket=$('r-basket');
+  const DAD=talkerFor($('pa-dad'),{pitch:.55,rate:.95,who:'dad',voice:0}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+        GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
+  S2=makeMain('small vanish'); put(S2,anchor(basket,.5,.2));
+  setHint('Кто это шуршит в корзинке? Нажми на неё'); tapme(basket,true);
+  setTimeout(()=>alive()&&talk2(MOM,'Какая хорошая погода!'),400);
+  let used=false;
+  basket.onclick=async()=>{
+    if(used) return; used=true; tapme(basket,false); setHint('Ой-ой…'); sfx.click();
+    S2.wrap.classList.remove('vanish'); await walk(S2,anchor($('r-boat'),.2,.5),700); if(!alive())return;
+    restart(S2.btn,'jump'); sfx.jump(); talk2(S2,'Привет! Я чёрный паук!');
+    await wait(1900); if(!alive())return;
+    talk2(GIRL,'А-а-а! Паук!'); sfx.yuck();
+    await wait(1600); if(!alive())return;
+    talk2(MOM,'Ой! Паук на лодке!');
+    await wait(1700); if(!alive())return;
+    talk2(DAD,'За борт его!');
+    await wait(1500); if(!alive())return;
+    restart(S2.wrap,'fly'); put(S2,onStone($('r-st0'))); sfx.whoosh(); talk2(S2,'А-а-а-а!',1100);
+    await wait(1250); if(!alive())return;
+    splash2(anchor($('r-st0'),.5,.5)); sfx.water(); restart(S2.btn,'shake');
+    talk2(S2,'Бултых! Ой, я не умею плавать!',2400); add2(1,false);
+    await wait(2700); if(!alive())return;
+    enter2(l2+1);
+  };
+};
+
+/* 2–4. Камни с примерами */
+const NUM_WORDS=['Ноль','Один','Два','Три','Четыре','Пять','Шесть','Семь','Восемь','Девять','Десять'];
+function makeExample(mode,prev){
+  for(let k=0;k<30;k++){
+    let a,b,op='+';
+    if(mode==='add5'){a=1+Math.floor(Math.random()*4);b=1+Math.floor(Math.random()*(5-a))}
+    else if(mode==='add10'){a=1+Math.floor(Math.random()*8);b=1+Math.floor(Math.random()*(10-a));if(a+b<6)continue}
+    else{op='−';a=3+Math.floor(Math.random()*8);b=1+Math.floor(Math.random()*(a-1))}
+    const ans=op==='+'?a+b:a-b;
+    if(prev&&prev.a===a&&prev.b===b) continue;
+    const opts=new Set([ans]);
+    while(opts.size<3){const d=ans+pick([-2,-1,1,2]);if(d>=0&&d<=10)opts.add(d)}
+    return{a,b,op,ans,opts:[...opts].sort(()=>Math.random()-.5)};
+  }
+}
+function stonesScene(alive,mode,last){
+  room.className='room sea';
+  const N=EPX[l2].goal, xs=[9,24,39,54,69,85], ys=[47,57,47,57,47,55];
+  room.innerHTML=SEA_BG+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
+    `<div class="stone${i===N?(last?' land':' flag'):''}" id="r-st${i}" style="left:${x}%;top:${ys[i]}%"></div>`).join('')+
+    `<div class="quiz"><div class="ex" id="r-ex" aria-live="polite"></div><div class="dots" id="r-dots" aria-hidden="true"></div><div class="ans" id="r-ans"></div></div>`;
+  S2=makeMain('small'); put(S2,onStone($('r-st0')));
+  setHint(last?'Реши пример, и паук прыгнет. Берег уже близко!':'Реши пример, и паук прыгнет на следующий камень');
+  let ex=null, lock=false;
+  function ask(){
+    ex=makeExample(mode,ex); lock=false;
+    $('r-ex').textContent=`${ex.a} ${ex.op} ${ex.b} = ?`;
+    $('r-dots').innerHTML=ex.op==='+'
+      ? '<i></i>'.repeat(ex.a)+'<i class="gap"></i>'+'<i class="b"></i>'.repeat(ex.b)
+      : '<i></i>'.repeat(ex.a-ex.b)+'<i class="x"></i>'.repeat(ex.b);
+    $('r-ans').innerHTML=ex.opts.map(o=>`<button data-v="${o}">${o}</button>`).join('');
+    $('r-ans').querySelectorAll('button').forEach(btn=>btn.onclick=()=>answer(btn));
+    talk2(S2,`Сколько будет ${ex.a} ${ex.op==='+'?'плюс':'минус'} ${ex.b}?`,2600);
+  }
+  async function answer(btn){
+    if(lock||busy2) return;
+    if(+btn.dataset.v!==ex.ans){
+      btn.classList.add('no'); btn.disabled=true; sfx.yuck(); restart(S2.btn,'shake');
+      const r=S2.wrap.getBoundingClientRect(), st=rr(); splash2({x:r.left-st.left+r.width/2,y:r.top-st.top+r.height});
+      talk2(S2,pick(['Ой! Чуть не упал! Подумай ещё.','Нет, не так! Посчитай кружочки.','Ой-ой! Попробуй ещё раз.']));
+      return;
+    }
+    lock=true; btn.classList.add('ok'); $('r-ex').textContent=`${ex.a} ${ex.op} ${ex.b} = ${ex.ans}`;
+    sfx.jump(); restart(S2.btn,'jump'); put(S2,onStone($('r-st'+(p2+1))));
+    talk2(S2,`${NUM_WORDS[ex.ans]}! Правильно!`); add2(1,false);
+    await wait(1000); if(!alive())return;
+    if(p2>=N){$('r-ans').innerHTML='';$('r-dots').innerHTML='';celebrate2();return}
+    await wait(500); if(!alive())return;
+    ask();
+  }
+  setTimeout(()=>alive()&&ask(),500);
+}
+SCENES.stones1=alive=>stonesScene(alive,'add5',false);
+SCENES.stones2=alive=>stonesScene(alive,'add10',false);
+SCENES.stones3=alive=>stonesScene(alive,'sub10',true);
+
+/* 5. Берег */
+SCENES.shore=function(alive){
+  room.className='room sea';
+  room.innerHTML=SEA_BG+`<div class="beach"></div><div class="palm">${SVG.palm}</div>`;
+  S2=makeMain(); const s=rr(); put(S2,{x:s.width*.4,y:s.height*.68});
+  setHint('Паук весь мокрый! Нажимай на него, пусть отряхнётся');
+  handlers2={move(){}}; // свой обработчик нажатий вместо обычного прыжка
+  tapme(S2.btn,true);
+  setTimeout(()=>alive()&&talk2(S2,'Брр! Я весь мокрый!'),300);
+  let done=false;
+  const shakeOff=()=>{
+    if(done) return;
+    const r=S2.wrap.getBoundingClientRect(); wetDrops(r.left+r.width/2,r.top+r.height/2);
+    restart(S2.btn,'shake'); sfx.water(); add2(1,false);
+    if(p2<EPX[l2].goal){talk2(S2,pick(['Бр-р-р!','Ещё разок!','Брызги летят!']));return}
+    done=true; tapme(S2.btn,false);
+    setTimeout(()=>{ if(!alive())return;
+      restart(S2.btn,'jump'); sfx.fanfare(); banner('Спасён!');
+      talk2(S2,'Ура! Я на берегу! Я чёрный паук!',2800);
+      for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
+      l2=EPX.length; lsSet(EPS.store,l2); render2();
+    },600);
+  };
+  S2.btn.addEventListener('pointerdown',e=>{e.preventDefault();shakeOff()});
+  S2.btn.addEventListener('click',e=>{if(e.detail===0)shakeOff()});
 };
 
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
 if(hot?.episode===1) startEp1();
-else if(hot?.episode===2){showScreen(2);enter2(Math.min(hot.l2|0,EP2.length-1))}
+else if(STORIES[hot?.episode]) startStory(hot.episode,hot.l2|0);
 else showMenu();
 </script>
 </body>
