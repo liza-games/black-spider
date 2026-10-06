@@ -283,12 +283,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .stone.land{width:min(30vw,130px);aspect-ratio:1.2;border-radius:50% 50% 0 0;background:var(--sand);box-shadow:none}
 .walker.small{width:min(20vw,90px)}
 .quiz{position:absolute;left:50%;bottom:3%;translate:-50% 0;width:min(94%,360px);box-sizing:border-box;background:var(--bubble);border-radius:20px;padding:10px 12px 12px;
-  display:flex;flex-direction:column;align-items:center;gap:7px;z-index:6;box-shadow:0 6px 20px rgb(0 0 0/.18)}
+  display:flex;flex-direction:column;align-items:center;gap:8px;z-index:6;box-shadow:0 6px 20px rgb(0 0 0/.18)}
 .quiz .ex{font-family:var(--display);font-size:clamp(26px,8.5vw,38px);line-height:1;font-variant-numeric:tabular-nums}
-.quiz .dots{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:14px}
-.quiz .dots i{width:11px;height:11px;border-radius:50%;background:var(--accent)}
-.quiz .dots i.b{background:var(--gold)} .quiz .dots i.gap{width:8px;background:none}
-.quiz .dots i.x{background:none;border:2px dashed var(--muted);box-sizing:border-box}
 .quiz .ans{display:flex;gap:10px;width:100%}
 .quiz .ans button{flex:1;min-width:0;font-family:var(--display);font-size:clamp(22px,7vw,30px);padding:10px 0;border-radius:14px;border:2px solid var(--web);
   background:var(--bg);color:var(--fg);cursor:pointer;font-variant-numeric:tabular-nums}
@@ -297,16 +293,14 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .quiz .ans button.no{opacity:.35;animation:shake .1s 4}
 .afly{position:absolute;left:0;top:0;width:66px;height:66px;margin:-33px 0 0 -33px;padding:0;border:0;background:none;cursor:pointer;z-index:4;will-change:transform}
 .afly:focus-visible{outline:3px dashed var(--accent);border-radius:50%}
-.afly .in{display:block;width:100%;height:100%;animation:flyin .35s cubic-bezier(.3,1.5,.5,1);transition:scale .25s,opacity .25s}
-.afly.bye{pointer-events:none}.afly.bye .in{scale:0;opacity:0}
-@keyframes flyin{from{scale:0;opacity:0}}
+.afly .in{display:block;width:100%;height:100%}
+.afly.bye{pointer-events:none}
 .afly svg{width:100%;height:100%;overflow:visible;display:block}
 .afly b.l3{font-size:14px}
 .quiz{position:absolute}
-.quiz .lvl{position:absolute;right:12px;top:10px;display:flex;gap:3px}
+.quiz .lvl{display:flex;gap:4px;order:2}
 .quiz .lvl i{width:7px;height:7px;border-radius:50%;background:var(--track)}
 .quiz .lvl i.on{background:var(--gold)}
-.quiz .dots i.br{flex-basis:100%;width:0;height:0;background:none}
 .afly b{position:absolute;left:50%;top:65%;translate:-50% -50%;font-family:var(--display);font-weight:400;font-size:19px;color:#2a2620;font-variant-numeric:tabular-nums}
 .fish{position:absolute;left:7%;top:68%;width:min(19vw,82px);translate:-50% -50%;z-index:3;pointer-events:none}
 .fish.leap{transition:left .45s ease-in-out,top .45s ease-in-out;z-index:5}
@@ -1720,11 +1714,6 @@ function makeExample(op,tier,prev){
     return{a,b,op,tier,ans,sym:OPS[op].sym,word:OPS[op].word,opts:[...opts].sort(()=>Math.random()-.5)};
   }
 }
-function dotsFor(ex){
-  if(ex.op==='add') return ex.ans<=20?'<i></i>'.repeat(ex.a)+'<i class="gap"></i>'+'<i class="b"></i>'.repeat(ex.b):'';
-  if(ex.op==='sub') return ex.a<=20?'<i></i>'.repeat(ex.ans)+'<i class="x"></i>'.repeat(ex.b):'';
-  return ex.a<=5&&ex.b<=10?Array.from({length:ex.a},()=>'<i></i>'.repeat(ex.b)).join('<i class="br"></i>'):'';
-}
 const FLY_COLORS=['#ffd166','#8fe3cf','#f9a8c9','#b9e87a','#9fc9ff'];
 const FLY_SVG=`<svg viewBox="0 0 60 60"><ellipse class="flap flapL" cx="15" cy="24" rx="15" ry="9" fill="var(--wing)" stroke="rgb(255 255 255/.8)" stroke-width="1.5"/><ellipse class="flap flapR" cx="45" cy="24" rx="15" ry="9" fill="var(--wing)" stroke="rgb(255 255 255/.8)" stroke-width="1.5"/>
   <path d="M25 6 Q22 0 18 1 M35 6 Q38 0 42 1" stroke="#5a4a3a" stroke-width="2" fill="none" stroke-linecap="round"/>
@@ -1741,18 +1730,23 @@ function stonesScene(alive,ops,opt={}){
   room.innerHTML=SEA_BG+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
     `<div class="stone${i===N?(opt.last?' land':' flag'):''}" id="r-st${i}" style="left:${x}%;top:${ys[i]}%"></div>`).join('')+
     (opt.fish?`<div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
-    `<div class="quiz"><div class="lvl" id="r-lvl" aria-hidden="true"></div><div class="ex" id="r-ex" aria-live="polite"></div><div class="dots" id="r-dots" aria-hidden="true"></div></div>`;
+    `<div class="quiz"><div class="lvl" id="r-lvl" aria-hidden="true"></div><div class="ex" id="r-ex" aria-live="polite"></div></div>`;
   S2=makeMain('small'); put(S2,onStone($('r-st0')));
   setHint(opt.strict?'Не ошибись! Упадёшь в воду и начнёшь сначала, а рыба поплывёт быстрее'
-         :opt.fish?'Успей съесть муху с ответом, пока рыба не доплыла до края'
-         :'Реши пример и нажми на муху с правильным ответом');
+         :opt.fish?'Успей съесть муху с ответом, пока рыба не доплыла. За ошибку на камень назад'
+         :'Нажми на муху с правильным ответом. За ошибку паук отлетает на камень назад');
   const fishEl=$('r-fish'), FISH=fishEl&&talkerFor(fishEl,{pitch:1.7,rate:1.15,who:'fish',voice:1});
   let ex=null, lock=true, flies=[], speedK=1, fishBusy=false, last=performance.now(), tAsk=0, miss=0, colorShift=0;
   let pos=0, dir=1, rate=0, taunted=false; // рыба плавает туда-сюда и не возвращается в начало при новом примере
   const fishX=w=>w*(.07+.86*pos);
   const FISH_Y=.68;
   const dur=d=>{S2.wrap.style.transitionDuration=d};
-  function clearFlies(){flies.forEach(f=>{f.held=true;f.el.classList.add('bye');setTimeout(()=>f.el.remove(),300)});flies=[]}
+  let leaving=[];
+  // старые мухи улетают за край экрана, новые прилетают сверху
+  function clearFlies(){
+    flies.forEach(f=>{f.el.classList.add('bye');f.a=-Math.PI/2+(f.x<rr().width/2?-1:1)*rand(.35,1.1);leaving.push(f)});
+    flies=[];
+  }
   function ask(){
     clearFlies(); const op=pick(ops), s=rr(); ex=makeExample(op,tierOf(op),ex);
     miss=0; colorShift++;
@@ -1760,13 +1754,13 @@ function stonesScene(alive,ops,opt={}){
     const T=(7000+ex.tier*1500)*speedK, rem=dir>0?1-pos:pos; rate=rem/Math.max(rem*T,5000); taunted=false;
     restart($('r-ex'),'pop');
     $('r-ex').textContent=`${ex.a} ${ex.sym} ${ex.b} = ?`;
-    $('r-dots').innerHTML=dotsFor(ex);
     $('r-lvl').innerHTML=Array.from({length:5},(_,i)=>`<i class="${i<=ex.tier?'on':''}"></i>`).join('');
     ex.opts.forEach((v,i)=>{
       const el=document.createElement('button'); el.className='afly'; el.setAttribute('aria-label','Муха с числом '+v);
       el.style.setProperty('--fc',FLY_COLORS[(colorShift+i)%FLY_COLORS.length]);
       el.innerHTML=`<span class="in">${FLY_SVG}<b class="${v>99?'l3':''}">${v}</b></span>`;
-      const f={el,v,x:s.width*(.22+.28*i),y:s.height*rand(.1,.28),a:rand(0,TAU),sp:rand(.8,1.2),held:false};
+      const tx=s.width*(.22+.28*i), ty=s.height*rand(.1,.28);
+      const f={el,v,tx,ty,x:tx+rand(-90,90),y:-50-i*30,enter:true,a:rand(0,TAU),sp:rand(.8,1.2),held:false};
       el.addEventListener('pointerdown',e=>{e.preventDefault();grab(f)});
       el.addEventListener('click',e=>{if(e.detail===0)grab(f)});
       el.style.transform=`translate(${f.x}px,${f.y}px)`; room.appendChild(el); flies.push(f);
@@ -1786,11 +1780,12 @@ function stonesScene(alive,ops,opt={}){
       if(!miss) adjustSkill(ex.op,sec<5?.6:sec<9?.35:sec<14?.1:0);   // быстро и без ошибок: сложнее
       put(S2,onStone($('r-st'+(p2+1)))); talk2(S2,`${ex.ans}! Правильно!`); add2(1,false);
       await wait(900); if(!alive())return; dur('');
-      if(p2>=N){clearFlies();$('r-dots').innerHTML='';celebrate2();return}
+      if(p2>=N){clearFlies();celebrate2();return}
       await wait(400); if(!alive())return; ask();
     } else if(!opt.strict){
       miss++; adjustSkill(ex.op,-.7);
-      put(S2,onStone(cur)); talk2(S2,pick(['Тьфу! Не та муха!','Бе! Не тот ответ!','Ой! Посчитай ещё раз.']));
+      if(p2>0){p2--;render2()}   // за ошибку паук отлетает на камень назад
+      put(S2,onStone($('r-st'+p2))); talk2(S2,pick(['Тьфу! Не та муха! Назад…','Бе! Не тот ответ!','Ой! Отлетел назад. Посчитай ещё раз.']));
       await wait(480); if(!alive())return;
       restart(S2.btn,'shake'); sfx.yuck(); dur(''); lock=false;
     } else {
@@ -1828,6 +1823,11 @@ function stonesScene(alive,ops,opt={}){
     const x0=34, x1=s.width-34, y0=s.height*.07, y1=s.height*.33;
     for(const f of flies){
       if(f.held) continue;
+      if(f.enter){ // влетает на своё место
+        const dx=f.tx-f.x, dy=f.ty-f.y, d=Math.hypot(dx,dy), st=Math.min(d,6.5*dt/16);
+        if(d<3) f.enter=false; else{f.x+=dx/d*st; f.y+=dy/d*st}
+        f.el.style.transform=`translate(${f.x}px,${f.y}px)`; continue;
+      }
       f.a+=(Math.random()-.5)*.25; f.x+=Math.cos(f.a)*f.sp*dt/16; f.y+=Math.sin(f.a)*f.sp*dt/16;
       if(f.x<x0){f.x=x0;f.a=Math.PI-f.a} if(f.x>x1){f.x=x1;f.a=Math.PI-f.a}
       if(f.y<y0){f.y=y0;f.a=-f.a} if(f.y>y1){f.y=y1;f.a=-f.a}
@@ -1841,6 +1841,12 @@ function stonesScene(alive,ops,opt={}){
         talk2(FISH,pick(['Думай быстрее!','Я уже близко!','Плыву-плыву!','Буль! Я почти посчитала!','Сейчас я съем ответ!']),1500)}
       if(rem<=0&&!lock) fishEats();
     }
+    for(const f of leaving){
+      f.x+=Math.cos(f.a)*8*dt/16; f.y+=Math.sin(f.a)*8*dt/16;
+      f.el.style.transform=`translate(${f.x}px,${f.y}px)`;
+      if(f.y<-70||f.x<-70||f.x>s.width+70){f.el.remove();f.gone=true}
+    }
+    leaving=leaving.filter(f=>!f.gone);
     requestAnimationFrame(tick);
   })();
   setTimeout(()=>alive()&&ask(),500);
