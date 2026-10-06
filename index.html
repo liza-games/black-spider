@@ -353,6 +353,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+.vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
 @media (min-width:560px){.cards{grid-template-columns:1fr 1fr}}
 .card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;font:inherit;color:var(--fg);background:var(--bubble);
@@ -407,6 +408,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 <div class="menu" id="menu">
   <div class="sub">Игра про паука</div>
   <h2>Чёрный паук</h2>
+  <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
   <div class="cards">
     <button class="card" id="m1">
       <svg viewBox="0 0 200 110" aria-hidden="true">
@@ -524,12 +526,26 @@ function nextSpeech(){
   speaking=true; const id=++spId, done=()=>{if(id===spId)nextSpeech()};
   const u=new SpeechSynthesisUtterance(it.text);
   u.lang='ru-RU'; u.pitch=it.pitch; u.rate=it.rate;
-  const ru=speechSynthesis.getVoices().filter(v=>/^ru/i.test(v.lang));
-  if(ru.length) u.voice=ru[Math.min(it.voiceIdx,ru.length-1)];
+  // Говорим только русским голосом. Если на устройстве его нет, лучше молчать:
+  // иначе телефон читает русский текст словацким, японским или китайским голосом.
+  const all=speechSynthesis.getVoices(), ru=ruVoices(all);
+  if(all.length&&!ru.length){noRuVoice(true);speaking=false;sq.length=0;return}
+  if(ru.length){const v=ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
   u.onend=done; u.onerror=done;
   spTimer=setTimeout(done,1200+it.text.length*120); // на случай, если onend не придёт
   speechSynthesis.resume();
   speechSynthesis.speak(u);
+}
+function ruVoices(all){
+  const ru=all.filter(v=>/^ru([-_]|$)/i.test(v.lang||''));
+  // сначала голоса самого устройства и именно ru-RU: они надёжнее сетевых
+  return ru.sort((a,b)=>(b.localService-a.localService)||(/ru[-_]RU/i.test(b.lang)-/ru[-_]RU/i.test(a.lang)));
+}
+function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
+function checkVoices(){const all=speechSynthesis.getVoices(); if(all.length) noRuVoice(!ruVoices(all).length)}
+if('speechSynthesis' in window){
+  checkVoices(); setTimeout(checkVoices,1500);
+  try{speechSynthesis.addEventListener('voiceschanged',checkVoices)}catch(e){speechSynthesis.onvoiceschanged=checkVoices}
 }
 function stopSpeech(){sq.length=0;spId++;speaking=false;clearTimeout(spTimer);if('speechSynthesis' in window)speechSynthesis.cancel()}
 /* iOS разрешает голос и звук только после настоящего касания (touchend/click).
