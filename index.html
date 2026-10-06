@@ -1777,7 +1777,7 @@ function stonesScene(alive,ops,opt={}){
       el.addEventListener('click',e=>{if(e.detail===0)grab(f)});
       el.style.transform=`translate(${f.x}px,${f.y}px)`; room.appendChild(el); flies.push(f);
     });
-    talk2(S2,`Сколько будет ${ex.a} ${ex.word} ${ex.b}?`,2600);
+    speak(`Сколько будет ${ex.a} ${ex.word} ${ex.b}?`,S2.pitch,S2.rate,S2.who,S2.voice); // без облачка: пример и так написан внизу
     lock=false; tAsk=performance.now();
   }
   async function grab(f){
