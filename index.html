@@ -349,6 +349,23 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .spark{transform-box:fill-box;transform-origin:center;animation:spark .7s ease-out forwards;pointer-events:none}
 @keyframes spark{from{scale:.2 .2;opacity:1}to{scale:1.6 1.6;opacity:0;rotate:90deg}}
 
+/* ================= эпизод 5: квиз ================= */
+.qcard{position:absolute;left:50%;top:54%;translate:-50% -50%;width:min(92%,380px);box-sizing:border-box;background:var(--paper);border:6px solid var(--wood);border-radius:18px;
+  padding:14px;display:flex;flex-direction:column;gap:10px;z-index:5;color:#2a2620}
+.qcard.swap{animation:pageturn .45s ease-out}
+.qcard .q{font-family:var(--body);font-weight:800;font-size:clamp(17px,5vw,21px);line-height:1.3;text-wrap:balance;min-height:2.6em}
+.qcard .opts{display:flex;flex-direction:column;gap:8px}
+.qcard .opts button{font:inherit;font-family:var(--body);font-weight:800;font-size:clamp(16px,4.6vw,19px);text-align:left;padding:12px 14px;border-radius:14px;
+  border:2px solid #d8cdb4;background:#fff;color:#2a2620;cursor:pointer;transition:background .2s,border-color .2s}
+.qcard .opts button:focus-visible,.qcard .peekbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.qcard .opts button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.qcard .opts button.no{opacity:.4;text-decoration:line-through;animation:shake .1s 4}
+.qcard .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#8a7f6a;font-variant-numeric:tabular-nums}
+.qcard .peekbtn{align-self:center;font:inherit;font-weight:800;font-size:13px;background:none;border:2px solid #d8cdb4;border-radius:999px;padding:6px 12px;color:#6b5a3a;cursor:pointer}
+.peek{position:absolute;inset:0;z-index:8;background:rgb(20 20 30/.45);display:grid;place-items:center;padding:12px;animation:fadein .3s;cursor:pointer}
+.peek .storybook{position:static;translate:none;cursor:pointer}
+.score-stars{font-size:clamp(34px,10vw,48px);letter-spacing:.1em;color:var(--gold);text-align:center;line-height:1}
+
 /* ================= главное меню ================= */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
@@ -460,6 +477,17 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <ellipse cx="155" cy="79" rx="9" ry="8" fill="#141412"/><circle cx="155" cy="68" r="7" fill="#141412"/><circle cx="152.5" cy="67" r="2.4" fill="#fff"/><circle cx="157.5" cy="67" r="2.4" fill="#fff"/>
       </svg>
       <span class="ep">Эпизод 4 · сказка на ночь</span><span class="nm">Паучок и звёздочка</span><span class="st" id="m4s"></span>
+    </button>
+    <button class="card" id="m5">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#bfe6f5"/>
+        <g fill="none" stroke-width="7"><path d="M30 110 A70 70 0 0 1 170 110" stroke="#e8483c"/><path d="M37 110 A63 63 0 0 1 163 110" stroke="#f39a2e"/><path d="M44 110 A56 56 0 0 1 156 110" stroke="#f5d33a"/><path d="M51 110 A49 49 0 0 1 149 110" stroke="#5cbf4f"/><path d="M58 110 A42 42 0 0 1 142 110" stroke="#3d8fe0"/></g>
+        <ellipse cx="160" cy="22" rx="26" ry="11" fill="#fff"/><ellipse cx="146" cy="16" rx="14" ry="10" fill="#fff"/>
+        <rect x="14" y="58" width="58" height="44" rx="6" fill="#fbf6ea" stroke="#a8794f" stroke-width="3"/><path d="M43 58 V102" stroke="#a8794f" stroke-width="2"/>
+        <path d="M20 68 h17 M20 76 h17 M20 84 h13 M49 68 h17 M49 76 h17 M49 84 h12" stroke="#b9ad96" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="122" cy="84" r="17" fill="#d8432f"/><text x="122" y="91" text-anchor="middle" fill="#fff" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="18">?</text>
+      </svg>
+      <span class="ep">Эпизод 5 · книжка и квиз</span><span class="nm">Паучок и дождик</span><span class="st" id="m5s"></span>
     </button>
   </div>
 </div>
@@ -1181,6 +1209,8 @@ function showMenu(){
   $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
+  const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best',-1);
+  $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший счёт ${best} из 10`:''}`:e===2?`Квиз${best>=0?` · лучший счёт ${best} из 10`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
 }
 function startEp1(){
@@ -1198,6 +1228,7 @@ $('m1').addEventListener('click',()=>{unlockAudio();startEp1()});
 $('m2').addEventListener('click',()=>{unlockAudio();startStory(2)});
 $('m3').addEventListener('click',()=>{unlockAudio();startStory(3)});
 $('m4').addEventListener('click',()=>{unlockAudio();startStory(4)});
+$('m5').addEventListener('click',()=>{unlockAudio();startStory(5)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1228,8 +1259,14 @@ const EP4=[
   {key:'tale3',title:'Глава 3. Дома',           goal:6, unit:'стр.', done:'Какая добрая сказка!'},
   {key:'sleep',title:'Спокойной ночи',          goal:1, unit:'',     done:''}
 ];
+const EP5=[
+  {key:'rain1',title:'Глава 1. Тучка',          goal:6, unit:'стр.',     done:'Сейчас будет дождик!'},
+  {key:'rain2',title:'Глава 2. Радуга',         goal:6, unit:'стр.',     done:'А теперь вопросы!'},
+  {key:'quiz', title:'Квиз по книжке',          goal:10,unit:'вопросов', done:''}
+];
 const STORIES={
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
+  5:{n:5,levels:EP5,store:'spider-ep5',fin:['Квиз пройден!','']},
   4:{n:4,levels:EP4,store:'spider-ep4',fin:['Спокойной ночи!','Паучок спит, а звёздочка светит над ним']},
   3:{n:3,levels:EP3,store:'spider-ep3',fin:['Друзья!','Паук вернулся на лодку и считает волны']}
 };
@@ -2027,13 +2064,13 @@ const TALE=[
   {t:'Паучок лёг в свою паутинку, посмотрел на звёздочку и уснул. Спокойной ночи, паучок.',
    p:()=>T.night()+T.roof()+T.web(70,56,30)+T.sp(70,56,.55,true)+T.star(124,28,9)+`<text x="88" y="42" fill="#fff" font-size="10" font-family="Rubik Mono One,Arial Black,sans-serif">z Z</text>`}
 ];
-function taleScene(alive,from,count){
+function taleScene(alive,from,count,book=TALE){
   room.className='room bedroom';
   room.innerHTML=BED_ROOM+`<button class="storybook" id="r-sb" aria-label="Книжка со сказкой. Нажми, чтобы перевернуть страницу"><div class="pgin" id="r-pg" aria-live="polite"></div></button>`;
   const sb=$('r-sb'); let idx=0, lock=true;
-  const render=i=>{const P=TALE[from+i];
-    $('r-pg').innerHTML=T.wrap(P.p())+`<div class="tx">${P.t}</div><div class="pn"><span class="nx">${i<count-1?'Дальше ›':'Конец главы ›'}</span><span>${from+i+1} / ${TALE.length}</span></div>`};
-  const read=i=>{speak(TALE[from+i].t,.5,.92,'B',0); lock=true; setTimeout(()=>{lock=false},900)};
+  const render=i=>{const P=book[from+i];
+    $('r-pg').innerHTML=T.wrap(P.p())+`<div class="tx">${P.t}</div><div class="pn"><span class="nx">${i<count-1?'Дальше ›':'Конец главы ›'}</span><span>${from+i+1} / ${book.length}</span></div>`};
+  const read=i=>{speak(book[from+i].t,.5,.92,'B',0); lock=true; setTimeout(()=>{lock=false},900)};
   render(0);
   S2=makeMain('small'); const p=anchor(sb,.8,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p); // сидит на верхнем краю книжки
   setHint('Нажимай на картинку, там всё живое. Чтобы читать дальше, нажми на текст');
@@ -2061,6 +2098,142 @@ function taleScene(alive,from,count){
 SCENES.tale1=alive=>taleScene(alive,0,6);
 SCENES.tale2=alive=>taleScene(alive,6,6);
 SCENES.tale3=alive=>taleScene(alive,12,6);
+
+/* =====================================================================
+   ЭПИЗОД 5 — КНИЖКА «ПАУЧОК И ДОЖДИК» И КВИЗ ИЗ 10 ВОПРОСОВ
+   ===================================================================== */
+const tap=(k,g)=>`<g class="tp" data-k="${k}">${g}</g>`;
+const R5={ // дневные кирпичики, поле 160 × 90
+  sky:grey=>`<rect width="160" height="90" fill="${grey?'#a9bccd':'#bfe6f5'}"/><rect y="76" width="160" height="14" fill="#8fc45a"/><path d="M0 76 q8 -5 16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0 t16 0" fill="#8fc45a"/>`,
+  cloud:(x,y,s=1,grey=true)=>tap('cloud',`<g fill="${grey?'#8e9aa8':'#fff'}"><ellipse cx="${x}" cy="${y}" rx="${26*s}" ry="${11*s}"/><ellipse cx="${x-12*s}" cy="${y-7*s}" rx="${13*s}" ry="${10*s}"/><ellipse cx="${x+8*s}" cy="${y-10*s}" rx="${15*s}" ry="${12*s}"/></g>`),
+  rain:()=>tap('rain',`<g stroke="#4e86c8" stroke-width="1.6" stroke-linecap="round">${[[20,30],[44,44],[70,28],[96,40],[122,26],[146,42],[32,58],[84,60],[136,62],[10,52],[110,54],[58,52]].map(([x,y])=>`<path d="M${x} ${y} l-3 7"/>`).join('')}</g>`),
+  sun:(x,y,r)=>tap('sun',`<g stroke="#f5b83a" stroke-width="2" stroke-linecap="round">${Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${(x+Math.cos(a)*r*1.3).toFixed(1)} ${(y+Math.sin(a)*r*1.3).toFixed(1)} L${(x+Math.cos(a)*r*1.65).toFixed(1)} ${(y+Math.sin(a)*r*1.65).toFixed(1)}"/>`}).join('')}</g><circle cx="${x}" cy="${y}" r="${r}" fill="#f7d04a"/><circle cx="${x-r*.3}" cy="${y-r*.1}" r="${r*.1}" fill="#7a5a10"/><circle cx="${x+r*.3}" cy="${y-r*.1}" r="${r*.1}" fill="#7a5a10"/><path d="M${x-r*.35} ${y+r*.25} Q${x} ${y+r*.55} ${x+r*.35} ${y+r*.25}" stroke="#7a5a10" stroke-width="${r*.1}" fill="none" stroke-linecap="round"/>`),
+  rainbow:(x,y,r)=>tap('rainbow',['#e8483c','#f39a2e','#f5d33a','#5cbf4f','#3dbbd8','#3d6fe0','#8a4fd6'].map((c,i)=>{const q=r-i*3.4;return `<path d="M${x-q} ${y} A${q} ${q} 0 0 1 ${x+q} ${y}" stroke="${c}" stroke-width="3.6" fill="none"/>`}).join('')),
+  branch:()=>tap('maple',`<path d="M0 10 Q60 4 160 14" stroke="#7a5236" stroke-width="7" fill="none" stroke-linecap="round"/>`+[[20,6,'#e8742e'],[58,4,'#7bbf3a'],[104,8,'#e8742e'],[140,12,'#7bbf3a']].map(([x,y,c])=>`<path d="M${x} ${y+16} l-3 -6 l-7 2 l3 -6 l-6 -5 l7 -1 l1 -7 l5 5 l5 -5 l1 7 l7 1 l-6 5 l3 6 l-7 -2Z" fill="${c}"/>`).join('')),
+  leaf:(x,y,s=1,tilt=0)=>tap('leaf',`<g transform="rotate(${tilt} ${x} ${y})"><path d="M${x-52*s} ${y+6*s} Q${x} ${y-34*s} ${x+52*s} ${y+6*s} Q${x} ${y-4*s} ${x-52*s} ${y+6*s}Z" fill="#4fae5a"/><path d="M${x-46*s} ${y+4*s} Q${x} ${y-24*s} ${x+46*s} ${y+4*s}" stroke="#2f8a3f" stroke-width="1.5" fill="none"/><path d="M${x} ${y-14*s} V${y+30*s}" stroke="#2f8a3f" stroke-width="${2*s}"/></g>`),
+  snail:(x,y,s=1)=>tap('snail',`<path d="M${x-16*s} ${y+8*s} Q${x-22*s} ${y-6*s} ${x-14*s} ${y-6*s} L${x-12*s} ${y+2*s} L${x+18*s} ${y+2*s} Q${x+22*s} ${y+8*s} ${x+16*s} ${y+9*s}Z" fill="#e8c89a"/>
+    <path d="M${x-17*s} ${y-6*s} l-3 -7 M${x-13*s} ${y-6*s} l1 -8" stroke="#c9a476" stroke-width="${1.4*s}"/><circle cx="${x-20*s}" cy="${y-13*s}" r="${1.6*s}" fill="#5a4a3a"/><circle cx="${x-12*s}" cy="${y-14*s}" r="${1.6*s}" fill="#5a4a3a"/>
+    <circle cx="${x+3*s}" cy="${y-5*s}" r="${11*s}" fill="#d9884a"/><path d="M${x+3*s} ${y-5*s} m-1 0 a2 2 0 1 1 3 1 a5 5 0 1 1 -8 -3 a8 8 0 1 1 13 6" stroke="#9c5a2a" stroke-width="${1.6*s}" fill="none"/>`),
+  lady:(x,y,s=1,fly)=>tap('lady',(fly?`<ellipse cx="${x-9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/><ellipse cx="${x+9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/>`:'')+
+    `<circle cx="${x}" cy="${y-10*s}" r="${5*s}" fill="#222"/><circle cx="${x-2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x+2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${10*s}" fill="#e23b2e"/><path d="M${x} ${y-10*s} V${y+10*s}" stroke="#222" stroke-width="${1.2*s}"/>`+
+    [[-5,-4],[5,-4],[-6,2],[6,2],[-3,7],[3,7],[0,-6.5]].map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${1.7*s}" fill="#222"/>`).join('')),
+  hopper:(x,y,s=1,violin)=>tap('hopper',`<path d="M${x-14*s} ${y+6*s} L${x+4*s} ${y-16*s} L${x+8*s} ${y+8*s}" stroke="#3f8f2e" stroke-width="${3*s}" fill="none" stroke-linejoin="round"/><ellipse cx="${x}" cy="${y}" rx="${18*s}" ry="${6*s}" fill="#7bc94a" transform="rotate(-18 ${x} ${y})"/>
+    <circle cx="${x+18*s}" cy="${y-8*s}" r="${6*s}" fill="#7bc94a"/><circle cx="${x+20*s}" cy="${y-9*s}" r="${2*s}" fill="#fff"/><circle cx="${x+20.6*s}" cy="${y-9*s}" r="${1*s}" fill="#222"/><path d="M${x+16*s} ${y-13*s} q-6 -14 -16 -16 M${x+19*s} ${y-13*s} q2 -14 10 -18" stroke="#3f8f2e" stroke-width="${1*s}" fill="none"/>
+    <path d="M${x+2*s} ${y+4*s} l-3 ${10*s} M${x+10*s} ${y+2*s} l1 ${11*s}" stroke="#3f8f2e" stroke-width="${1.6*s}"/>`+
+    (violin?`<g transform="rotate(-30 ${x+26*s} ${y+2*s})"><ellipse cx="${x+26*s}" cy="${y+4*s}" rx="${5*s}" ry="${7*s}" fill="#b5652a"/><rect x="${x+25*s}" y="${y-10*s}" width="${2*s}" height="${9*s}" fill="#5a3416"/></g><path d="M${x+16*s} ${y-2*s} L${x+38*s} ${y+10*s}" stroke="#5a3416" stroke-width="${1*s}"/>`:'')),
+  berries:(x,y,s=1)=>tap('berries',[[-6,0],[6,0],[0,-8]].map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${5*s}" fill="#d63a5a"/><circle cx="${x+a*s-1.5*s}" cy="${y+b*s-1.5*s}" r="${1.2*s}" fill="#fff" opacity=".7"/>`).join('')+`<path d="M${x} ${y-13*s} q3 -4 7 -3" stroke="#4fae5a" stroke-width="${1.6*s}" fill="none"/>`),
+  notes:(x,y)=>tap('notes',`<g fill="#2a2620" font-family="sans-serif" font-size="12"><text x="${x}" y="${y}">♪</text><text x="${x+12}" y="${y-8}">♫</text><text x="${x+24}" y="${y+2}">♪</text></g>`),
+  wind:()=>tap('wind',`<path d="M8 36 q30 -12 54 0 q10 5 4 10 q-6 4 -9 -2 M90 56 q34 -10 60 2 q10 5 4 10 q-6 3 -8 -3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".9"/>`),
+  sp:(x,y,s=.5)=>T.sp(x,y,s), web:(x,y,r)=>T.web(x,y,r).replace('#cfd6e8','#ffffff'), thread:(x,y1,y2)=>T.thread(x,y1,y2).replace('#e8ecf5','#ffffff')
+};
+Object.assign(POKES,{
+  cloud:{say:['Туча-туча!','Сейчас пойдёт дождик!'],snd:()=>tone(160,.5,'sine',0,.06,110)},
+  rain:{say:['Кап-кап-кап!','Дождик идёт!'],snd:()=>{for(let i=0;i<6;i++)tone(rand(1200,1900),.05,'sine',i*.08,.03)}},
+  sun:{say:['Солнышко!','Тепло!'],snd:()=>sfx.magic()},
+  rainbow:{say:['Семь цветов радуги!','Красота!'],snd:()=>[523,587,659,698,784,880,988].forEach((f,i)=>tone(f,.18,'sine',i*.07,.04))},
+  maple:{say:['Это старый клён.','Листики шелестят!'],snd:()=>tone(900,.3,'sine',0,.03,400)},
+  leaf:{say:['Большой зелёный лист!','Под ним сухо!'],snd:()=>sfx.click()},
+  snail:{say:['Это улитка Тоня!','Тоня ползёт с домиком.'],snd:()=>tone(300,.4,'sine',0,.05,200)},
+  lady:{say:['Это Мила! У неё семь точек.','Божья коровка!'],snd:()=>{tone(1300,.08,'square',0,.03);tone(1500,.08,'square',.1,.03)}},
+  hopper:{say:['Это кузнечик Гоша!','Прыг-скок!'],snd:()=>sfx.boing()},
+  berries:{say:['Три ягодки малины!','Ням!'],snd:()=>sfx.chomp()},
+  notes:{say:['Ля-ля-ля!','Музыка!'],snd:()=>[659,784,880,784].forEach((f,i)=>tone(f,.15,'triangle',i*.13,.05))}
+});
+const BOOK5=[
+  // Глава 1. Тучка
+  {t:'Однажды утром паучок проснулся и увидел, что небо затянуло серой тучей.',
+   p:()=>R5.sky(true)+R5.branch()+R5.cloud(112,40,1.3)+R5.web(46,44,26)+R5.sp(46,44,.5)},
+  {t:'«Будет дождик», — подумал паучок и позвал друзей в гости, под свою паутинку на старом клёне.',
+   p:()=>R5.sky(true)+R5.branch()+R5.cloud(126,36,.9)+R5.web(60,46,28)+R5.sp(60,46,.55)},
+  {t:'Первой приползла улитка Тоня. Она несла на спине свой домик и три спелые ягодки малины.',
+   p:()=>R5.sky(true)+R5.branch()+R5.thread(40,14,40)+R5.sp(40,44,.38)+R5.snail(84,68,1.4)+R5.berries(120,68,1.1)},
+  {t:'Потом прилетела божья коровка Мила. У неё на спинке было семь чёрных точек, и она очень этим гордилась.',
+   p:()=>R5.sky(true)+R5.branch()+R5.lady(82,46,2.2,true)+R5.snail(26,70,.8)},
+  {t:'Последним прискакал кузнечик Гоша со скрипочкой. «Я сыграю вам песенку!» — сказал он.',
+   p:()=>R5.sky(true)+R5.branch()+R5.hopper(72,58,1.6,true)+R5.notes(118,40)},
+  {t:'И тут закапал дождик: кап-кап-кап! Друзья спрятались под большим зелёным листом.',
+   p:()=>R5.sky(true)+R5.cloud(80,16,1.2)+R5.rain()+R5.leaf(80,46,1.25)+R5.sp(52,64,.32)+R5.snail(76,70,.65)+R5.lady(98,66,.7)+R5.hopper(118,68,.6)},
+  // Глава 2. Радуга
+  {t:'Дождик стучал по листу, а кузнечик Гоша играл на скрипочке весёлую песенку.',
+   p:()=>R5.sky(true)+R5.rain()+R5.leaf(80,40,1.3)+R5.hopper(78,66,1.1,true)+R5.notes(112,58)},
+  {t:'Улитка Тоня угостила всех малиной. Ягодок было три, а друзей четверо. Тогда паучок сказал: «Ешьте вы, я не голодный!»',
+   p:()=>R5.sky(true)+R5.leaf(80,38,1.3)+R5.berries(80,64,1)+R5.sp(40,64,.42)+R5.snail(116,68,.7)+R5.lady(58,70,.6)+R5.hopper(132,60,.55)},
+  {t:'Вдруг подул ветер, и лист чуть не улетел! Паучок быстро сплёл крепкую ниточку и привязал лист к ветке.',
+   p:()=>R5.sky(true)+R5.branch()+R5.wind()+R5.leaf(92,52,1.1,-14)+`<path d="M60 14 L76 44" stroke="#fff" stroke-width="1.5"/>`+R5.sp(68,30,.4)},
+  {t:'Скоро дождик кончился, и выглянуло солнышко.',
+   p:()=>R5.sky()+R5.sun(118,28,13)+R5.cloud(40,24,.8,false)+R5.leaf(64,62,.9)},
+  {t:'А на небе появилась радуга! Мила сосчитала цвета: их было семь — как точек у неё на спинке.',
+   p:()=>R5.sky()+R5.rainbow(80,78,58)+R5.lady(80,58,1.4,true)},
+  {t:'Друзья помахали радуге, и паучок сказал: «Приходите ещё, когда снова будет дождик!»',
+   p:()=>R5.sky()+R5.rainbow(80,78,62)+R5.sp(44,66,.45)+R5.snail(72,70,.7)+R5.lady(98,64,.7)+R5.hopper(124,66,.65)}
+];
+SCENES.rain1=alive=>taleScene(alive,0,6,BOOK5);
+SCENES.rain2=alive=>taleScene(alive,6,6,BOOK5);
+
+const QUIZ5=[
+  {q:'Что увидел паучок утром на небе?',a:'Серую тучу',w:['Радугу','Луну'],pg:0},
+  {q:'На каком дереве жил паучок?',a:'На клёне',w:['На ёлке','На берёзе'],pg:1},
+  {q:'Кто пришёл в гости первым?',a:'Улитка Тоня',w:['Божья коровка Мила','Кузнечик Гоша'],pg:2},
+  {q:'Сколько ягодок малины принесла улитка?',a:'Три',w:['Пять','Семь'],pg:2},
+  {q:'Сколько точек было на спинке у Милы?',a:'Семь',w:['Три','Десять'],pg:3},
+  {q:'Как зовут кузнечика?',a:'Гоша',w:['Тоня','Мила'],pg:4},
+  {q:'На чём играл кузнечик?',a:'На скрипочке',w:['На барабане','На дудочке'],pg:4},
+  {q:'Где друзья спрятались от дождя?',a:'Под зелёным листом',w:['В домике улитки','В норке'],pg:5},
+  {q:'Что сделал паучок, когда подул ветер?',a:'Привязал лист ниточкой',w:['Убежал домой','Улетел с ветром'],pg:8},
+  {q:'Что появилось на небе после дождя?',a:'Радуга',w:['Звёзды','Самолёт'],pg:10}
+];
+SCENES.quiz=function(alive){
+  room.className='room bedroom';
+  room.innerHTML=BED_ROOM+`<div class="qcard" id="r-qc"><div class="foot"><span id="r-qn"></span></div><div class="q" id="r-q" aria-live="polite"></div><div class="opts" id="r-opts"></div>
+    <button class="peekbtn" id="r-peek">📖 Заглянуть в книжку</button></div>`;
+  const qc=$('r-qc'); let i=0, first=0, wrong=false, lock=true;
+  S2=makeMain('small');
+  setHint('Нажми на правильный ответ. Если не помнишь, загляни в книжку');
+  function show(){
+    const Q=QUIZ5[i], opts=[Q.a,...Q.w].sort(()=>Math.random()-.5); wrong=false;
+    $('r-q').textContent=Q.q; $('r-qn').textContent=`Вопрос ${i+1} из ${QUIZ5.length}`;
+    $('r-opts').innerHTML=opts.map(o=>`<button>${o}</button>`).join('');
+    $('r-opts').querySelectorAll('button').forEach(b=>b.onclick=()=>pickAns(b,b.textContent===Q.a));
+    if(i>0) restart(qc,'swap');
+    const p=anchor(qc,.84,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p);   // паук сидит на верхнем краю карточки
+    setTimeout(()=>{ if(!alive())return;
+      speak(`${Q.q} ${opts.slice(0,-1).join(', ')} или ${opts[opts.length-1]}?`,S2.pitch,S2.rate,S2.who,S2.voice); lock=false },i?150:600);
+  }
+  async function pickAns(b,ok){
+    if(lock||busy2||b.disabled) return;
+    if(!ok){
+      wrong=true; b.classList.add('no'); b.disabled=true; sfx.yuck(); restart(S2.btn,'shake');
+      talk2(S2,pick(['Нет, вспомни ещё!','Не то! Попробуй другой.','Хм, не так было в книжке.']),1600); return;
+    }
+    lock=true; if(!wrong) first++;
+    b.classList.add('ok'); sfx.fanfare(); restart(S2.btn,'jump');
+    const r=b.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,26,6);
+    talk2(S2,pick(wrong?['Правильно!','Да, так и было!']:['Правильно!','Молодец!','Точно!','Верно!']),1300);
+    add2(1,false);
+    await wait(1400); if(!alive())return;
+    i++; if(i<QUIZ5.length){show();return}
+    finish();
+  }
+  function finish(){
+    const stars=first>=10?3:first>=7?2:1;
+    try{ if(first>lsGet('spider-quiz-best',-1)) lsSet('spider-quiz-best',first) }catch(e){}
+    qc.innerHTML=`<div class="score-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="q" style="text-align:center">С первого раза правильно ${first} из ${QUIZ5.length}!</div>
+      <div class="opts"><button id="r-again">Пройти квиз ещё раз</button></div>`;
+    restart(qc,'swap'); sfx.fanfare(); banner(first>=10?'Все 10!':first>=7?'Отлично!':'Молодец!');
+    for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
+    talk2(S2,first>=10?'Ура! Ты всё запомнила!':first>=7?'Здорово! Ты внимательно слушала!':'Молодец! Можно перечитать книжку и попробовать ещё.',3000);
+    $('r-again').onclick=()=>enter2(EPX.findIndex(L=>L.key==='quiz'));
+    EPS.fin=['Квиз пройден!',`С первого раза ${first} из ${QUIZ5.length}`];
+    l2=EPX.length; lsSet(EPS.store,l2); render2();
+  }
+  $('r-peek').onclick=()=>{
+    const P=BOOK5[QUIZ5[i].pg], d=document.createElement('div'); d.className='peek';
+    d.innerHTML=`<div class="storybook"><div class="pgin">${T.wrap(P.p())}<div class="tx">${P.t}</div><div class="pn"><span class="nx">Закрыть ✕</span><span>${QUIZ5[i].pg+1} / ${BOOK5.length}</span></div></div></div>`;
+    d.onclick=()=>d.remove(); room.appendChild(d); sfx.page();
+  };
+  show();
+};
 
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
