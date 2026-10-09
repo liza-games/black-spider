@@ -350,10 +350,11 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes spark{from{scale:.2 .2;opacity:1}to{scale:1.6 1.6;opacity:0;rotate:90deg}}
 
 /* ================= эпизод 5: квиз ================= */
-.qcard{position:absolute;left:50%;top:54%;translate:-50% -50%;width:min(92%,380px);box-sizing:border-box;background:var(--paper);border:6px solid var(--wood);border-radius:18px;
+.qcard{position:absolute;left:50%;bottom:4%;translate:-50% 0;width:min(92%,380px);box-sizing:border-box;background:var(--paper);border:6px solid var(--wood);border-radius:18px;
   padding:14px;display:flex;flex-direction:column;gap:10px;z-index:5;color:#2a2620}
 .qcard.swap{animation:qswap .45s ease-out}
-@keyframes qswap{from{opacity:0;translate:calc(-50% + 16px) -50%}}
+@keyframes qswap{from{opacity:0;translate:calc(-50% + 16px) 0}}
+.bubble.nt::after{display:none}
 .qcard .q{font-family:var(--body);font-weight:800;font-size:clamp(17px,5vw,21px);line-height:1.3;text-wrap:balance;min-height:2.6em}
 .qcard .opts{display:flex;flex-direction:column;gap:8px}
 .qcard .opts button{font:inherit;font-family:var(--body);font-weight:800;font-size:clamp(16px,4.6vw,19px);text-align:left;padding:12px 14px;border-radius:14px;
@@ -1216,8 +1217,8 @@ function showMenu(){
   $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
-  const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best',-1);
-  $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best*10}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best*10}%`:''}`:e>0?'Глава 2 из 2':'Начать';
+  const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
+  $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
 }
 function startEp1(){
@@ -1269,7 +1270,7 @@ const EP4=[
 const EP5=[
   {key:'rain1',title:'Глава 1. Тучка',          goal:6, unit:'стр.',     done:'Сейчас будет дождик!'},
   {key:'rain2',title:'Глава 2. Радуга',         goal:6, unit:'стр.',     done:'А теперь вопросы!'},
-  {key:'quiz', title:'Квиз по книжке',          goal:10,unit:'вопросов', done:''}
+  {key:'quiz', title:'Квиз по книжке',          goal:10,unit:'вопросов', done:''} // goal подменяется числом вопросов
 ];
 const STORIES={
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
@@ -1293,7 +1294,11 @@ function clampDom(s){
   const bb=s.bubble; if(!bb||!bb.classList.contains('show')) return;
   const st=rr(), wr=s.wrap.getBoundingClientRect(), left=wr.left-st.left+bb.offsetLeft, w=bb.offsetWidth;
   let shift=0; if(left+w>st.width-6) shift=st.width-6-(left+w); if(left+shift<6) shift=6-left;
-  bb.style.translate=`${shift}px 0`;
+  // по высоте тоже: если облачко вылезает за верх сцены, опускаем его и прячем хвостик
+  const prev=+bb.dataset.dy||0, natTop=bb.getBoundingClientRect().top-st.top-prev;
+  const dy=natTop<6?Math.round(6-natTop):0; bb.dataset.dy=dy;
+  bb.classList.toggle('nt',dy>0);
+  bb.style.translate=`${shift}px ${dy}px`;
 }
 function makeWalker(cls,opts={}){
   const node=$('spiderTpl').content.firstElementChild.cloneNode(true);
@@ -2085,7 +2090,7 @@ function taleScene(alive,from,count,book=TALE){
   function poke(g){
     const P=POKES[g.dataset.k]; if(!P) return;
     restart(g,'boing'); P.snd();
-    const text=pick(P.say); say(S2,bold(text),1400); speak(text,.75,1.1,'poke',0);
+    const text=pick(typeof P.say==='function'?P.say():P.say); say(S2,bold(text),1400); speak(text,.75,1.1,'poke',0);
   }
   function sparkle(svg,e){ // нажали мимо всех: на небе вспыхивает искорка
     const r=svg.getBoundingClientRect(), x=(e.clientX-r.left)/r.width*160, y=(e.clientY-r.top)/r.height*90;
@@ -2115,81 +2120,143 @@ const R5={ // дневные кирпичики, поле 160 × 90
   cloud:(x,y,s=1,grey=true)=>tap('cloud',`<g fill="${grey?'#8e9aa8':'#fff'}"><ellipse cx="${x}" cy="${y}" rx="${26*s}" ry="${11*s}"/><ellipse cx="${x-12*s}" cy="${y-7*s}" rx="${13*s}" ry="${10*s}"/><ellipse cx="${x+8*s}" cy="${y-10*s}" rx="${15*s}" ry="${12*s}"/></g>`),
   rain:()=>tap('rain',`<g stroke="#4e86c8" stroke-width="1.6" stroke-linecap="round">${[[20,30],[44,44],[70,28],[96,40],[122,26],[146,42],[32,58],[84,60],[136,62],[10,52],[110,54],[58,52]].map(([x,y])=>`<path d="M${x} ${y} l-3 7"/>`).join('')}</g>`),
   sun:(x,y,r)=>tap('sun',`<g stroke="#f5b83a" stroke-width="2" stroke-linecap="round">${Array.from({length:8},(_,i)=>{const a=i*Math.PI/4;return `<path d="M${(x+Math.cos(a)*r*1.3).toFixed(1)} ${(y+Math.sin(a)*r*1.3).toFixed(1)} L${(x+Math.cos(a)*r*1.65).toFixed(1)} ${(y+Math.sin(a)*r*1.65).toFixed(1)}"/>`}).join('')}</g><circle cx="${x}" cy="${y}" r="${r}" fill="#f7d04a"/><circle cx="${x-r*.3}" cy="${y-r*.1}" r="${r*.1}" fill="#7a5a10"/><circle cx="${x+r*.3}" cy="${y-r*.1}" r="${r*.1}" fill="#7a5a10"/><path d="M${x-r*.35} ${y+r*.25} Q${x} ${y+r*.55} ${x+r*.35} ${y+r*.25}" stroke="#7a5a10" stroke-width="${r*.1}" fill="none" stroke-linecap="round"/>`),
-  rainbow:(x,y,r)=>tap('rainbow',['#e8483c','#f39a2e','#f5d33a','#5cbf4f','#3dbbd8','#3d6fe0','#8a4fd6'].map((c,i)=>{const q=r-i*3.4;return `<path d="M${x-q} ${y} A${q} ${q} 0 0 1 ${x+q} ${y}" stroke="${c}" stroke-width="3.6" fill="none"/>`}).join('')),
-  branch:()=>tap('maple',`<path d="M0 10 Q60 4 160 14" stroke="#7a5236" stroke-width="7" fill="none" stroke-linecap="round"/>`+[[20,6,'#e8742e'],[58,4,'#7bbf3a'],[104,8,'#e8742e'],[140,12,'#7bbf3a']].map(([x,y,c])=>`<path d="M${x} ${y+16} l-3 -6 l-7 2 l3 -6 l-6 -5 l7 -1 l1 -7 l5 5 l5 -5 l1 7 l7 1 l-6 5 l3 6 l-7 -2Z" fill="${c}"/>`).join('')),
+  rainbow:(x,y,r,n=7)=>tap('rainbow',(n===5?['#e8483c','#f39a2e','#f5d33a','#5cbf4f','#3d6fe0']:n===6?['#e8483c','#f39a2e','#f5d33a','#5cbf4f','#3d6fe0','#8a4fd6']:['#e8483c','#f39a2e','#f5d33a','#5cbf4f','#3dbbd8','#3d6fe0','#8a4fd6'])
+    .map((c,i)=>{const w=24/n,q=r-i*w;return `<path d="M${x-q} ${y} A${q} ${q} 0 0 1 ${x+q} ${y}" stroke="${c}" stroke-width="${w+.2}" fill="none"/>`}).join('')),
+  branch:(tree='maple')=>tap('tree',tree==='birch'
+    ? `<path d="M0 10 Q60 4 160 14" stroke="#f2f0ea" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M14 8 h6 M44 6 h5 M80 7 h7 M118 10 h5 M146 13 h6" stroke="#2a2620" stroke-width="2.5"/>`+
+      [[18,16],[34,12],[60,14],[76,10],[100,16],[124,18],[142,20]].map(([x,y],i)=>`<ellipse cx="${x}" cy="${y}" rx="5" ry="3.4" fill="${i%2?'#9bd14f':'#7bbf3a'}" transform="rotate(${i%2?30:-25} ${x} ${y})"/>`).join('')
+    : tree==='oak'
+    ? `<path d="M0 10 Q60 4 160 14" stroke="#6b4a2a" stroke-width="8" fill="none" stroke-linecap="round"/>`+[[22,14],[64,12],[108,16],[146,18]].map(([x,y])=>`<g fill="#3f8a3a"><circle cx="${x}" cy="${y}" r="6"/><circle cx="${x-6}" cy="${y+4}" r="4.5"/><circle cx="${x+6}" cy="${y+4}" r="4.5"/><circle cx="${x}" cy="${y+8}" r="4"/></g>`).join('')+
+      [[40,18],[86,20],[128,22]].map(([x,y])=>`<ellipse cx="${x}" cy="${y+2}" rx="3" ry="4" fill="#b5803a"/><path d="M${x-3.5} ${y} h7" stroke="#6b4a2a" stroke-width="2.5" stroke-linecap="round"/>`).join('')
+    : `<path d="M0 10 Q60 4 160 14" stroke="#7a5236" stroke-width="7" fill="none" stroke-linecap="round"/>`+[[20,6,'#e8742e'],[58,4,'#7bbf3a'],[104,8,'#e8742e'],[140,12,'#7bbf3a']].map(([x,y,c])=>`<path d="M${x} ${y+16} l-3 -6 l-7 2 l3 -6 l-6 -5 l7 -1 l1 -7 l5 5 l5 -5 l1 7 l7 1 l-6 5 l3 6 l-7 -2Z" fill="${c}"/>`).join('')),
   leaf:(x,y,s=1,tilt=0)=>tap('leaf',`<g transform="rotate(${tilt} ${x} ${y})"><path d="M${x-52*s} ${y+6*s} Q${x} ${y-34*s} ${x+52*s} ${y+6*s} Q${x} ${y-4*s} ${x-52*s} ${y+6*s}Z" fill="#4fae5a"/><path d="M${x-46*s} ${y+4*s} Q${x} ${y-24*s} ${x+46*s} ${y+4*s}" stroke="#2f8a3f" stroke-width="1.5" fill="none"/><path d="M${x} ${y-14*s} V${y+30*s}" stroke="#2f8a3f" stroke-width="${2*s}"/></g>`),
+  mushroom:(x,y,s=1,tilt=0)=>tap('mushroom',`<g transform="rotate(${tilt} ${x} ${y})"><rect x="${x-7*s}" y="${y-2*s}" width="${14*s}" height="${30*s}" rx="${5*s}" fill="#f3ead6"/><path d="M${x-48*s} ${y+4*s} Q${x-44*s} ${y-30*s} ${x} ${y-32*s} Q${x+44*s} ${y-30*s} ${x+48*s} ${y+4*s}Z" fill="#d8402c"/>
+    ${[[-28,-10,5],[-8,-20,6],[16,-14,5],[34,-4,4],[-38,-2,3.5],[2,-4,4]].map(([a,b,r])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${r*s}" fill="#fff"/>`).join('')}</g>`),
   snail:(x,y,s=1)=>tap('snail',`<path d="M${x-16*s} ${y+8*s} Q${x-22*s} ${y-6*s} ${x-14*s} ${y-6*s} L${x-12*s} ${y+2*s} L${x+18*s} ${y+2*s} Q${x+22*s} ${y+8*s} ${x+16*s} ${y+9*s}Z" fill="#e8c89a"/>
     <path d="M${x-17*s} ${y-6*s} l-3 -7 M${x-13*s} ${y-6*s} l1 -8" stroke="#c9a476" stroke-width="${1.4*s}"/><circle cx="${x-20*s}" cy="${y-13*s}" r="${1.6*s}" fill="#5a4a3a"/><circle cx="${x-12*s}" cy="${y-14*s}" r="${1.6*s}" fill="#5a4a3a"/>
     <circle cx="${x+3*s}" cy="${y-5*s}" r="${11*s}" fill="#d9884a"/><path d="M${x+3*s} ${y-5*s} m-1 0 a2 2 0 1 1 3 1 a5 5 0 1 1 -8 -3 a8 8 0 1 1 13 6" stroke="#9c5a2a" stroke-width="${1.6*s}" fill="none"/>`),
-  lady:(x,y,s=1,fly)=>tap('lady',(fly?`<ellipse cx="${x-9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/><ellipse cx="${x+9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/>`:'')+
-    `<circle cx="${x}" cy="${y-10*s}" r="${5*s}" fill="#222"/><circle cx="${x-2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x+2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${10*s}" fill="#e23b2e"/><path d="M${x} ${y-10*s} V${y+10*s}" stroke="#222" stroke-width="${1.2*s}"/>`+
-    [[-5,-4],[5,-4],[-6,2],[6,2],[-3,7],[3,7],[0,-6.5]].map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${1.7*s}" fill="#222"/>`).join('')),
-  hopper:(x,y,s=1,violin)=>tap('hopper',`<path d="M${x-14*s} ${y+6*s} L${x+4*s} ${y-16*s} L${x+8*s} ${y+8*s}" stroke="#3f8f2e" stroke-width="${3*s}" fill="none" stroke-linejoin="round"/><ellipse cx="${x}" cy="${y}" rx="${18*s}" ry="${6*s}" fill="#7bc94a" transform="rotate(-18 ${x} ${y})"/>
+  lady:(x,y,s=1,fly,v=V5)=>{
+    const spots=[...(v.spots%2?[[0,-6.5]]:[]),...[[-5,-4],[5,-4],[-6,2],[6,2],[-3,7],[3,7]].slice(0,v.spots-(v.spots%2))];
+    return tap('lady',(fly?`<ellipse cx="${x-9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/><ellipse cx="${x+9*s}" cy="${y-7*s}" rx="${9*s}" ry="${5*s}" fill="#dfeaff" opacity=".85"/>`:'')+
+      `<circle cx="${x}" cy="${y-10*s}" r="${5*s}" fill="#222"/><circle cx="${x-2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x+2*s}" cy="${y-11*s}" r="${1.4*s}" fill="#fff"/><circle cx="${x}" cy="${y}" r="${10*s}" fill="${LADY_COLORS[v.color].hex}"/><path d="M${x} ${y-10*s} V${y+10*s}" stroke="#222" stroke-width="${1.2*s}"/>`+
+      spots.map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${1.7*s}" fill="#222"/>`).join(''))},
+  instr:(x,y,s,kind)=>kind==='pipe'?`<path d="M${x+14*s} ${y-4*s} L${x+40*s} ${y+10*s}" stroke="#b5803a" stroke-width="${3.4*s}" stroke-linecap="round"/>${[0,1,2].map(i=>`<circle cx="${x+(22+i*5)*s}" cy="${y+(0.3+i*2.7)*s}" r="${.8*s}" fill="#5a3416"/>`).join('')}`
+    : kind==='drum'?`<path d="M${x+20*s} ${y+2*s} v${8*s} a${10*s} ${3.5*s} 0 0 0 ${20*s} 0 v-${8*s}" fill="#d8402c" stroke="#5a3416" stroke-width="${.8*s}"/><ellipse cx="${x+30*s}" cy="${y+2*s}" rx="${10*s}" ry="${3.5*s}" fill="#f3ead6" stroke="#5a3416" stroke-width="${.8*s}"/><path d="M${x+20*s} ${y-12*s} l${6*s} ${12*s} M${x+40*s} ${y-12*s} l-${5*s} ${12*s}" stroke="#5a3416" stroke-width="${1.2*s}" stroke-linecap="round"/>`
+    : kind==='guitar'?`<g transform="rotate(-35 ${x+28*s} ${y+6*s})"><circle cx="${x+28*s}" cy="${y+10*s}" r="${6*s}" fill="#e08a2e"/><circle cx="${x+28*s}" cy="${y+3*s}" r="${4.5*s}" fill="#e08a2e"/><circle cx="${x+28*s}" cy="${y+8*s}" r="${1.6*s}" fill="#5a3416"/><rect x="${x+27*s}" y="${y-14*s}" width="${2*s}" height="${15*s}" fill="#5a3416"/></g>`
+    : `<g transform="rotate(-30 ${x+26*s} ${y+2*s})"><ellipse cx="${x+26*s}" cy="${y+4*s}" rx="${5*s}" ry="${7*s}" fill="#b5652a"/><rect x="${x+25*s}" y="${y-10*s}" width="${2*s}" height="${9*s}" fill="#5a3416"/></g><path d="M${x+16*s} ${y-2*s} L${x+38*s} ${y+10*s}" stroke="#5a3416" stroke-width="${1*s}"/>`,
+  hopper:(x,y,s=1,withInstr,v=V5)=>tap('hopper',`<path d="M${x-14*s} ${y+6*s} L${x+4*s} ${y-16*s} L${x+8*s} ${y+8*s}" stroke="#3f8f2e" stroke-width="${3*s}" fill="none" stroke-linejoin="round"/><ellipse cx="${x}" cy="${y}" rx="${18*s}" ry="${6*s}" fill="#7bc94a" transform="rotate(-18 ${x} ${y})"/>
     <circle cx="${x+18*s}" cy="${y-8*s}" r="${6*s}" fill="#7bc94a"/><circle cx="${x+20*s}" cy="${y-9*s}" r="${2*s}" fill="#fff"/><circle cx="${x+20.6*s}" cy="${y-9*s}" r="${1*s}" fill="#222"/><path d="M${x+16*s} ${y-13*s} q-6 -14 -16 -16 M${x+19*s} ${y-13*s} q2 -14 10 -18" stroke="#3f8f2e" stroke-width="${1*s}" fill="none"/>
-    <path d="M${x+2*s} ${y+4*s} l-3 ${10*s} M${x+10*s} ${y+2*s} l1 ${11*s}" stroke="#3f8f2e" stroke-width="${1.6*s}"/>`+
-    (violin?`<g transform="rotate(-30 ${x+26*s} ${y+2*s})"><ellipse cx="${x+26*s}" cy="${y+4*s}" rx="${5*s}" ry="${7*s}" fill="#b5652a"/><rect x="${x+25*s}" y="${y-10*s}" width="${2*s}" height="${9*s}" fill="#5a3416"/></g><path d="M${x+16*s} ${y-2*s} L${x+38*s} ${y+10*s}" stroke="#5a3416" stroke-width="${1*s}"/>`:'')),
-  berries:(x,y,s=1)=>tap('berries',[[-6,0],[6,0],[0,-8]].map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${5*s}" fill="#d63a5a"/><circle cx="${x+a*s-1.5*s}" cy="${y+b*s-1.5*s}" r="${1.2*s}" fill="#fff" opacity=".7"/>`).join('')+`<path d="M${x} ${y-13*s} q3 -4 7 -3" stroke="#4fae5a" stroke-width="${1.6*s}" fill="none"/>`),
+    <path d="M${x+2*s} ${y+4*s} l-3 ${10*s} M${x+10*s} ${y+2*s} l1 ${11*s}" stroke="#3f8f2e" stroke-width="${1.6*s}"/>`+(withInstr?R5.instr(x,y,s,v.instr):'')),
+  berries:(x,y,s=1,v=V5)=>{const pos=[[-6,0],[6,0],[0,-8],[12,-8],[-12,-8]].slice(0,v.berries), c=BERRY[v.berry].hex;
+    return tap('berries',pos.map(([a,b])=>`<circle cx="${x+a*s}" cy="${y+b*s}" r="${5*s}" fill="${c}"/><circle cx="${x+a*s-1.5*s}" cy="${y+b*s-1.5*s}" r="${1.2*s}" fill="#fff" opacity=".7"/>`).join('')+`<path d="M${x} ${y-13*s} q3 -4 7 -3" stroke="#4fae5a" stroke-width="${1.6*s}" fill="none"/>`)},
   notes:(x,y)=>tap('notes',`<g fill="#2a2620" font-family="sans-serif" font-size="12"><text x="${x}" y="${y}">♪</text><text x="${x+12}" y="${y-8}">♫</text><text x="${x+24}" y="${y+2}">♪</text></g>`),
   wind:()=>tap('wind',`<path d="M8 36 q30 -12 54 0 q10 5 4 10 q-6 4 -9 -2 M90 56 q34 -10 60 2 q10 5 4 10 q-6 3 -8 -3" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".9"/>`),
   sp:(x,y,s=.5)=>T.sp(x,y,s), web:(x,y,r)=>T.web(x,y,r).replace('#cfd6e8','#ffffff'), thread:(x,y1,y2)=>T.thread(x,y1,y2).replace('#e8ecf5','#ffffff')
 };
+
+/* ---- что в этот раз будет в книжке: всё выбирается случайно ---- */
+const LADY_COLORS={red:{hex:'#e23b2e',nom:'красная',ans:'Красная'},orange:{hex:'#f08a24',nom:'оранжевая',ans:'Оранжевая'},yellow:{hex:'#f2c230',nom:'жёлтая',ans:'Жёлтая'}};
+const BERRY={rasp:{hex:'#d63a5a',gen:'малины',acc:'малину',ans:'Малину'},straw:{hex:'#e8343a',gen:'клубники',acc:'клубнику',ans:'Клубнику'},blue:{hex:'#3d3f8f',gen:'черники',acc:'чернику',ans:'Чернику'}};
+const TREES={maple:{loc:'клёне',ans:'На клёне'},oak:{loc:'дубе',ans:'На дубе'},birch:{loc:'берёзе',ans:'На берёзе'}};
+const INSTR={violin:{ins:'со скрипочкой',on:'на скрипочке',ans:'На скрипочке'},pipe:{ins:'с дудочкой',on:'на дудочке',ans:'На дудочке'},drum:{ins:'с барабаном',on:'на барабане',ans:'На барабане'},guitar:{ins:'с гитарой',on:'на гитаре',ans:'На гитаре'}};
+const NUMF=['ноль','одна','две','три','четыре','пять','шесть','семь','восемь','девять','десять','одиннадцать','двенадцать']; // женский род: ягодки, точки
+const NUMQ=['ноль','один','два','три','четыре','пять','шесть','семь','восемь','девять','десять','одиннадцать','двенадцать'];
+const cap=w=>w[0].toUpperCase()+w.slice(1);
+const plural=(n,one,few,many)=>{const a=n%10,b=n%100;return a===1&&b!==11?one:a>=2&&a<=4&&(b<12||b>14)?few:many};
+function newV5(){
+  const rnd=a=>a[Math.floor(Math.random()*a.length)];
+  return {snail:rnd(['Тоня','Соня','Нюша']),lady:rnd(['Мила','Ника','Тася']),hopper:rnd(['Гоша','Кеша','Тёма']),
+    tree:rnd(Object.keys(TREES)),berry:rnd(Object.keys(BERRY)),berries:2+Math.floor(Math.random()*4),
+    color:rnd(Object.keys(LADY_COLORS)),spots:2+Math.floor(Math.random()*6),instr:rnd(Object.keys(INSTR)),
+    shelter:rnd(['leaf','mushroom']),rainbow:5+Math.floor(Math.random()*3),n:9+Math.floor(Math.random()*4)};
+}
+let V5=newV5(), BOOK5=[], QUIZ5=[];
+function ensureV5(fresh){
+  let v=null; if(!fresh){try{v=JSON.parse(localStorage.getItem('spider-ep5-v'))}catch(e){}}
+  V5=v&&v.snail?v:newV5(); try{localStorage.setItem('spider-ep5-v',JSON.stringify(V5))}catch(e){}
+  BOOK5=makeBook5(V5); QUIZ5=makeQuiz5(V5);
+}
+function makeBook5(v){
+  const sh=v.shelter==='leaf', shelter=(x,y,s,t)=>sh?R5.leaf(x,y,s,t):R5.mushroom(x,y,s,t);
+  const shWhere=sh?'под большим зелёным листом':'под большим красным грибом';
+  const L=LADY_COLORS[v.color], B=BERRY[v.berry], I=INSTR[v.instr];
+  const berriesTxt=`${NUMF[v.berries]} ${plural(v.berries,'спелую ягодку','спелые ягодки','спелых ягодок')} ${B.gen}`;
+  const spotsTxt=`${NUMF[v.spots]} ${plural(v.spots,'чёрная точка','чёрные точки','чёрных точек')}`;
+  const share=v.berries<4?`Ягодок было ${NUMF[v.berries]}, а друзей четверо. Тогда паучок сказал: «Ешьте вы, я не голодный!»`
+                         :`Ягодок было ${NUMF[v.berries]}, а друзей четверо. Всем хватило! «Как вкусно!» — сказал паучок.`;
+  return [
+    {t:'Однажды утром паучок проснулся и увидел, что небо затянуло серой тучей.',
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.cloud(112,40,1.3)+R5.web(46,44,26)+R5.sp(46,44,.5)},
+    {t:`«Будет дождик», — подумал паучок и позвал друзей в гости, под свою паутинку на старом ${TREES[v.tree].loc}.`,
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.cloud(126,36,.9)+R5.web(60,46,28)+R5.sp(60,46,.55)},
+    {t:`Первой приползла улитка ${v.snail}. Она несла на спине свой домик и ${berriesTxt}.`,
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.thread(40,14,40)+R5.sp(40,44,.38)+R5.snail(84,68,1.4)+R5.berries(124,68,1.1)},
+    {t:`Потом прилетела ${L.nom} божья коровка ${v.lady}. У неё на спинке ${plural(v.spots,'была','были','было')} ${spotsTxt}, и она очень этим гордилась.`,
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.lady(82,46,2.2,true)+R5.snail(26,70,.8)},
+    {t:`Последним прискакал кузнечик ${v.hopper} ${I.ins}. «Я сыграю вам песенку!» — сказал он.`,
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.hopper(68,58,1.6,true)+R5.notes(118,36)},
+    {t:`И тут закапал дождик: кап-кап-кап! Друзья спрятались ${shWhere}.`,
+     p:()=>R5.sky(true)+R5.cloud(80,16,1.2)+R5.rain()+shelter(80,46,1.25)+R5.sp(52,64,.32)+R5.snail(76,70,.65)+R5.lady(98,66,.7)+R5.hopper(118,68,.6)},
+    {t:`Дождик стучал ${sh?'по листу':'по шляпке гриба'}, а кузнечик ${v.hopper} играл ${I.on} весёлую песенку.`,
+     p:()=>R5.sky(true)+R5.rain()+shelter(80,40,1.3)+R5.hopper(76,66,1.1,true)+R5.notes(118,56)},
+    {t:`Улитка ${v.snail} угостила всех ${B.gen === 'малины'?'малиной':B.gen==='клубники'?'клубникой':'черникой'}. ${share}`,
+     p:()=>R5.sky(true)+shelter(80,38,1.3)+R5.berries(80,64,1)+R5.sp(40,64,.42)+R5.snail(116,68,.7)+R5.lady(58,70,.6)+R5.hopper(132,60,.55)},
+    {t:sh?'Вдруг подул ветер, и лист чуть не улетел! Паучок быстро сплёл крепкую ниточку и привязал лист к ветке.'
+         :'Вдруг подул ветер, и гриб чуть не опрокинулся! Паучок быстро сплёл крепкую ниточку и привязал гриб к ветке.',
+     p:()=>R5.sky(true)+R5.branch(v.tree)+R5.wind()+shelter(92,52,1.1,-14)+`<path d="M60 14 L76 44" stroke="#fff" stroke-width="1.5"/>`+R5.sp(68,30,.4)},
+    {t:'Скоро дождик кончился, и выглянуло солнышко.',
+     p:()=>R5.sky()+R5.sun(118,28,13)+R5.cloud(40,24,.8,false)+shelter(64,62,.9)},
+    {t:`А на небе появилась радуга! ${v.lady} сосчитала цвета: их было ${NUMQ[v.rainbow]}${v.rainbow===v.spots?' — как точек у неё на спинке':''}.`,
+     p:()=>R5.sky()+R5.rainbow(80,78,58,v.rainbow)+R5.lady(80,58,1.4,true)},
+    {t:'Друзья помахали радуге, и паучок сказал: «Приходите ещё, когда снова будет дождик!»',
+     p:()=>R5.sky()+R5.rainbow(80,78,62,v.rainbow)+R5.sp(44,66,.45)+R5.snail(72,70,.7)+R5.lady(98,64,.7)+R5.hopper(124,66,.65)}
+  ];
+}
+function makeQuiz5(v){
+  const others=(pool,right,k=2)=>pool.filter(x=>x!==right).sort(()=>Math.random()-.5).slice(0,k);
+  const nums=(n,lo,hi,words)=>others([n-2,n-1,n+1,n+2].filter(x=>x>=lo&&x<=hi).map(x=>cap(words[x])),null);
+  const L=LADY_COLORS[v.color], I=INSTR[v.instr], sh=v.shelter==='leaf';
+  const all=[
+    {q:'Что увидел паучок утром на небе?',a:'Серую тучу',w:['Радугу','Луну'],pg:0},
+    {q:'На каком дереве жил паучок?',a:TREES[v.tree].ans,w:others(['На клёне','На дубе','На берёзе','На ёлке'],TREES[v.tree].ans),pg:1},
+    {q:'Кто пришёл в гости первым?',a:`Улитка ${v.snail}`,w:[`Божья коровка ${v.lady}`,`Кузнечик ${v.hopper}`],pg:2},
+    {q:'Как звали улитку?',a:v.snail,w:others(['Тоня','Соня','Нюша','Маша'],v.snail),pg:2},
+    {q:'Какие ягоды принесла улитка?',a:BERRY[v.berry].ans,w:others(['Малину','Клубнику','Чернику','Вишню'],BERRY[v.berry].ans),pg:2},
+    {q:'Сколько ягодок принесла улитка?',a:cap(NUMF[v.berries]),w:nums(v.berries,1,8,NUMF),pg:2},
+    {q:'Какого цвета была божья коровка?',a:L.ans,w:others(['Красная','Оранжевая','Жёлтая','Синяя'],L.ans),pg:3},
+    {q:`Сколько точек было на спинке у ${v.lady==='Мила'?'Милы':v.lady==='Ника'?'Ники':'Таси'}?`,a:cap(NUMF[v.spots]),w:nums(v.spots,1,9,NUMF),pg:3},
+    {q:'Как звали божью коровку?',a:v.lady,w:others(['Мила','Ника','Тася','Даша'],v.lady),pg:3},
+    {q:'Кто пришёл последним?',a:`Кузнечик ${v.hopper}`,w:[`Улитка ${v.snail}`,`Божья коровка ${v.lady}`],pg:4},
+    {q:'Как звали кузнечика?',a:v.hopper,w:others(['Гоша','Кеша','Тёма','Петя'],v.hopper),pg:4},
+    {q:'На чём играл кузнечик?',a:I.ans,w:others(Object.values(INSTR).map(x=>x.ans),I.ans),pg:4},
+    {q:'Где друзья спрятались от дождя?',a:sh?'Под зелёным листом':'Под красным грибом',w:['В домике улитки','В норке'],pg:5},
+    {q:'Что сделал паучок, когда подул ветер?',a:sh?'Привязал лист ниточкой':'Привязал гриб ниточкой',w:['Убежал домой','Улетел с ветром'],pg:8},
+    {q:'Что появилось на небе после дождя?',a:'Радуга',w:['Звёзды','Самолёт'],pg:10},
+    {q:'Сколько цветов было у радуги?',a:cap(NUMQ[v.rainbow]),w:nums(v.rainbow,3,9,NUMQ),pg:10}
+  ];
+  // случайные v.n вопросов, по порядку книжки
+  const keep=new Set(all.map((_,i)=>i).sort(()=>Math.random()-.5).slice(0,v.n));
+  return all.filter((_,i)=>keep.has(i));
+}
 Object.assign(POKES,{
   cloud:{say:['Туча-туча!','Сейчас пойдёт дождик!'],snd:()=>tone(160,.5,'sine',0,.06,110)},
   rain:{say:['Кап-кап-кап!','Дождик идёт!'],snd:()=>{for(let i=0;i<6;i++)tone(rand(1200,1900),.05,'sine',i*.08,.03)}},
   sun:{say:['Солнышко!','Тепло!'],snd:()=>sfx.magic()},
-  rainbow:{say:['Семь цветов радуги!','Красота!'],snd:()=>[523,587,659,698,784,880,988].forEach((f,i)=>tone(f,.18,'sine',i*.07,.04))},
-  maple:{say:['Это старый клён.','Листики шелестят!'],snd:()=>tone(900,.3,'sine',0,.03,400)},
+  rainbow:{say:()=>[`${cap(NUMQ[V5.rainbow])} цветов у радуги!`,'Красота!'],snd:()=>[523,587,659,698,784,880,988].slice(0,V5.rainbow).forEach((f,i)=>tone(f,.18,'sine',i*.07,.04))},
+  tree:{say:()=>[`Это старый ${V5.tree==='birch'?'берёза':V5.tree==='oak'?'дуб':'клён'}.`.replace('старый берёза','старая берёза'),'Листики шелестят!'],snd:()=>tone(900,.3,'sine',0,.03,400)},
   leaf:{say:['Большой зелёный лист!','Под ним сухо!'],snd:()=>sfx.click()},
-  snail:{say:['Это улитка Тоня!','Тоня ползёт с домиком.'],snd:()=>tone(300,.4,'sine',0,.05,200)},
-  lady:{say:['Это Мила! У неё семь точек.','Божья коровка!'],snd:()=>{tone(1300,.08,'square',0,.03);tone(1500,.08,'square',.1,.03)}},
-  hopper:{say:['Это кузнечик Гоша!','Прыг-скок!'],snd:()=>sfx.boing()},
-  berries:{say:['Три ягодки малины!','Ням!'],snd:()=>sfx.chomp()},
+  mushroom:{say:['Какой большой гриб!','Под шляпкой сухо!'],snd:()=>sfx.click()},
+  snail:{say:()=>[`Это улитка ${V5.snail}!`,`${V5.snail} ползёт с домиком.`],snd:()=>tone(300,.4,'sine',0,.05,200)},
+  lady:{say:()=>[`Это ${V5.lady}! У неё ${NUMF[V5.spots]} ${plural(V5.spots,'точка','точки','точек')}.`,`${cap(LADY_COLORS[V5.color].nom)} божья коровка!`],snd:()=>{tone(1300,.08,'square',0,.03);tone(1500,.08,'square',.1,.03)}},
+  hopper:{say:()=>[`Это кузнечик ${V5.hopper}!`,'Прыг-скок!'],snd:()=>sfx.boing()},
+  berries:{say:()=>[`${cap(NUMF[V5.berries])} ${plural(V5.berries,'ягодка','ягодки','ягодок')} ${BERRY[V5.berry].gen}!`,'Ням!'],snd:()=>sfx.chomp()},
   notes:{say:['Ля-ля-ля!','Музыка!'],snd:()=>[659,784,880,784].forEach((f,i)=>tone(f,.15,'triangle',i*.13,.05))}
 });
-const BOOK5=[
-  // Глава 1. Тучка
-  {t:'Однажды утром паучок проснулся и увидел, что небо затянуло серой тучей.',
-   p:()=>R5.sky(true)+R5.branch()+R5.cloud(112,40,1.3)+R5.web(46,44,26)+R5.sp(46,44,.5)},
-  {t:'«Будет дождик», — подумал паучок и позвал друзей в гости, под свою паутинку на старом клёне.',
-   p:()=>R5.sky(true)+R5.branch()+R5.cloud(126,36,.9)+R5.web(60,46,28)+R5.sp(60,46,.55)},
-  {t:'Первой приползла улитка Тоня. Она несла на спине свой домик и три спелые ягодки малины.',
-   p:()=>R5.sky(true)+R5.branch()+R5.thread(40,14,40)+R5.sp(40,44,.38)+R5.snail(84,68,1.4)+R5.berries(120,68,1.1)},
-  {t:'Потом прилетела божья коровка Мила. У неё на спинке было семь чёрных точек, и она очень этим гордилась.',
-   p:()=>R5.sky(true)+R5.branch()+R5.lady(82,46,2.2,true)+R5.snail(26,70,.8)},
-  {t:'Последним прискакал кузнечик Гоша со скрипочкой. «Я сыграю вам песенку!» — сказал он.',
-   p:()=>R5.sky(true)+R5.branch()+R5.hopper(72,58,1.6,true)+R5.notes(118,40)},
-  {t:'И тут закапал дождик: кап-кап-кап! Друзья спрятались под большим зелёным листом.',
-   p:()=>R5.sky(true)+R5.cloud(80,16,1.2)+R5.rain()+R5.leaf(80,46,1.25)+R5.sp(52,64,.32)+R5.snail(76,70,.65)+R5.lady(98,66,.7)+R5.hopper(118,68,.6)},
-  // Глава 2. Радуга
-  {t:'Дождик стучал по листу, а кузнечик Гоша играл на скрипочке весёлую песенку.',
-   p:()=>R5.sky(true)+R5.rain()+R5.leaf(80,40,1.3)+R5.hopper(78,66,1.1,true)+R5.notes(112,58)},
-  {t:'Улитка Тоня угостила всех малиной. Ягодок было три, а друзей четверо. Тогда паучок сказал: «Ешьте вы, я не голодный!»',
-   p:()=>R5.sky(true)+R5.leaf(80,38,1.3)+R5.berries(80,64,1)+R5.sp(40,64,.42)+R5.snail(116,68,.7)+R5.lady(58,70,.6)+R5.hopper(132,60,.55)},
-  {t:'Вдруг подул ветер, и лист чуть не улетел! Паучок быстро сплёл крепкую ниточку и привязал лист к ветке.',
-   p:()=>R5.sky(true)+R5.branch()+R5.wind()+R5.leaf(92,52,1.1,-14)+`<path d="M60 14 L76 44" stroke="#fff" stroke-width="1.5"/>`+R5.sp(68,30,.4)},
-  {t:'Скоро дождик кончился, и выглянуло солнышко.',
-   p:()=>R5.sky()+R5.sun(118,28,13)+R5.cloud(40,24,.8,false)+R5.leaf(64,62,.9)},
-  {t:'А на небе появилась радуга! Мила сосчитала цвета: их было семь — как точек у неё на спинке.',
-   p:()=>R5.sky()+R5.rainbow(80,78,58)+R5.lady(80,58,1.4,true)},
-  {t:'Друзья помахали радуге, и паучок сказал: «Приходите ещё, когда снова будет дождик!»',
-   p:()=>R5.sky()+R5.rainbow(80,78,62)+R5.sp(44,66,.45)+R5.snail(72,70,.7)+R5.lady(98,64,.7)+R5.hopper(124,66,.65)}
-];
-SCENES.rain1=alive=>taleScene(alive,0,6,BOOK5);
-SCENES.rain2=alive=>taleScene(alive,6,6,BOOK5);
+SCENES.rain1=alive=>{ensureV5(true); taleScene(alive,0,6,BOOK5)};
+SCENES.rain2=alive=>{ensureV5(false); taleScene(alive,6,6,BOOK5)};
 
-const QUIZ5=[
-  {q:'Что увидел паучок утром на небе?',a:'Серую тучу',w:['Радугу','Луну'],pg:0},
-  {q:'На каком дереве жил паучок?',a:'На клёне',w:['На ёлке','На берёзе'],pg:1},
-  {q:'Кто пришёл в гости первым?',a:'Улитка Тоня',w:['Божья коровка Мила','Кузнечик Гоша'],pg:2},
-  {q:'Сколько ягодок малины принесла улитка?',a:'Три',w:['Пять','Семь'],pg:2},
-  {q:'Сколько точек было на спинке у Милы?',a:'Семь',w:['Три','Десять'],pg:3},
-  {q:'Как зовут кузнечика?',a:'Гоша',w:['Тоня','Мила'],pg:4},
-  {q:'На чём играл кузнечик?',a:'На скрипочке',w:['На барабане','На дудочке'],pg:4},
-  {q:'Где друзья спрятались от дождя?',a:'Под зелёным листом',w:['В домике улитки','В норке'],pg:5},
-  {q:'Что сделал паучок, когда подул ветер?',a:'Привязал лист ниточкой',w:['Убежал домой','Улетел с ветром'],pg:8},
-  {q:'Что появилось на небе после дождя?',a:'Радуга',w:['Звёзды','Самолёт'],pg:10}
-];
 SCENES.quiz=function(alive){
+  ensureV5(false); EPX[l2].goal=QUIZ5.length; render2();   // полоска прогресса под случайное число вопросов
   room.className='room bedroom';
   room.innerHTML=BED_ROOM+`<div class="qcard" id="r-qc"><div class="foot"><span id="r-qn"></span></div><div class="q" id="r-q" aria-live="polite"></div><div class="opts" id="r-opts"></div>
     <button class="peekbtn" id="r-peek">📖 Заглянуть в книжку</button></div>`;
@@ -2225,13 +2292,14 @@ SCENES.quiz=function(alive){
   function scared(on,shut){S2.wrap.classList.toggle('tremble',on); S2.wrap.classList.toggle('shut',!!shut)}
   // начало: паучок пугается, что вопросов целых десять
   function intro(){
-    qc.innerHTML=`<div class="foot"><span>Квиз по книжке</span></div><div class="big-num">${QUIZ5.length}</div>
-      <div class="q" style="text-align:center;min-height:0">вопросов</div><div class="opts"><button class="brave" id="r-brave">💪 Подбодрить паучка</button></div>`;
+    const N=QUIZ5.length;
+    qc.innerHTML=`<div class="foot"><span>Квиз по книжке</span></div><div class="big-num">${N}</div>
+      <div class="q" style="text-align:center;min-height:0">${plural(N,'вопрос','вопроса','вопросов')}</div><div class="opts"><button class="brave" id="r-brave">💪 Подбодрить паучка</button></div>`;
     seat(); scared(true); setHint('Паучок испугался! Подбодри его');
-    setTimeout(()=>{if(alive()){restart(S2.btn,'shake');sfx.yuck();talk2(S2,'Ой-ой! Целых десять вопросов?! Мне страшно…',3000)}},500);
+    setTimeout(()=>{if(alive()){restart(S2.btn,'shake');sfx.yuck();talk2(S2,N===10?'Ой-ой! Целых десять вопросов?! Мне страшно…':N>10?`Ой! Сегодня целых ${NUMQ[N]} вопросов?! Обычно же десять! Мне страшно…`:`Ой! ${cap(NUMQ[N])} вопросов? Почему не десять? Как непривычно… Мне страшно!`,3400)}},500);
     $('r-brave').onclick=async()=>{
       $('r-brave').disabled=true; scared(false); restart(S2.btn,'jump'); sfx.magic();
-      talk2(S2,'Спасибо! Я смогу! Всё возможно!',2200);
+      talk2(S2,N===10?'Спасибо! Я смогу! Всё возможно!':'Спасибо! Непривычно, но не страшно! Я справлюсь, всё возможно!',2600);
       await wait(2300); if(!alive())return;
       qc.innerHTML=QHTML; bindPeek(); restart(qc,'swap'); show(); setHint('Нажми на правильный ответ. Если не помнишь, загляни в книжку');
     };
@@ -2239,7 +2307,7 @@ SCENES.quiz=function(alive){
   // конец: паучку страшно смотреть на результат, он зажмуривается
   function finish(){
     const pct=Math.round(first/QUIZ5.length*100);
-    try{ if(first>lsGet('spider-quiz-best',-1)) lsSet('spider-quiz-best',first) }catch(e){}
+    try{ if(pct>lsGet('spider-quiz-best-pct',-1)) lsSet('spider-quiz-best-pct',pct) }catch(e){}
     qc.innerHTML=`<div class="foot"><span>Результат квиза</span></div><div class="curtain">?</div>
       <div class="q" style="text-align:center;min-height:0">Паучку страшно смотреть…</div><div class="opts"><button class="brave" id="r-brave">💪 Подбодрить паучка</button></div>`;
     restart(qc,'swap'); seat(); scared(true,true); setHint('Паучку страшно смотреть на результат. Подбодри его!');
@@ -2251,7 +2319,7 @@ SCENES.quiz=function(alive){
     };
   }
   function reveal(pct){
-    const stars=first>=10?3:first>=7?2:1;
+    const stars=pct>=100?3:pct>=70?2:1;
     qc.innerHTML=`<div class="foot"><span>Результат квиза</span></div><div class="big-num" id="r-pct">0%</div>
       <div class="score-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
       <div class="q" style="text-align:center;min-height:0">С первого раза правильно ${first} из ${QUIZ5.length}</div>
@@ -2263,9 +2331,10 @@ SCENES.quiz=function(alive){
     setTimeout(()=>{ if(!alive())return;
       restart(S2.btn,'jump'); sfx.fanfare(); banner(pct+'%');
       for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
-      talk2(S2,pct>=100?'Сто процентов! Я всё запомнил!':pct>=70?`${pct} процентов! Ура, я молодец!`:`${pct} процентов. Не страшно! Перечитаю книжку и попробую ещё.`,3200);
+      talk2(S2,(QUIZ5.length!==10&&pct>=70?'Даже с непривычным числом вопросов справился! ':'')+(pct>=100?'Сто процентов! Я всё запомнил!':pct>=70?`${pct} процентов! Ура, я молодец!`:`${pct} процентов. Не страшно! Перечитаю книжку и попробую ещё.`),3600);
     },1250);
-    $('r-again').onclick=()=>enter2(EPX.findIndex(L=>L.key==='quiz'));
+    // ещё раз: та же книжка, но другое число вопросов и другие вопросы
+    $('r-again').onclick=()=>{V5.n=9+Math.floor(Math.random()*4);try{localStorage.setItem('spider-ep5-v',JSON.stringify(V5))}catch(e){}enter2(EPX.findIndex(L=>L.key==='quiz'))};
     EPS.fin=['Квиз пройден!',`Результат: ${pct}%`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
   }
