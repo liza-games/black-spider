@@ -341,7 +341,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 /* ================= эпизод 5: квиз ================= */
 .qcard{position:absolute;left:50%;top:54%;translate:-50% -50%;width:min(92%,380px);box-sizing:border-box;background:var(--paper);border:6px solid var(--wood);border-radius:18px;
   padding:14px;display:flex;flex-direction:column;gap:10px;z-index:5;color:#2a2620}
-.qcard.swap{animation:pageturn .45s ease-out}
+.qcard.swap{animation:qswap .45s ease-out}
+@keyframes qswap{from{opacity:0;translate:calc(-50% + 16px) -50%}}
 .qcard .q{font-family:var(--body);font-weight:800;font-size:clamp(17px,5vw,21px);line-height:1.3;text-wrap:balance;min-height:2.6em}
 .qcard .opts{display:flex;flex-direction:column;gap:8px}
 .qcard .opts button{font:inherit;font-family:var(--body);font-weight:800;font-size:clamp(16px,4.6vw,19px);text-align:left;padding:12px 14px;border-radius:14px;
@@ -353,6 +354,12 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .qcard .peekbtn{align-self:center;font:inherit;font-weight:800;font-size:13px;background:none;border:2px solid #d8cdb4;border-radius:999px;padding:6px 12px;color:#6b5a3a;cursor:pointer}
 .peek{position:absolute;inset:0;z-index:8;background:rgb(20 20 30/.45);display:grid;place-items:center;padding:12px;animation:fadein .3s;cursor:pointer}
 .peek .storybook{position:static;translate:none;cursor:pointer}
+.shut .eye,.shut .pupil{display:none}.shut .lids{display:inline}
+.tremble .sp{animation:tremble .09s infinite}
+@keyframes tremble{25%{translate:-2px 0}75%{translate:2px 0}}
+.big-num{font-family:var(--display);font-size:clamp(48px,15vw,68px);text-align:center;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.curtain{height:clamp(60px,18vw,80px);border-radius:14px;background:repeating-linear-gradient(90deg,#c9433a 0 14px,#b23a32 14px 28px);display:grid;place-items:center;color:#fff;font-family:var(--display);font-size:36px}
+.qcard .opts button.brave{text-align:center}
 .score-stars{font-size:clamp(34px,10vw,48px);letter-spacing:.1em;color:var(--gold);text-align:center;line-height:1}
 
 /* ================= главное меню ================= */
@@ -1198,7 +1205,7 @@ function showMenu(){
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best',-1);
-  $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший счёт ${best} из 10`:''}`:e===2?`Квиз${best>=0?` · лучший счёт ${best} из 10`:''}`:e>0?'Глава 2 из 2':'Начать';
+  $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best*10}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best*10}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
 }
 function startEp1(){
@@ -2202,25 +2209,63 @@ SCENES.quiz=function(alive){
     i++; if(i<QUIZ5.length){show();return}
     finish();
   }
+  function seat(){const p=anchor(qc,.84,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p)}
+  function scared(on,shut){S2.wrap.classList.toggle('tremble',on); S2.wrap.classList.toggle('shut',!!shut)}
+  // начало: паучок пугается, что вопросов целых десять
+  function intro(){
+    qc.innerHTML=`<div class="foot"><span>Квиз по книжке</span></div><div class="big-num">${QUIZ5.length}</div>
+      <div class="q" style="text-align:center;min-height:0">вопросов</div><div class="opts"><button class="brave" id="r-brave">💪 Подбодрить паучка</button></div>`;
+    seat(); scared(true); setHint('Паучок испугался! Подбодри его');
+    setTimeout(()=>{if(alive()){restart(S2.btn,'shake');sfx.yuck();talk2(S2,'Ой-ой! Целых десять вопросов?! Мне страшно…',3000)}},500);
+    $('r-brave').onclick=async()=>{
+      $('r-brave').disabled=true; scared(false); restart(S2.btn,'jump'); sfx.magic();
+      talk2(S2,'Спасибо! Я смогу! Всё возможно!',2200);
+      await wait(2300); if(!alive())return;
+      qc.innerHTML=QHTML; bindPeek(); restart(qc,'swap'); show(); setHint('Нажми на правильный ответ. Если не помнишь, загляни в книжку');
+    };
+  }
+  // конец: паучку страшно смотреть на результат, он зажмуривается
   function finish(){
-    const stars=first>=10?3:first>=7?2:1;
+    const pct=Math.round(first/QUIZ5.length*100);
     try{ if(first>lsGet('spider-quiz-best',-1)) lsSet('spider-quiz-best',first) }catch(e){}
-    qc.innerHTML=`<div class="score-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
-      <div class="q" style="text-align:center">С первого раза правильно ${first} из ${QUIZ5.length}!</div>
-      <div class="opts"><button id="r-again">Пройти квиз ещё раз</button></div>`;
-    restart(qc,'swap'); sfx.fanfare(); banner(first>=10?'Все 10!':first>=7?'Отлично!':'Молодец!');
-    for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
-    talk2(S2,first>=10?'Ура! Ты всё запомнила!':first>=7?'Здорово! Ты внимательно слушала!':'Молодец! Можно перечитать книжку и попробовать ещё.',3000);
+    qc.innerHTML=`<div class="foot"><span>Результат квиза</span></div><div class="curtain">?</div>
+      <div class="q" style="text-align:center;min-height:0">Паучку страшно смотреть…</div><div class="opts"><button class="brave" id="r-brave">💪 Подбодрить паучка</button></div>`;
+    restart(qc,'swap'); seat(); scared(true,true); setHint('Паучку страшно смотреть на результат. Подбодри его!');
+    talk2(S2,'Ой… А вдруг там мало? Мне страшно смотреть!',3000);
+    $('r-brave').onclick=async()=>{
+      $('r-brave').disabled=true; talk2(S2,'Ладно… Раз, два, три… Смотрю!',2000);
+      await wait(2100); if(!alive())return;
+      scared(false); reveal(pct);
+    };
+  }
+  function reveal(pct){
+    const stars=first>=10?3:first>=7?2:1;
+    qc.innerHTML=`<div class="foot"><span>Результат квиза</span></div><div class="big-num" id="r-pct">0%</div>
+      <div class="score-stars">${'★'.repeat(stars)}${'☆'.repeat(3-stars)}</div>
+      <div class="q" style="text-align:center;min-height:0">С первого раза правильно ${first} из ${QUIZ5.length}</div>
+      <div class="opts"><button class="brave" id="r-again">Пройти квиз ещё раз</button></div>`;
+    restart(qc,'swap'); seat();
+    const t0=performance.now();
+    (function count(){ const k=Math.min(1,(performance.now()-t0)/1200); if(!$('r-pct'))return;
+      $('r-pct').textContent=Math.round(pct*k)+'%'; if(k<1) requestAnimationFrame(count) })();
+    setTimeout(()=>{ if(!alive())return;
+      restart(S2.btn,'jump'); sfx.fanfare(); banner(pct+'%');
+      for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
+      talk2(S2,pct>=100?'Сто процентов! Я всё запомнил!':pct>=70?`${pct} процентов! Ура, я молодец!`:`${pct} процентов. Не страшно! Перечитаю книжку и попробую ещё.`,3200);
+    },1250);
     $('r-again').onclick=()=>enter2(EPX.findIndex(L=>L.key==='quiz'));
-    EPS.fin=['Квиз пройден!',`С первого раза ${first} из ${QUIZ5.length}`];
+    EPS.fin=['Квиз пройден!',`Результат: ${pct}%`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
   }
-  $('r-peek').onclick=()=>{
+  function bindPeek(){
+    $('r-peek').onclick=()=>{
     const P=BOOK5[QUIZ5[i].pg], d=document.createElement('div'); d.className='peek';
     d.innerHTML=`<div class="storybook"><div class="pgin">${T.wrap(P.p())}<div class="tx">${P.t}</div><div class="pn"><span class="nx">Закрыть ✕</span><span>${QUIZ5[i].pg+1} / ${BOOK5.length}</span></div></div></div>`;
     d.onclick=()=>d.remove(); room.appendChild(d); sfx.page();
-  };
-  show();
+    };
+  }
+  const QHTML=qc.innerHTML;
+  intro();
 };
 
 /* ---- старт ---- */
