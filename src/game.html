@@ -366,6 +366,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 
 /* ================= эпизод 6: бассейн ================= */
 .gear-cap,.gear-goggles,.gear-arm,.gear-medal{display:none}
+.silver .gear-medal circle{fill:#d3d9df;stroke:#8a96a3}
 .w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal{display:inline}
 .room.locker .wall{background:linear-gradient(transparent 62%,#c99a6b 62% 64%,transparent 64%),#f1e7d6}
 .room.locker .floor{background:repeating-linear-gradient(90deg,#d9cdb5 0 36px,#cfc2a8 36px 72px)}
@@ -1437,10 +1438,10 @@ addEventListener('pointerup',e=>{if(episode>=2)handlers2.up?.(e)});
 addEventListener('pointercancel',e=>{if(episode>=2)handlers2.up?.(e)});
 
 /* облачка в пределах сцены и глаза, следящие за пальцем */
-(function loop2(){
+function loop2(){
   if(episode>=2){
-    const arcadeOn=S2&&S2.wrap.classList.contains('free');
-    if(!arcadeOn) for(const t of talkers2) clampDom(t);
+    const arcadeOn=S2&&S2.wrap.classList.contains('free'); loop2.n=(loop2.n||0)+1;
+    if(!arcadeOn||loop2.n%8===0) for(const t of talkers2) clampDom(t);
     if(!arcadeOn&&S2&&ptr2&&S2.pl&&!S2.wrap.classList.contains('asleep')){
       const r=S2.btn.getBoundingClientRect(), a=Math.atan2(ptr2.y-(r.top+r.height*.5),ptr2.x-(r.left+r.width/2));
       S2.pl.setAttribute('cx',90+Math.cos(a)*3);S2.pl.setAttribute('cy',82+Math.sin(a)*3);
@@ -1448,7 +1449,8 @@ addEventListener('pointercancel',e=>{if(episode>=2)handlers2.up?.(e)});
     }
   }
   requestAnimationFrame(loop2);
-})();
+}
+loop2();
 
 /* ---- картинки ---- */
 const SVG={
@@ -2827,10 +2829,13 @@ SCENES.medal=function(alive){
     <button class="medalbtn" id="r-medal" aria-label="Медаль"><svg viewBox="0 0 60 80"><path d="M18 0 L30 34 L42 0" stroke="#3d6fe0" stroke-width="8" fill="none"/><circle cx="30" cy="52" r="22" fill="#f5c03a" stroke="#c98f12" stroke-width="4"/><path d="M30 38 l4 9 10 1 -7 7 2 10 -9 -5 -9 5 2 -10 -7 -7 10 -1z" fill="#fff8"/></svg></button>`;
   const s=rr(), pod=$('r-pod'); const C=coachAt(s.width*.18,s.height*.45);
   S2=makeMain(); wearAll(S2,['cap','goggles']);
-  const top1=anchor(pod.children[1],.5,0); put(S2,{x:top1.x,y:top1.y-S2.wrap.offsetWidth*.32});
+  const top1=anchor(pod.children[1],.5,0); put(S2,{x:top1.x,y:top1.y-S2.wrap.offsetWidth*.38});
+  const P=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}); P.wrap.classList.add('w-cap','w-goggles');
+  const top2=anchor(pod.children[0],.5,0); put(P,{x:top2.x,y:top2.y-P.wrap.offsetWidth*.32});
   const m=$('r-medal'); m.style.left=(s.width*.78)+'px'; m.style.top=(s.height*.3)+'px'; m.style.translate='-50% -50%'; tapme(m,true);
   setHint('Нажми на медаль, и тренер наградит паука');
   setTimeout(()=>alive()&&talk2(C,'Ква! Награждается чемпион заплыва… чёрный паук!',3200),400);
+  setTimeout(()=>alive()&&!m.disabled&&talk2(P,'Ты был быстрее меня! Поздравляю!',2600),3900);
   m.onclick=async()=>{
     if(m.disabled) return; m.disabled=true; tapme(m,false);
     const sp=S2.wrap.getBoundingClientRect(), rm=rr(); m.style.left=(sp.left-rm.left+sp.width/2)+'px'; m.style.top=(sp.top-rm.top+sp.height*.62)+'px'; m.style.scale='.4'; sfx.whoosh();
@@ -2838,6 +2843,8 @@ SCENES.medal=function(alive){
     m.remove(); S2.wrap.classList.add('w-medal'); restart(S2.btn,'jump'); sfx.fanfare(); banner('Чемпион!'); add2(1,false);
     for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
     talk2(S2,`Ура! Я научился плавать! И собрал ${stars6} ${plural(stars6,'звёздочку','звёздочки','звёздочек')}!`,3200);
+    setTimeout(()=>{ if(!alive())return; P.wrap.classList.add('w-medal','silver'); restart(P.btn,'jump'); sfx.magic();
+      talk2(P,'Ура, серебро!',1800) },3500);   // коротко, чтобы облачко не закрывало чемпиона
     try{ if(stars6>lsGet('spider-ep6-stars',-1)) lsSet('spider-ep6-stars',stars6) }catch(e){}
     EPS.fin=['Паук научился плавать!',`Медаль и ${stars6} ⭐`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
