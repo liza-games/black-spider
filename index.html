@@ -1055,7 +1055,7 @@ function rivalCatch(s,b){
 /* ================= этапы ================= */
 const LEVELS=[
   {key:'wake',title:'Разбуди паука',hint:'Потыкай в него пальцем',goal:3,unit:'',done:'Ааа! Я проснулся! Я чёрный паук!'},
-  {key:'eyes',title:'Разминка: покрути глазками',hint:'Води пальцем по кругу вокруг паука',goal:2,unit:'круга',done:'Глазки размяты!'},
+  {key:'eyes',title:'Разминка: покрутим глазками',hint:'Води пальцем по кругу вокруг паука',goal:3,unit:'круга',done:'Глазки размяты!'},
   {key:'jump',title:'Разминка: попрыгай',hint:'Нажимай на паука',goal:5,unit:'прыжков',done:'Я готов!'},
   {key:'eat',title:'Пора обедать!',hint:'Тапай по букашкам — паук их поймает',goal:5,unit:'',done:'Вкусно! Ещё хочу!'},
   {key:'purple',title:'Фиолетовый ворует еду',hint:'Успей съесть 7 раньше него',goal:7,unit:'',done:'Я обогнал Фиолетового!'},
@@ -1118,7 +1118,7 @@ function enterLevel(i){
     case 'poison': spawnOn=true; maxBugs=5; badChance=.2; poisonChance=.35;
       setTimeout(()=>talk(B,'Синие вонючки! Их надо съесть, пока не пшикнули!'),1200); break;
     case 'wake': spawnOn=false; break;
-    case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Покрути их!'),200); break;
+    case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Давай их покрутим!'),200); break;
     case 'jump': spawnOn=false; setTimeout(()=>talk(B,'Теперь попрыгаем!'),200); break;
     case 'eat': spawnOn=true; maxBugs=3; badChance=0; setTimeout(()=>talk(B,'Ух, проголодался!'),200); break;
     case 'purple': spawnOn=true; maxBugs=4; badChance=0; if(!R) summonRival('purple'); break;
