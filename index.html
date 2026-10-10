@@ -374,6 +374,40 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .qcard .opts button.brave{text-align:center}
 .score-stars{font-size:clamp(34px,10vw,48px);letter-spacing:.1em;color:var(--gold);text-align:center;line-height:1}
 
+/* ================= эпизод 6: бассейн ================= */
+.gear-cap,.gear-goggles,.gear-arm,.gear-medal{display:none}
+.w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal{display:inline}
+.room.locker .wall{background:linear-gradient(transparent 62%,#c99a6b 62% 64%,transparent 64%),#f1e7d6}
+.room.locker .floor{background:repeating-linear-gradient(90deg,#d9cdb5 0 36px,#cfc2a8 36px 72px)}
+.room.poolside{background:linear-gradient(#d8eef2 0 50%,#3d9be0 50%)}
+.room.poolside::before{content:"";position:absolute;inset:0 0 50% 0;background-image:linear-gradient(#fff 2px,transparent 2px),linear-gradient(90deg,#fff 2px,transparent 2px);background-size:30px 30px;opacity:.7}
+.room.poolside .waves{position:absolute;left:0;right:0;top:calc(50% - 4px);height:10px;background:radial-gradient(circle at 10px 10px,transparent 7px,#bfe6ff 8px,transparent 10px) 0 0/20px 10px;animation:ripple 3s linear infinite}
+.bench{position:absolute;left:8%;right:8%;bottom:20%;height:6%;background:#a8794f;border-radius:6px;box-shadow:0 14px 0 -6px #8a6040}
+.shelf{position:absolute;right:6%;top:16%;width:44%;display:flex;justify-content:space-around;align-items:flex-end;padding:0 6px 6px;border-bottom:8px solid #a8794f;border-radius:0 0 4px 4px}
+.item{width:28%;padding:0;border:0;background:none;cursor:pointer;transition:translate .7s ease-in-out,scale .7s,opacity .3s .5s}
+.item svg{width:100%;height:auto;display:block}
+.item.used{opacity:0;pointer-events:none}
+.coach{position:absolute;width:min(26vw,110px);translate:-50% -50%;pointer-events:none;z-index:4}
+.coach svg{width:100%;height:auto;display:block}
+.coach.toot svg{animation:boing .5s}
+.paddles{position:absolute;left:4%;right:4%;bottom:4%;display:flex;gap:10px;z-index:6}
+.paddles button{flex:1;font:inherit;font-family:var(--body);font-weight:800;font-size:clamp(15px,4.4vw,18px);padding:16px 6px;border-radius:16px;border:0;
+  background:var(--bubble);color:var(--fg);box-shadow:0 5px 0 rgb(0 0 0/.18);cursor:pointer}
+.paddles button:active{translate:0 3px;box-shadow:0 2px 0 rgb(0 0 0/.18)}
+.paddles button.hint{outline:3px solid var(--gold);outline-offset:2px}
+.paddles button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.ripple2{position:absolute;width:60px;height:16px;margin:-8px 0 0 -30px;border:3px solid #fff;border-radius:50%;opacity:.8;pointer-events:none;animation:rip .8s ease-out forwards;z-index:2}
+@keyframes rip{to{scale:2.4 2.4;opacity:0}}
+.cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.walker.free{transition:none!important}
+.walker.blink{animation:blink .2s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.tapzone{position:absolute;left:50%;bottom:5%;translate:-50% 0;z-index:6;pointer-events:none;font-weight:800;font-size:14px;color:#fff;background:rgb(0 0 0/.35);padding:6px 12px;border-radius:999px;transition:opacity .5s}
+.podium{position:absolute;left:50%;bottom:20%;translate:-50% 0;width:min(70%,280px);display:flex;align-items:flex-end;gap:4px}
+.podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
+.medalbtn{position:absolute;width:min(16vw,70px);padding:0;border:0;background:none;cursor:pointer;z-index:6;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
+.medalbtn svg{width:100%;height:auto;display:block}
+
 /* ================= главное меню ================= */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
@@ -497,6 +531,20 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
       </svg>
       <span class="ep">Эпизод 5 · книжка и квиз</span><span class="nm">Паучок и дождик</span><span class="st" id="m5s"></span>
     </button>
+    <button class="card" id="m6">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#d8eef2"/><path d="M0 24 H200 M0 48 H200 M40 0 V48 M80 0 V48 M120 0 V48 M160 0 V48" stroke="#fff" stroke-width="2"/>
+        <rect y="48" width="200" height="62" fill="#3d9be0"/><path d="M0 52 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#bfe6ff" stroke-width="3" fill="none"/>
+        <g fill="#e8483c"><circle cx="20" cy="54" r="4"/><circle cx="60" cy="54" r="4"/><circle cx="100" cy="54" r="4"/><circle cx="140" cy="54" r="4"/><circle cx="180" cy="54" r="4"/></g>
+        <g fill="#fff"><circle cx="40" cy="54" r="4"/><circle cx="80" cy="54" r="4"/><circle cx="120" cy="54" r="4"/><circle cx="160" cy="54" r="4"/></g>
+        <g stroke="#141412" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M88 74 L70 64 L60 72 M88 80 L68 84 M112 74 L130 64 L140 72 M112 80 L132 84"/></g>
+        <rect x="68" y="60" width="12" height="8" rx="4" fill="#f39a2e" transform="rotate(30 74 64)"/><rect x="120" y="60" width="12" height="8" rx="4" fill="#f39a2e" transform="rotate(-30 126 64)"/>
+        <ellipse cx="100" cy="82" rx="12" ry="10" fill="#141412"/><circle cx="100" cy="68" r="10" fill="#141412"/><path d="M89 67 A11 11 0 0 1 111 67 Q100 62 89 67Z" fill="#2f7de0"/>
+        <circle cx="96" cy="69" r="4" fill="#bfe6ff" stroke="#2f7de0" stroke-width="1.5"/><circle cx="104" cy="69" r="4" fill="#bfe6ff" stroke="#2f7de0" stroke-width="1.5"/>
+        <circle cx="150" cy="86" r="4" fill="#fff" opacity=".7"/><circle cx="160" cy="76" r="3" fill="#fff" opacity=".7"/><circle cx="44" cy="90" r="3" fill="#fff" opacity=".6"/>
+      </svg>
+      <span class="ep">Эпизод 6 · бассейн</span><span class="nm">Паук учится плавать</span><span class="st" id="m6s"></span>
+    </button>
   </div>
 </div>
 
@@ -509,12 +557,14 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
       <svg viewBox="0 0 200 170">
         <g class="legs-l">
           <path class="leg" d="M80 92 L44 60 L18 84"/>
+          <rect class="gear-arm" x="34" y="52" width="20" height="13" rx="6.5" fill="#f39a2e" stroke="#c96f12" stroke-width="1.5" transform="rotate(42 44 58)"/>
           <path class="leg" d="M78 100 L36 84 L8 112"/>
           <path class="leg" d="M78 110 L38 116 L16 148"/>
           <path class="leg" d="M82 118 L52 140 L40 166"/>
         </g>
         <g class="legs-r">
           <path class="leg" d="M120 92 L156 60 L182 84"/>
+          <rect class="gear-arm" x="146" y="52" width="20" height="13" rx="6.5" fill="#f39a2e" stroke="#c96f12" stroke-width="1.5" transform="rotate(-42 156 58)"/>
           <path class="leg" d="M122 100 L164 84 L192 112"/>
           <path class="leg" d="M122 110 L162 116 L184 148"/>
           <path class="leg" d="M118 118 L148 140 L160 166"/>
@@ -526,6 +576,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <g class="lids"><path d="M82 82 Q90 88 98 82"/><path d="M102 82 Q110 88 118 82"/></g>
         <path class="brow" d="M81 70 L96 75 M119 70 L104 75"/>
         <path class="mouth" d="M92 98 Q100 104 108 98" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path class="gear-cap" d="M73 84 A27 27 0 0 1 127 84 Q100 74 73 84Z" fill="#2f7de0"/><path class="gear-cap" d="M80 70 Q100 62 120 70" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/>
+        <g class="gear-goggles"><path d="M74 81 H80 M120 81 H126" stroke="#2f7de0" stroke-width="3"/><circle cx="90" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><circle cx="110" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><path d="M100 82 h0" stroke="#2f7de0" stroke-width="3" stroke-linecap="round"/></g>
+        <g class="gear-medal"><path d="M90 100 L100 118 L110 100" stroke="#3d6fe0" stroke-width="4" fill="none"/><circle cx="100" cy="124" r="10" fill="#f5c03a" stroke="#c98f12" stroke-width="2"/><path d="M100 118 l2 4 4 .5 -3 3 1 4 -4 -2 -4 2 1 -4 -3 -3 4 -.5z" fill="#fff6"/></g>
         <g class="teeth"><path class="tooth" d="M86 95 Q100 120 114 95 Z" stroke="#fff" stroke-width="1"/><path d="M93 96 v6 M100 96 v8 M107 96 v6" stroke="rgb(0 0 0/.25)" stroke-width="1.5"/></g>
         <g class="bow"><path d="M100 61 L84 52 V70Z M100 61 L116 52 V70Z" fill="#ff5a9b"/><circle cx="100" cy="61" r="5" fill="#ff86b0"/></g>
         <g class="specs" fill="none" stroke="#d9b13a" stroke-width="2.5"><circle cx="90" cy="82" r="11"/><circle cx="110" cy="82" r="11"/><path d="M101 82 h-2"/><path d="M87 97 q6 5 13 0 q7 5 13 0" stroke="#a89a8e" stroke-width="4" stroke-linecap="round"/></g>
@@ -1217,6 +1270,8 @@ function showMenu(){
   $('m1s').textContent=a>=LEVELS.length?'Пройден ✓':a>0?`Этап ${a+1} из ${LEVELS.length}`:'Начать';
   $('m2s').textContent=b>=EP2.length?'Пройден ✓':b>0?`Этап ${b+1} из ${EP2.length}`:'Начать';
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
+  const f6=lsGet('spider-ep6',0), st6=lsGet('spider-ep6-stars',-1);
+  $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -1237,6 +1292,7 @@ $('m2').addEventListener('click',()=>{unlockAudio();startStory(2)});
 $('m3').addEventListener('click',()=>{unlockAudio();startStory(3)});
 $('m4').addEventListener('click',()=>{unlockAudio();startStory(4)});
 $('m5').addEventListener('click',()=>{unlockAudio();startStory(5)});
+$('m6').addEventListener('click',()=>{unlockAudio();startStory(6)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1272,8 +1328,16 @@ const EP5=[
   {key:'rain2',title:'Глава 2. Радуга',         goal:6, unit:'стр.',     done:'А теперь вопросы!'},
   {key:'quiz', title:'Квиз по книжке',          goal:10,unit:'вопросов', done:''} // goal подменяется числом вопросов
 ];
+const EP6=[
+  {key:'gear',   title:'Раздевалка',            goal:3,  unit:'',       done:'Я готов плавать!'},
+  {key:'run',    title:'Беги к бассейну',       goal:100,unit:'%',      done:'Вот он, бассейн!'},
+  {key:'strokes',title:'Первые гребки',         goal:12, unit:'гребков',done:'Ура, я плыву!'},
+  {key:'swim',   title:'Заплыв на 25 метров',   goal:25, unit:'м',      done:'Я доплыл!'},
+  {key:'medal',  title:'Награждение',           goal:1,  unit:'',       done:''}
+];
 const STORIES={
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
+  6:{n:6,levels:EP6,store:'spider-ep6',fin:['Паук научился плавать!','']},
   5:{n:5,levels:EP5,store:'spider-ep5',fin:['Квиз пройден!','']},
   4:{n:4,levels:EP4,store:'spider-ep4',fin:['Спокойной ночи!','Паучок спит, а звёздочка светит над ним']},
   3:{n:3,levels:EP3,store:'spider-ep3',fin:['Друзья!','Паук вернулся на лодку и считает волны']}
@@ -2347,6 +2411,278 @@ SCENES.quiz=function(alive){
   }
   const QHTML=qc.innerHTML;
   intro();
+};
+
+/* =====================================================================
+   ЭПИЗОД 6 — ПАУК УЧИТСЯ ПЛАВАТЬ
+   ===================================================================== */
+const FROG=`<svg viewBox="0 0 120 120"><ellipse cx="60" cy="86" rx="40" ry="30" fill="#5cbf4f"/><ellipse cx="60" cy="92" rx="24" ry="18" fill="#c8ec9a"/>
+  <circle cx="38" cy="44" r="17" fill="#5cbf4f"/><circle cx="82" cy="44" r="17" fill="#5cbf4f"/><circle cx="38" cy="42" r="11" fill="#fff"/><circle cx="82" cy="42" r="11" fill="#fff"/>
+  <circle cx="40" cy="44" r="5.5" fill="#222"/><circle cx="80" cy="44" r="5.5" fill="#222"/><ellipse cx="60" cy="66" rx="34" ry="20" fill="#5cbf4f"/>
+  <path d="M42 70 Q60 82 78 70" stroke="#2f7a2a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M36 26 Q60 8 84 26 L80 32 Q60 20 40 32Z" fill="#e8483c"/>
+  <path d="M60 78 L60 96" stroke="#3d6fe0" stroke-width="2"/><rect x="54" y="96" width="14" height="8" rx="3" fill="#f5c03a" stroke="#c98f12" stroke-width="1.5"/></svg>`;
+const GEAR={
+  goggles:`<svg viewBox="0 0 60 30"><path d="M2 15 H10 M50 15 H58" stroke="#2f7de0" stroke-width="4"/><circle cx="20" cy="15" r="10" fill="#bfe6ff" stroke="#2f7de0" stroke-width="4"/><circle cx="40" cy="15" r="10" fill="#bfe6ff" stroke="#2f7de0" stroke-width="4"/></svg>`,
+  cap:`<svg viewBox="0 0 60 36"><path d="M4 34 A26 26 0 0 1 56 34 Q30 26 4 34Z" fill="#2f7de0"/><path d="M12 22 Q30 12 48 22" stroke="#fff" stroke-width="3" fill="none"/></svg>`,
+  arms:`<svg viewBox="0 0 60 30"><rect x="2" y="6" width="24" height="18" rx="9" fill="#f39a2e" stroke="#c96f12" stroke-width="2"/><rect x="34" y="6" width="24" height="18" rx="9" fill="#f39a2e" stroke="#c96f12" stroke-width="2"/></svg>`
+};
+function coachAt(x,y){
+  const el=document.createElement('div'); el.className='coach'; el.innerHTML=`<div class="bubble"></div>${FROG}`;
+  el.style.left=x+'px'; el.style.top=y+'px'; room.appendChild(el);
+  return talkerFor(el,{pitch:1.25,rate:1.05,who:'coach',voice:1});
+}
+function wearAll(t,list){list.forEach(k=>t.wrap.classList.add('w-'+k))}
+let stars6=0;
+
+/* 1. Раздевалка: очки, шапочка, нарукавники */
+SCENES.gear=function(alive){
+  stars6=0; try{localStorage.setItem('spider-ep6-stars-run','0')}catch(e){}
+  room.className='room locker';
+  room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="bench"></div>
+    <div class="shelf">${['goggles','cap','arms'].map(k=>`<button class="item" data-k="${k}" aria-label="${k==='goggles'?'Очки':k==='cap'?'Шапочка':'Нарукавники'}">${GEAR[k]}</button>`).join('')}</div>`;
+  const s=rr(); const C=coachAt(s.width*.2,s.height*.5);
+  S2=makeMain(); put(S2,{x:s.width*.48,y:s.height*.66});
+  setHint('Нажми на очки, шапочку и нарукавники, чтобы паук их надел');
+  room.querySelectorAll('.item').forEach(b=>tapme(b,true));
+  setTimeout(()=>alive()&&talk2(C,'Привет! Я тренер Ква. Чтобы плавать, нужны очки, шапочка и нарукавники!',3400),400);
+  const lines={goggles:'Ой, всё синее! А, это очки!',cap:'Шапочка! Немножко тесновата.',arms:'Нарукавники! Теперь я не утону!'};
+  room.querySelectorAll('.item').forEach(b=>b.onclick=async()=>{
+    if(b.classList.contains('used')||busy2) return;
+    const k=b.dataset.k; tapme(b,false); b.classList.add('used');
+    const br=b.getBoundingClientRect(), sr=S2.wrap.getBoundingClientRect();
+    b.style.translate=`${sr.left+sr.width/2-br.left-br.width/2}px ${sr.top+sr.height*.35-br.top-br.height/2}px`; b.style.scale='.5'; sfx.whoosh();
+    await wait(650); if(!alive())return;
+    S2.wrap.classList.add('w-'+k); restart(S2.btn,'jump'); sfx.magic(); talk2(S2,lines[k]); add2(1,false);
+    if(p2>=3){await wait(1500); if(!alive())return; talk2(C,'Отлично! Бежим к бассейну!'); await wait(1300); if(alive()) celebrate2()}
+  });
+};
+
+/* Общий движок для пробежки и заплыва: мир едет влево, паук на месте, нажатие = прыжок или гребок */
+function arcade(alive,cfg){
+  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="tapzone" id="r-tz">${cfg.tapHint}</div>`;
+  const cv=$('r-cv'), g=cv.getContext('2d');
+  S2=makeMain('small free'); wearAll(S2,cfg.gear);
+  const st={W:0,H:0,dist:0,obs:[],nextAt:0,y:0,vy:0,air:0,inv:0,slow:0,hits:0,last:performance.now(),done:false,t:0,lastOuch:0,tapped:false};
+  function size(){const r=rr(),dpr=devicePixelRatio||1; st.W=r.width; st.H=r.height; cv.width=r.width*dpr; cv.height=r.height*dpr; g.setTransform(dpr,0,0,dpr,0,0)}
+  size(); cfg.init(st);
+  const L=cfg.length(st);
+  handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if(st.done||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
+  const sr=()=>S2.wrap.offsetWidth*.3; // радиус паука для столкновений
+  function hitRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r}
+  function ouch(){
+    st.inv=1.3; st.slow=.7; st.hits++; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.yuck();
+    const now=performance.now(); if(now-st.lastOuch>2500){st.lastOuch=now; talk2(S2,pick(cfg.ouch),1200)}
+  }
+  function star(x,y,r){g.save();g.translate(x,y);g.rotate(st.t*1.5);g.beginPath();for(let i=0;i<10;i++){const q=i%2?r*.45:r,a=-Math.PI/2+i*Math.PI/5;g.lineTo(Math.cos(a)*q,Math.sin(a)*q)}g.closePath();g.fillStyle='#ffd23a';g.fill();g.strokeStyle='#e0a412';g.lineWidth=1.5;g.stroke();g.restore()}
+  (function frame(){
+    if(!alive()) return;
+    const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt;
+    if(Math.abs(rr().width-st.W)>2||Math.abs(rr().height-st.H)>2) size();
+    const W=st.W,H=st.H, sx=W*.24;
+    if(!st.done&&st.tapped){
+      const v=cfg.speed(st)*(st.slow>0?.45:1); st.dist+=v*dt;
+      st.slow=Math.max(0,st.slow-dt); st.inv=Math.max(0,st.inv-dt); if(st.inv<=0) S2.wrap.classList.remove('blink');
+      while(st.nextAt<st.dist+W*1.2&&st.nextAt<L-W*.6){cfg.spawn(st,st.nextAt+W); st.nextAt+=cfg.gap(st)}
+    }
+    cfg.physics(st,dt);
+    const prog=Math.min(1,st.dist/L), want=Math.floor(prog*EPX[l2].goal);
+    if(want>p2&&!st.done){p2=want;render2()}
+    // мир
+    cfg.drawBg(g,st,L);
+    const r=sr();
+    for(const o of st.obs){
+      o.sx=o.x-st.dist; if(o.sx<-W*.3||o.sx>W*1.3){if(o.sx<-W*.3)o.gone=true; continue}
+      cfg.drawObs(g,o,st);
+      if(o.star){ if(!o.got&&Math.hypot(o.sx-sx,o.sy-st.y)<r+W*.035){o.got=true;stars6++;tone(1400,.08,'sine',0,.06);tone(1900,.12,'sine',.07,.05);burst(rr().left+o.sx,rr().top+o.sy,10,4)}
+        else if(!o.got) star(o.sx,o.sy,W*.032); continue }
+      if(st.inv<=0&&!st.done&&cfg.hits(o,st,sx,r,hitRect)) ouch();
+    }
+    st.obs=st.obs.filter(o=>!o.gone);
+    g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.textAlign='right';
+    g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07);
+    S2.wrap.style.left=sx+'px'; S2.wrap.style.top=st.y+'px'; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st):0)+'deg';
+    if(!st.done&&st.dist>=L){st.done=true; p2=EPX[l2].goal; render2(); cfg.finish(st)}
+    requestAnimationFrame(frame);
+  })();
+  return st;
+}
+
+/* 2. Пробежка к бассейну: прыжки через препятствия, как в Geometry Dash */
+SCENES.run=function(alive){
+  setHint('Нажимай, чтобы прыгать. Можно прыгнуть ещё раз прямо в воздухе!');
+  const ground=st=>st.H*.8;
+  const st=arcade(alive,{
+    gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы бежать и прыгать',
+    ouch:['Ой! Споткнулся!','Ай! Скользко!','Ух, мокрый пол!'],
+    init(st){st.y=ground(st)-S2.wrap.offsetWidth*.33; st.nextAt=st.W*.5},
+    length:st=>st.W*.42*30, speed:st=>st.W*.42*(1+Math.min(.35,st.dist/(st.W*40))),
+    gap:st=>st.W*(.55+Math.random()*.45),
+    spawn(st,x){
+      const t=pick(['flip','bucket','duck','ball','flip','duck']), W=st.W,H=st.H;
+      const o={x,t,ph:Math.random()*6}; st.obs.push(o);
+      if(Math.random()<.6) st.obs.push({x:x+(Math.random()<.5?0:W*.2),star:true,sy:ground(st)-H*(.28+Math.random()*.12)});
+    },
+    tap(st){ if(st.air<2){ st.vy=-st.H*(st.air?1.05:1.25); st.air++; sfx.jump(); restart(S2.btn,'jump') } },
+    physics(st,dt){
+      const gy=ground(st)-S2.wrap.offsetWidth*.33;
+      if(st.y<gy||st.vy<0){st.vy+=st.H*3.6*dt; st.y+=st.vy*dt; if(st.y>=gy){st.y=gy;st.vy=0;st.air=0}}
+      else {st.y=gy; st.air=0}
+      S2.btn.classList.toggle('crawl',st.tapped&&st.air===0&&!st.done);
+      for(const o of st.obs){ if(o.t==='duck') o.x-=st.W*.09*dt; }
+    },
+    drawBg(g,st,L){
+      const W=st.W,H=st.H,gy=ground(st);
+      g.fillStyle='#d8eef2'; g.fillRect(0,0,W,gy);
+      g.strokeStyle='rgb(255 255 255/.9)'; g.lineWidth=2; const ts=W*.1, off=(st.dist*.5)%ts;
+      for(let x=-off;x<W;x+=ts){g.beginPath();g.moveTo(x,0);g.lineTo(x,gy);g.stroke()} for(let y=ts;y<gy;y+=ts){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
+      // окна и указатели
+      for(let k=Math.floor(st.dist/(W*1.6));k<st.dist/(W*1.6)+2;k++){const x=k*W*1.6-st.dist*.5+W*.5; g.fillStyle='#9fd3ef'; g.fillRect(x,H*.12,W*.22,H*.18); g.strokeStyle='#fff';g.lineWidth=4;g.strokeRect(x,H*.12,W*.22,H*.18)}
+      g.fillStyle='#e9e3d6'; g.fillRect(0,gy,W,H-gy); g.fillStyle='#d5ccb8'; const fs=W*.16, f2=st.dist%fs;
+      for(let x=-f2;x<W;x+=fs*2) g.fillRect(x,gy,fs,H-gy);
+      g.fillStyle='#bdb29a'; g.fillRect(0,gy,W,3);
+      // бассейн в конце
+      const px=L+W*.24-st.dist+W*.15; if(px<W){g.fillStyle='#3d9be0'; g.fillRect(px,gy+4,W*2,H-gy); g.fillStyle='#bfe6ff'; g.fillRect(px,gy+4,W*2,4)
+        g.fillStyle='#2a2620'; g.font=`800 ${Math.round(W*.05)}px Nunito,sans-serif`; g.textAlign='left'; g.fillText('БАССЕЙН',px+8,gy-H*.06)}
+    },
+    drawObs(g,o,st){
+      const W=st.W,H=st.H,gy=ground(st),x=o.sx;
+      if(o.t==='flip'){g.fillStyle='#ff6fa8'; g.beginPath(); g.ellipse(x,gy-H*.018,W*.05,H*.018,0,0,7); g.fill(); g.strokeStyle='#fff'; g.lineWidth=3; g.beginPath(); g.arc(x,gy-H*.02,W*.025,Math.PI,0); g.stroke(); o.w=W*.1;o.h=H*.04}
+      else if(o.t==='bucket'){o.w=W*.09;o.h=H*.11; g.fillStyle='#f5c03a'; g.beginPath(); g.moveTo(x-o.w/2,gy-o.h); g.lineTo(x+o.w/2,gy-o.h); g.lineTo(x+o.w*.38,gy); g.lineTo(x-o.w*.38,gy); g.fill(); g.strokeStyle='#c98f12'; g.lineWidth=2.5; g.beginPath(); g.arc(x,gy-o.h,o.w*.45,Math.PI,0); g.stroke()}
+      else if(o.t==='duck'){o.w=W*.1;o.h=H*.085; const b=Math.sin(st.t*8+o.ph)*2; g.fillStyle='#ffd23a'; g.beginPath(); g.ellipse(x,gy-o.h*.38+b,o.w*.5,o.h*.38,0,0,7); g.fill(); g.beginPath(); g.arc(x+o.w*.25,gy-o.h*.82+b,o.h*.3,0,7); g.fill();
+        g.fillStyle='#f39a2e'; g.beginPath(); g.moveTo(x+o.w*.48,gy-o.h*.86+b); g.lineTo(x+o.w*.7,gy-o.h*.78+b); g.lineTo(x+o.w*.48,gy-o.h*.7+b); g.fill(); g.fillStyle='#222'; g.beginPath(); g.arc(x+o.w*.3,gy-o.h*.9+b,2.2,0,7); g.fill()}
+      else {const rr_=W*.045; o.by=gy-rr_-Math.abs(Math.sin(st.t*2.6+o.ph))*H*.24; o.r=rr_;
+        ['#e8483c','#fff','#3d6fe0','#fff','#f5c03a','#fff'].forEach((c,i)=>{g.fillStyle=c;g.beginPath();g.moveTo(x,o.by);g.arc(x,o.by,rr_,i*Math.PI/3+st.t,(i+1)*Math.PI/3+st.t);g.fill()})}
+    },
+    hits(o,st,sx,r,hitRect){
+      const gy=ground(st);
+      if(o.t==='ball') return Math.hypot(o.sx-sx,o.by-st.y)<r+o.r*.9;
+      return hitRect(sx,st.y,r*.85,o.sx-o.w/2,gy-o.h,o.w,o.h);
+    },
+    async finish(st){
+      S2.btn.classList.remove('crawl'); talk2(S2,'Вот он, бассейн! Прыгаю!'); st.vy=-st.H*1.1; st.air=1; sfx.whoosh();
+      await wait(900); if(!alive())return; splash2({x:S2.wrap.offsetLeft,y:st.H*.85}); sfx.water(); S2.wrap.classList.add('vanish');
+      try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){}
+      await wait(700); if(alive()) celebrate2();
+    }
+  });
+};
+
+/* 3. Первые гребки: левой, правой, по очереди */
+SCENES.strokes=function(alive){
+  try{stars6=+localStorage.getItem('spider-ep6-stars-run')||stars6}catch(e){}
+  room.className='room poolside';
+  room.innerHTML=`<div class="waves"></div><div class="paddles"><button id="r-pl">◀ Левой лапкой</button><button id="r-pr">Правой лапкой ▶</button></div>`;
+  const s=rr(); const C=coachAt(s.width*.86,s.height*.28);
+  S2=makeMain('small'); wearAll(S2,['cap','goggles','arms']); put(S2,{x:s.width*.14,y:s.height*.52});
+  setHint('Греби лапками по очереди: левой, правой, левой…');
+  let last=null, lock=false;
+  setTimeout(()=>alive()&&talk2(C,'Ква! Греби по очереди: левой, правой!',2800),400);
+  const COUNT=['Раз!','Два!','Три!','Четыре!','Пять!','Шесть!','Семь!','Восемь!','Девять!','Десять!','Одиннадцать!','Двенадцать!'];
+  const hintBtn=()=>{$('r-pl').classList.toggle('hint',last!=='L');$('r-pr').classList.toggle('hint',last!=='R')};
+  hintBtn();
+  function stroke(side){
+    if(lock||busy2) return;
+    const btn=$(side==='L'?'r-pl':'r-pr'); 
+    if(side===last){ restart(S2.btn,'shake'); sfx.yuck(); talk2(C,'Теперь другой лапкой!',1300); return }
+    last=side; hintBtn(); lock=true; setTimeout(()=>lock=false,260);
+    const legs=S2.btn.querySelector(side==='L'?'.legs-l':'.legs-r'); legs.style.transition='rotate .15s'; legs.style.rotate=side==='L'?'-22deg':'22deg'; setTimeout(()=>{legs.style.rotate=''},170);
+    const r=rr(); const x=r.width*(.14+.66*(p2+1)/EPX[l2].goal);
+    const w=document.createElement('div'); w.className='ripple2'; w.style.left=S2.wrap.offsetLeft+'px'; w.style.top=(r.height*.56)+'px'; room.appendChild(w); setTimeout(()=>w.remove(),900);
+    put(S2,{x,y:r.height*.52}); tone(side==='L'?520:620,.12,'sine',0,.06); sfx.water();
+    add2(1,false); speak(COUNT[p2-1],1.25,1.1,'coach',1);
+    if(p2>=EPX[l2].goal){ setTimeout(()=>{ if(!alive())return; talk2(C,'Молодец! Теперь настоящий заплыв!'); setTimeout(()=>alive()&&celebrate2(),1500)},500) }
+  }
+  $('r-pl').onclick=()=>stroke('L'); $('r-pr').onclick=()=>stroke('R');
+};
+
+/* 4. Заплыв: как во Flappy Bird — паук тонет, нажатие = гребок вверх */
+SCENES.swim=function(alive){
+  try{stars6=+localStorage.getItem('spider-ep6-stars-run')||stars6}catch(e){}
+  setHint('Нажимай, чтобы грести вверх. Проплывай между поплавками и собирай звёздочки!');
+  const top=st=>st.H*.1, bot=st=>st.H*.9;
+  arcade(alive,{
+    gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы плыть',
+    ouch:['Ой! Буль!','Ай, поплавок!','Ух! Чуть не врезался!'],
+    init(st){st.y=st.H*.5; st.nextAt=st.W*.55},
+    length:st=>st.W*.36*38, speed:st=>st.W*.36,
+    gap:st=>st.W*(.62+Math.random()*.3),
+    spawn(st,x){
+      const H=st.H, k=Math.min(1,st.dist/(st.W*.36*30));            // чем дальше, тем труднее
+      const t=Math.random()<.62?'gate':pick(['ball','fish']);
+      const gapH=H*(.4-.08*k), mid=H*(.28+Math.random()*.44);
+      const o={x,t,mid,gapH,amp:t==='gate'&&Math.random()<.25+.45*k?H*(.06+.06*Math.random()):0,ph:Math.random()*6,sp:1+Math.random()*.8};
+      st.obs.push(o);
+      if(Math.random()<.7) st.obs.push({x:x+(t==='gate'?0:st.W*.3),star:true,sy:t==='gate'?mid:H*(.25+Math.random()*.5),gate:o});
+    },
+    tap(st){ st.vy=-st.H*.62; sfx.water(); restart(S2.btn,'jump') },
+    physics(st,dt){
+      if(!st.tapped){st.y=st.H*.5+Math.sin(st.t*2)*6; return}
+      st.vy=Math.min(st.vy+st.H*1.15*dt,st.H*.55); st.y+=st.vy*dt;
+      const r=S2.wrap.offsetWidth*.3; if(st.y<top(st)+r){st.y=top(st)+r;st.vy=Math.max(0,st.vy)} if(st.y>bot(st)-r){st.y=bot(st)-r;st.vy=Math.min(0,st.vy)}
+      for(const o of st.obs){ if(o.star&&o.gate) o.sy=o.gate.cy??o.sy; }
+    },
+    tilt:st=>Math.max(-25,Math.min(25,st.vy/st.H*40)),
+    drawBg(g,st,L){
+      const W=st.W,H=st.H,t=top(st),b=bot(st);
+      const gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0,'#5bb8f0'); gr.addColorStop(1,'#2a7cc4'); g.fillStyle=gr; g.fillRect(0,0,W,H);
+      g.fillStyle='#d8eef2'; g.fillRect(0,0,W,t-4);
+      g.strokeStyle='#bfe6ff'; g.lineWidth=3; g.beginPath(); for(let x=0;x<=W;x+=6) g.lineTo(x,t+Math.sin(x*.06+st.t*3)*3); g.stroke();
+      // дорожка на дне и плитка
+      g.fillStyle='#e9f6fb'; g.fillRect(0,b,W,H-b); g.fillStyle='#1d4f8a'; g.fillRect(0,b-H*.03,W,H*.012);
+      g.strokeStyle='rgb(255 255 255/.15)'; g.lineWidth=1; const ts=W*.12, off=(st.dist*.6)%ts;
+      for(let x=-off;x<W;x+=ts){g.beginPath();g.moveTo(x,t);g.lineTo(x,b);g.stroke()}
+      // разметка метров
+      g.fillStyle='rgb(255 255 255/.55)'; g.font=`800 ${Math.round(W*.04)}px Nunito,sans-serif`; g.textAlign='center';
+      for(let m=5;m<25;m+=5){const x=m/25*L-st.dist+W*.24; if(x>-40&&x<W+40){g.fillRect(x-1,t,2,b-t); g.fillText(m+' м',x,b+H*.06)}}
+      const fx=L-st.dist+W*.24+W*.06; if(fx<W){g.fillStyle='#f1e7d6'; g.fillRect(fx,t-H*.06,W,b-t+H*.12); g.fillStyle='#e8483c'; g.fillRect(fx,t,8,b-t)}
+    },
+    drawObs(g,o,st){
+      const W=st.W,H=st.H,x=o.sx,t=top(st),b=bot(st);
+      if(o.t==='gate'){
+        o.cy=o.mid+(o.amp?Math.sin(st.t*1.6*o.sp+o.ph)*o.amp:0); o.cy=Math.max(t+o.gapH/2+10,Math.min(b-o.gapH/2-10,o.cy));
+        const gt=o.cy-o.gapH/2, gb=o.cy+o.gapH/2, w=W*.07; o.w=w; o.gt=gt; o.gb=gb;
+        g.strokeStyle='#fff'; g.lineWidth=2; g.beginPath(); g.moveTo(x,t); g.lineTo(x,gt); g.stroke();
+        for(let y=t+w*.5,i=0;y<gt-2;y+=w*.95,i++){g.fillStyle=i%2?'#fff':'#e8483c'; g.beginPath(); g.ellipse(x,y,w*.5,w*.45,0,0,7); g.fill()}
+        const ng=g.createLinearGradient(x-w/2,0,x+w/2,0); ng.addColorStop(0,'#2fbf6a'); ng.addColorStop(.5,'#7be08f'); ng.addColorStop(1,'#2fbf6a');
+        g.fillStyle=ng; g.beginPath(); g.roundRect?g.roundRect(x-w/2,gb,w,b-gb+10,w/2):g.rect(x-w/2,gb,w,b-gb+10); g.fill();
+      } else if(o.t==='ball'){ o.r=W*.05; o.cy=(t+b)/2+Math.sin(st.t*1.8*o.sp+o.ph)*(b-t)*.36;
+        ['#e8483c','#fff','#3d6fe0','#fff','#f5c03a','#fff'].forEach((c,i)=>{g.fillStyle=c;g.beginPath();g.moveTo(x,o.cy);g.arc(x,o.cy,o.r,i*Math.PI/3+st.t,(i+1)*Math.PI/3+st.t);g.fill()})
+      } else { o.x-=W*.12*(1/60); o.cy=(t+b)/2+Math.sin(st.t*2.4*o.sp+o.ph)*(b-t)*.32; const s=W*.05;
+        g.fillStyle='#f08a3c'; g.beginPath(); g.ellipse(x,o.cy,s,s*.6,0,0,7); g.fill(); g.beginPath(); g.moveTo(x+s*.8,o.cy); g.lineTo(x+s*1.5,o.cy-s*.5); g.lineTo(x+s*1.5,o.cy+s*.5); g.fill();
+        g.fillStyle='#fff'; g.beginPath(); g.arc(x-s*.45,o.cy-s*.15,s*.18,0,7); g.fill(); g.fillStyle='#222'; g.beginPath(); g.arc(x-s*.5,o.cy-s*.15,s*.09,0,7); g.fill(); o.r=s*.7 }
+    },
+    hits(o,st,sx,r,hitRect){
+      if(o.t==='gate') return hitRect(sx,st.y,r*.8,o.sx-o.w/2,top(st),o.w,o.gt-top(st))||hitRect(sx,st.y,r*.8,o.sx-o.w/2,o.gb,o.w,bot(st)-o.gb);
+      return Math.hypot(o.sx-sx,o.cy-st.y)<r*.85+o.r;
+    },
+    async finish(st){ talk2(S2,'Я доплыл до бортика! Двадцать пять метров!',2400); sfx.fanfare(); try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){}
+      await wait(1400); if(alive()) celebrate2() }
+  });
+};
+
+/* 5. Награждение */
+SCENES.medal=function(alive){
+  try{stars6=+localStorage.getItem('spider-ep6-stars-run')||stars6}catch(e){}
+  room.className='room locker';
+  room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="podium" id="r-pod"><div style="height:44px">2</div><div style="height:72px;background:#e0b04a">1</div><div style="height:30px">3</div></div>
+    <button class="medalbtn" id="r-medal" aria-label="Медаль"><svg viewBox="0 0 60 80"><path d="M18 0 L30 34 L42 0" stroke="#3d6fe0" stroke-width="8" fill="none"/><circle cx="30" cy="52" r="22" fill="#f5c03a" stroke="#c98f12" stroke-width="4"/><path d="M30 38 l4 9 10 1 -7 7 2 10 -9 -5 -9 5 2 -10 -7 -7 10 -1z" fill="#fff8"/></svg></button>`;
+  const s=rr(), pod=$('r-pod'); const C=coachAt(s.width*.18,s.height*.45);
+  S2=makeMain(); wearAll(S2,['cap','goggles']);
+  const top1=anchor(pod.children[1],.5,0); put(S2,{x:top1.x,y:top1.y-S2.wrap.offsetWidth*.32});
+  const m=$('r-medal'); m.style.left=(s.width*.78)+'px'; m.style.top=(s.height*.3)+'px'; m.style.translate='-50% -50%'; tapme(m,true);
+  setHint('Нажми на медаль, и тренер наградит паука');
+  setTimeout(()=>alive()&&talk2(C,'Ква! Награждается чемпион заплыва… чёрный паук!',3200),400);
+  m.onclick=async()=>{
+    if(m.disabled) return; m.disabled=true; tapme(m,false);
+    const sp=S2.wrap.getBoundingClientRect(), rm=rr(); m.style.left=(sp.left-rm.left+sp.width/2)+'px'; m.style.top=(sp.top-rm.top+sp.height*.62)+'px'; m.style.scale='.4'; sfx.whoosh();
+    await wait(950); if(!alive())return;
+    m.remove(); S2.wrap.classList.add('w-medal'); restart(S2.btn,'jump'); sfx.fanfare(); banner('Чемпион!'); add2(1,false);
+    for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
+    talk2(S2,`Ура! Я научился плавать! И собрал ${stars6} ${plural(stars6,'звёздочку','звёздочки','звёздочек')}!`,3200);
+    try{ if(stars6>lsGet('spider-ep6-stars',-1)) lsSet('spider-ep6-stars',stars6) }catch(e){}
+    EPS.fin=['Паук научился плавать!',`Медаль и ${stars6} ⭐`];
+    l2=EPX.length; lsSet(EPS.store,l2); render2();
+  };
 };
 
 /* ---- старт ---- */
