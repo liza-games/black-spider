@@ -333,6 +333,20 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .storybook.turn .pgin{animation:pageturn .45s ease-out}
 @keyframes pageturn{from{opacity:0;translate:16px 0}}
 .storybook svg{width:100%;height:auto;border-radius:9px;display:block}
+.storybook .pic{position:relative}
+.storybook .nx.off{background:#c9bfae}
+.storybook .hidc{color:#b8860b}
+.hid{cursor:pointer;animation:twinkle 1.6s ease-in-out infinite}
+@keyframes twinkle{50%{opacity:.35}}
+.mini{position:absolute;inset:0;border-radius:9px;overflow:hidden;touch-action:none;cursor:pointer;z-index:2;transition:opacity .6s}
+.mini.fade{opacity:0}
+.mini svg{width:100%;height:100%;display:block}
+.mlabel{position:absolute;left:6px;right:6px;top:6px;padding:4px 8px;border-radius:10px;background:rgb(0 0 0/.5);color:#fff;font-weight:800;font-size:clamp(11px,3.2vw,14px);text-align:center;pointer-events:none}
+.mbar{position:absolute;left:10%;right:10%;bottom:7px;height:6px;border-radius:3px;background:rgb(255 255 255/.25);pointer-events:none}
+.mbar i{display:block;height:100%;width:0;border-radius:3px;background:#ffe27a;transition:width .15s}
+.constel{position:absolute;left:50%;top:6%;translate:-50% 0;width:min(86%,340px);z-index:7;animation:fadein 1.2s}
+.constel svg{width:100%;display:block;border-radius:12px;box-shadow:0 0 30px rgb(245 231 161/.35)}
+.constel .ctext{margin-top:6px;text-align:center;color:#fff3b0;font-weight:800;font-size:15px;text-shadow:0 1px 2px #000}
 .storybook .tx{font-family:var(--body);font-weight:800;font-size:clamp(14px,4vw,17px);line-height:1.35;min-height:5.4em;text-wrap:pretty}
 .storybook .pn{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:800;color:#8a7f6a}
 .storybook .nx{background:var(--accent);color:#fff;border-radius:999px;padding:6px 14px;font-size:14px}
@@ -1290,7 +1304,7 @@ function showMenu(){
   $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
-  const d=lsGet('spider-ep4',0); $('m4s').textContent=d>=EP4.length?'Прочитана ✓':d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
+  const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
 }
 function startEp1(){
   showScreen(1);
@@ -1772,6 +1786,7 @@ const SCENES={
       talk2(CV,'Сладких снов, паучок…',2800);
       await wait(2400); if(!alive())return;
       banner('Спокойной ночи!');
+      if(EPS.n===4) constellation();
       const w=room.querySelector('.window').getBoundingClientRect();
       for(let k=0;k<3;k++) setTimeout(()=>hearts(w.left+w.width/2,w.top+w.height,10),k*400);
       l2=EPX.length; lsSet(EPS.store,l2); render2();
@@ -2161,16 +2176,35 @@ const TALE=[
   {t:'Паучок лёг в свою паутинку, посмотрел на звёздочку и уснул. Спокойной ночи, паучок.',
    p:()=>T.night()+T.roof()+T.web(70,56,30)+T.sp(70,56,.55,true)+T.star(124,28,9)+`<text x="88" y="42" fill="#fff" font-size="10" font-family="Rubik Mono One,Arial Black,sans-serif">z Z</text>`}
 ];
-function taleScene(alive,from,count,book=TALE){
+/* Сказка «Паучок и звёздочка»: на каждой странице спрятана маленькая звёздочка,
+   а в четырёх местах сказка останавливается и игрок помогает героям (мини-игры) */
+const TALE_MINI={5:'weave',7:'wind',9:'light',14:'beam'};
+let HID=null; // {pos:[[x,y]…18], found:[номера страниц]}
+function ensureHid(fresh){
+  if(!fresh){try{HID=JSON.parse(localStorage.getItem('spider-ep4-hid'))}catch(e){}}
+  if(fresh||!HID||!HID.pos){HID={pos:TALE.map(()=>[Math.round(rand(10,150)),Math.round(rand(8,80))]),found:[]}}
+  try{localStorage.setItem('spider-ep4-hid',JSON.stringify(HID))}catch(e){}
+}
+function taleScene(alive,from,count,book=TALE,opts={}){
   room.className='room bedroom';
   room.innerHTML=BED_ROOM+`<button class="storybook" id="r-sb" aria-label="Книжка со сказкой. Нажми, чтобы перевернуть страницу"><div class="pgin" id="r-pg" aria-live="polite"></div></button>`;
-  const sb=$('r-sb'); let idx=0, lock=true;
-  const render=i=>{const P=book[from+i];
-    $('r-pg').innerHTML=T.wrap(P.p())+`<div class="tx">${P.t}</div><div class="pn"><span class="nx">${i<count-1?'Дальше ›':'Конец главы ›'}</span><span>${from+i+1} / ${book.length}</span></div>`};
+  const sb=$('r-sb'); let idx=0, lock=true, miniDone=true, miniStop=null;
+  const hidOn=!!opts.hidden;
+  const render=i=>{const gi=from+i, P=book[gi];
+    const hid=hidOn&&!HID.found.includes(gi)?`<g class="hid" data-p="${gi}"><circle cx="${HID.pos[gi][0]}" cy="${HID.pos[gi][1]}" r="7" fill="transparent"/><path transform="translate(${HID.pos[gi][0]} ${HID.pos[gi][1]})" d="M0 -4 L1.1 -1.1 L4 0 L1.1 1.1 L0 4 L-1.1 1.1 L-4 0 L-1.1 -1.1Z" fill="#fff8c0"/></g>`:'';
+    const svg=T.wrap(P.p()).replace('</svg>',hid+'</svg>');
+    const found=hidOn?`<span class="hidc">⭐ ${HID.found.length} / ${book.length}</span>`:'';
+    $('r-pg').innerHTML=`<div class="pic">${svg}<div class="mini" id="r-mini" hidden></div></div><div class="tx">${P.t}</div><div class="pn"><span class="nx">${i<count-1?'Дальше ›':'Конец главы ›'}</span>${found}<span>${gi+1} / ${book.length}</span></div>`;
+    if(miniStop){miniStop();miniStop=null}
+    miniDone=true;
+    if(opts.minis&&TALE_MINI[gi]){ miniDone=false; $('r-pg').querySelector('.nx').classList.add('off');
+      setTimeout(()=>{ if(alive()&&idx===i) miniStop=MINI[TALE_MINI[gi]]($('r-mini'),()=>{ miniDone=true; const nx=$('r-pg').querySelector('.nx'); if(nx) nx.classList.remove('off') }) },2600) }
+  };
   const read=i=>{speak(book[from+i].t,.5,.92,'B',0); lock=true; setTimeout(()=>{lock=false},900)};
   render(0);
   S2=makeMain('small'); const p=anchor(sb,.8,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p); // сидит на верхнем краю книжки
-  setHint('Нажимай на картинку, там всё живое. Чтобы читать дальше, нажми на текст');
+  setHint(hidOn?'На каждой странице спрятана звёздочка — найди её! Чтобы читать дальше, нажми на текст'
+               :'Нажимай на картинку, там всё живое. Чтобы читать дальше, нажми на текст');
   setTimeout(()=>alive()&&read(0),600);
   function poke(g){
     const P=POKES[g.dataset.k]; if(!P) return;
@@ -2183,18 +2217,117 @@ function taleScene(alive,from,count,book=TALE){
     g.innerHTML=`<path d="M${x} ${y-6} L${x+1.5} ${y-1.5} L${x+6} ${y} L${x+1.5} ${y+1.5} L${x} ${y+6} L${x-1.5} ${y+1.5} L${x-6} ${y} L${x-1.5} ${y-1.5}Z" fill="#fff"/>`;
     svg.appendChild(g); setTimeout(()=>g.remove(),700); tone(rand(1400,2000),.1,'sine',0,.04);
   }
+  function findHidden(h){
+    const gi=+h.dataset.p; if(HID.found.includes(gi)) return;
+    HID.found.push(gi); try{localStorage.setItem('spider-ep4-hid',JSON.stringify(HID))}catch(e){}
+    const r=h.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,18,5); sfx.magic();
+    h.remove(); const c=$('r-pg').querySelector('.hidc'); if(c) c.textContent=`⭐ ${HID.found.length} / ${book.length}`;
+    say(S2,bold(pick(['Нашла звёздочку!','Ура, звёздочка!','Вот она где!'])).replace('Нашла','Нашли'),1200);
+  }
   sb.onclick=e=>{
+    if(e.target.closest('.mini')) return;            // мини-игра ловит нажатия сама
+    const h=e.target.closest('.hid'); if(h){findHidden(h);return}
     const g=e.target.closest('.tp'), svg=e.target.closest('svg');
     if(g){poke(g);return}
     if(svg&&e.clientX){sparkle(svg,e);return}   // по картинке страницы не листаются
-    if(lock||busy2) return; sfx.page();
+    if(lock||busy2) return;
+    if(!miniDone){ restart(S2.btn,'shake'); say(S2,'<b>Сначала помоги паучку!</b>',1200); return }
+    sfx.page();
     if(idx<count-1){idx++; add2(1,false); render(idx); restart(sb,'turn'); read(idx)}
     else add2(1);
   };
 }
-SCENES.tale1=alive=>taleScene(alive,0,6);
-SCENES.tale2=alive=>taleScene(alive,6,6);
-SCENES.tale3=alive=>taleScene(alive,12,6);
+
+/* звёздочки, найденные в сказке, складываются на небе в созвездие паучка */
+function constellation(){
+  ensureHid(false); const n=HID.found.length;
+  const P=[[80,27],[80,50],[64,36],[50,20],[96,36],[110,20],[60,46],[40,40],[100,46],[120,40],[60,56],[40,66],[100,56],[120,66],[66,66],[54,82],[94,66],[106,82]];
+  const E=[[2,3],[4,5],[6,7],[8,9],[10,11],[12,13],[14,15],[16,17]];
+  const LEG=[[2,73,44],[4,87,44],[6,71,49],[8,89,49],[10,71,54],[12,89,54],[14,73,58],[16,87,58]]; // от края брюшка к колену
+  const lit=i=>i<n, d=document.createElement('div'); d.className='constel';
+  d.innerHTML=`<svg viewBox="0 0 160 90"><rect width="160" height="90" rx="10" fill="#0c1030"/>
+    <circle cx="80" cy="27" r="6" fill="none" stroke="#ffe27a" stroke-width="1" opacity="${lit(0)?.75:.12}"/><ellipse cx="80" cy="50" rx="10" ry="12" fill="none" stroke="#ffe27a" stroke-width="1" opacity="${lit(1)?.75:.12}"/>
+    ${LEG.map(([k,x,y])=>`<path d="M${x} ${y} L${P[k][0]} ${P[k][1]}" stroke="#ffe27a" stroke-width="1" opacity="${lit(k)?.75:.12}"/>`).join('')}${E.map(([a,b])=>`<path d="M${P[a][0]} ${P[a][1]} L${P[b][0]} ${P[b][1]}" stroke="#ffe27a" stroke-width="1" opacity="${lit(a)&&lit(b)?.75:.12}"/>`).join('')}
+    ${P.map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${lit(i)?2.4:1.3}" fill="${lit(i)?'#fff3b0':'#56608f'}" class="${lit(i)?'star':''}"/>`).join('')}</svg>
+    <div class="ctext">Звёздочек найдено: ${n} из 18${n>=18?' — целый паучок на небе!':''}</div>`;
+  room.appendChild(d); sfx.magic();
+  setTimeout(()=>{ if(S2) speak(n>=9?'Смотри, звёздочки сложились в паучка!':'Смотри, на небе появляется паучок из звёздочек!',.5,.9,'B',0) },600);
+  try{ if(n>lsGet('spider-ep4-best',-1)) lsSet('spider-ep4-best',n) }catch(e){}
+}
+
+/* ---- мини-игры внутри сказки: каждая рисует свою сцену поверх картинки и зовёт done() ---- */
+const MINI={};
+function miniBase(el,label){
+  el.hidden=false; el.innerHTML=`<svg viewBox="0 0 160 90"></svg><div class="mlabel">${label}</div><div class="mbar"><i></i></div>`;
+  const svg=el.querySelector('svg'), bar=el.querySelector('.mbar i');
+  speak(label.replace(/ — /,', '),.75,1,'B',0);
+  const pt=e=>{const r=svg.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*160,y:(e.clientY-r.top)/r.height*90}};
+  return {svg,bar,pt,label:t=>{el.querySelector('.mlabel').textContent=t}};
+}
+function miniWin(el,m,done,text){
+  m.label(text); m.bar.style.width='100%'; sfx.fanfare(); const r=el.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,30,7);
+  say(S2,bold(text),1500); done(); setTimeout(()=>{el.classList.add('fade');setTimeout(()=>{el.hidden=true;el.classList.remove('fade')},600)},1500);
+}
+// 1) плетём ниточку до неба: вести пальцем вверх
+MINI.weave=(el,done)=>{
+  const m=miniBase(el,'Веди пальцем вверх — плети ниточку до неба!'); let p=0, last=null, fin=false;
+  const draw=()=>{ const top=62-60*p; m.svg.innerHTML=T.night()+T.house()+T.star(122,74,7)+`<path d="M96 62 L96 ${top}" stroke="#e8ecf5" stroke-width="1.6"/>`+T.sp(96,66,.5)+(p<1?`<path d="M96 ${top-4} l-3 5 h6z" fill="#ffe27a"/>`:''); m.bar.style.width=(p*100)+'%' };
+  draw();
+  el.onpointerdown=e=>{e.preventDefault();e.stopPropagation();last=m.pt(e)};
+  el.onpointermove=e=>{ if(fin||!last||!(e.buttons&1)) return; const q=m.pt(e), dy=last.y-q.y; last=q;
+    if(dy>0){ p=Math.min(1,p+dy/120); draw(); if(Math.random()<.25) tone(800+p*800,.04,'sine',0,.03);
+      if(p>=1){fin=true; miniWin(el,m,done,'Ниточка до самого неба!')} } };
+  el.onpointerup=()=>{last=null};
+  return ()=>{fin=true};
+};
+// 2) ветер качает ниточку: нажимать, чтобы удержать паучка посередине
+MINI.wind=(el,done)=>{
+  const m=miniBase(el,'Ветер! Нажимай, чтобы паучок не раскачивался'); let d=0,v=0,p=0,t=0,fin=false,last=performance.now();
+  el.onpointerdown=e=>{e.preventDefault();e.stopPropagation(); if(fin) return; v*=.2; d*=.45; tone(500,.06,'sine',0,.05)};
+  (function f(){ if(fin||!document.body.contains(el)) return;
+    const now=performance.now(), dt=Math.min(.05,(now-last)/1000); last=now; t+=dt;
+    v+=(Math.sin(t*1.3)*.9+Math.sin(t*2.7+1)*.6)*dt*60; v*=Math.exp(-.8*dt); d=Math.max(-50,Math.min(50,d+v*dt));
+    const calm=Math.abs(d)<16; p=Math.max(0,Math.min(1,p+(calm?dt/5:-dt/14)));
+    const x=80+d;
+    m.svg.innerHTML=T.night(true)+`<g opacity="${.4+Math.min(.6,Math.abs(v)/40)}">${T.wind()}</g><rect x="64" y="0" width="32" height="90" fill="#7fd07a" opacity=".12"/>`+`<path d="M80 0 Q${80+d*.4} 25 ${x} 46" stroke="#e8ecf5" stroke-width="1.2" fill="none"/>`+T.sp(x,50,.5)+T.star(x,38,6,calm?'':'sad');
+    m.bar.style.width=(p*100)+'%';
+    if(p>=1){fin=true; miniWin(el,m,done,'Удержали! Ветер стих.'); return}
+    requestAnimationFrame(f) })();
+  return ()=>{fin=true};
+};
+// 3) светлячок светит: водить пальцем-фонариком и найти паучка в темноте
+MINI.light=(el,done)=>{
+  const m=miniBase(el,'Темно! Води пальцем, как фонариком, и нажми на паучка'); let fin=false, lx=80, ly=45;
+  const tx=Math.round(rand(20,140)), ty=Math.round(rand(26,70));
+  const draw=()=>{ m.svg.innerHTML=`<defs><mask id="mk"><rect width="160" height="90" fill="#fff"/><circle cx="${lx}" cy="${ly}" r="18" fill="#000"/></mask></defs>`+
+      T.night(true)+T.thread(tx,0,ty)+T.sp(tx,ty+4,.45)+T.star(tx,ty-7,5)+
+      (fin?'':`<rect width="160" height="90" fill="#05070f" mask="url(#mk)"/>`)+T.fly(lx+12,ly-10,.8); m.bar.style.width=fin?'100%':'0%' };
+  draw();
+  const move=e=>{const q=m.pt(e); lx=q.x; ly=q.y; draw()};
+  el.onpointermove=e=>{ if(!fin) move(e) };
+  el.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(fin) return; move(e);
+    if(Math.hypot(lx-tx,ly-ty)<14){ fin=true; draw(); miniWin(el,m,done,'Нашли паучка и звёздочку!') } };
+  return ()=>{fin=true};
+};
+// 4) звёздочка бежит по лучику: вести её пальцем к луне
+MINI.beam=(el,done)=>{
+  const m=miniBase(el,'Веди звёздочку пальцем по лучику к луне'); let t=0, fin=false, drag=false;
+  const A={x:40,y:80}, B={x:122,y:28};
+  const draw=()=>{ const x=A.x+(B.x-A.x)*t, y=A.y+(B.y-A.y)*t;
+    m.svg.innerHTML=T.night()+`<path d="M${A.x} ${A.y} L${B.x} ${B.y}" stroke="#f5e7a1" stroke-width="10" stroke-linecap="round" opacity=".35"/><path d="M${A.x} ${A.y} L${B.x} ${B.y}" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 4" opacity=".8"/>`+
+      T.moon(130,20,13)+T.star(x,y,7.5)+T.moth(30,80,.6); m.bar.style.width=(t*100)+'%' };
+  draw();
+  const follow=e=>{ const q=m.pt(e), dx=B.x-A.x, dy=B.y-A.y, L2=dx*dx+dy*dy, k=Math.max(0,Math.min(1,((q.x-A.x)*dx+(q.y-A.y)*dy)/L2));
+    const px=A.x+dx*k, py=A.y+dy*k; if(Math.hypot(q.x-px,q.y-py)<16&&k<t+.25){ if(k>t){t=k; if(Math.random()<.3) tone(900+t*700,.05,'sine',0,.03)} draw();
+      if(t>=.96){fin=true; t=1; draw(); miniWin(el,m,done,'Звёздочка дома, на небе!')} } };
+  el.onpointerdown=e=>{e.preventDefault();e.stopPropagation(); if(fin) return; drag=true; follow(e)};
+  el.onpointermove=e=>{ if(drag&&!fin&&(e.buttons&1)) follow(e) };
+  el.onpointerup=()=>{drag=false};
+  return ()=>{fin=true};
+};
+SCENES.tale1=alive=>{ensureHid(true); taleScene(alive,0,6,TALE,{minis:true,hidden:true})};
+SCENES.tale2=alive=>{ensureHid(false); taleScene(alive,6,6,TALE,{minis:true,hidden:true})};
+SCENES.tale3=alive=>{ensureHid(false); taleScene(alive,12,6,TALE,{minis:true,hidden:true})};
 
 /* =====================================================================
    ЭПИЗОД 5 — КНИЖКА «ПАУЧОК И ДОЖДИК» И КВИЗ ИЗ 10 ВОПРОСОВ
