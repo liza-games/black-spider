@@ -867,7 +867,7 @@ const KINDS={
 };
 const TASTY=Object.keys(KINDS).filter(k=>!KINDS[k].bad&&!KINDS[k].poison), BAD=Object.keys(KINDS).filter(k=>KINDS[k].bad);
 const bugs=[];
-const FUSE=7000; // сколько живёт синяя вонючка до «пшика»
+const FUSE=4000; // сколько живёт синяя вонючка до «пшика»
 let spawnOn=false, maxBugs=0, badChance=0, poisonChance=0;
 function spawnBug(){
   const roll=Math.random();
