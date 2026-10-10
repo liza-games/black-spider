@@ -30,6 +30,7 @@ html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden;
   display:flex;flex-direction:column;align-items:center;padding:0 16px;box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;user-select:none;touch-action:manipulation}
+*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #web{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 #web path,#web line{stroke:var(--web);fill:none;stroke-width:1.5}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
@@ -399,7 +400,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .ripple2{position:absolute;width:60px;height:16px;margin:-8px 0 0 -30px;border:3px solid #fff;border-radius:50%;opacity:.8;pointer-events:none;animation:rip .8s ease-out forwards;z-index:2}
 @keyframes rip{to{scale:2.4 2.4;opacity:0}}
 .cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
-.walker.free{transition:none!important}
+.walker.free{transition:none!important;left:0!important;top:0!important;translate:none!important;will-change:transform}
 .walker.blink{animation:blink .2s steps(2) infinite}
 @keyframes blink{50%{opacity:.35}}
 .tapzone{position:absolute;left:50%;bottom:5%;translate:-50% 0;z-index:6;pointer-events:none;font-weight:800;font-size:14px;color:#fff;background:rgb(0 0 0/.35);padding:6px 12px;border-radius:999px;transition:opacity .5s}
@@ -596,6 +597,10 @@ const rand=(a,b)=>a+Math.random()*(b-a);
 const TAU=Math.PI*2;
 let soundOn=true, ac;
 
+/* ================= нажатия не выделяют текст и не открывают меню ================= */
+document.addEventListener('selectstart',e=>e.preventDefault());
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
 /* ================= звук ================= */
 /* Речь идёт по очереди: фраза не обрывает другую. У каждого паука в очереди
    не больше одной ждущей фразы, а устаревшие (старше 3 с) пропускаются. */
@@ -692,8 +697,10 @@ function burst(x,y,n=60,power=9){
   for(let i=0;i<n;i++){const a=rand(0,TAU),p=rand(power*.3,power);
     parts.push({x,y,vx:Math.cos(a)*p,vy:Math.sin(a)*p-power*.5,r:rand(0,TAU),vr:rand(-.3,.3),w:rand(6,11),h:rand(4,7),c:pick(CONF),life:rand(60,110)})}
 }
+let fxDirty=true;
 function drawFx(){
-  const dpr=devicePixelRatio||1;
+  if(!parts.length&&!fxDirty) return; fxDirty=parts.length>0;
+  const dpr=Math.min(2,devicePixelRatio||1);
   if(fx.width!==innerWidth*dpr||fx.height!==innerHeight*dpr){fx.width=innerWidth*dpr;fx.height=innerHeight*dpr}
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,innerWidth,innerHeight);
   parts=parts.filter(p=>p.life-->0);
@@ -1185,6 +1192,7 @@ function update(s,h){
   return true;
 }
 function frame(){
+  if(episode!==1){drawFx();requestAnimationFrame(frame);return}   // в других эпизодах первый не считается в фоне
   const r=rect(), h=H(), now=performance.now();
   for(const b of bugs.filter(b=>b.K.poison&&!b.caught&&!b.dead)){
     const rem=b.fuse-now;
@@ -1222,6 +1230,7 @@ function frame(){
 
 /* глаза */
 setInterval(()=>{
+  if(episode!==1) return;
   const eyesLevel=LEVELS[level]?.key==='eyes';
   for(const s of spiders){
     let p=null, d=3;
@@ -1435,8 +1444,9 @@ addEventListener('pointercancel',e=>{if(episode>=2)handlers2.up?.(e)});
 /* облачка в пределах сцены и глаза, следящие за пальцем */
 (function loop2(){
   if(episode>=2){
-    for(const t of talkers2) clampDom(t);
-    if(S2&&ptr2&&S2.pl&&!S2.wrap.classList.contains('asleep')){
+    const arcadeOn=S2&&S2.wrap.classList.contains('free');
+    if(!arcadeOn) for(const t of talkers2) clampDom(t);
+    if(!arcadeOn&&S2&&ptr2&&S2.pl&&!S2.wrap.classList.contains('asleep')){
       const r=S2.btn.getBoundingClientRect(), a=Math.atan2(ptr2.y-(r.top+r.height*.5),ptr2.x-(r.left+r.width/2));
       S2.pl.setAttribute('cx',90+Math.cos(a)*3);S2.pl.setAttribute('cy',82+Math.sin(a)*3);
       S2.pr.setAttribute('cx',110+Math.cos(a)*3);S2.pr.setAttribute('cy',82+Math.sin(a)*3);
@@ -2463,21 +2473,24 @@ function arcade(alive,cfg){
   const cv=$('r-cv'), g=cv.getContext('2d');
   S2=makeMain('small free'); wearAll(S2,cfg.gear);
   const st={W:0,H:0,dist:0,obs:[],nextAt:0,y:0,vy:0,air:0,inv:0,slow:0,hits:0,last:performance.now(),done:false,t:0,lastOuch:0,tapped:false};
-  function size(){const r=rr(),dpr=devicePixelRatio||1; st.W=r.width; st.H=r.height; cv.width=r.width*dpr; cv.height=r.height*dpr; g.setTransform(dpr,0,0,dpr,0,0)}
+  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1); st.W=r.width; st.H=r.height; st.sw=S2.wrap.offsetWidth; st.ox=r.left; st.oy=r.top;
+    cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); g.setTransform(dpr,0,0,dpr,0,0)}
   size(); cfg.init(st);
+  let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
   const L=cfg.length(st);
   handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if(st.done||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
-  const sr=()=>S2.wrap.offsetWidth*.3; // радиус паука для столкновений
+  const sr=()=>st.sw*.3; // радиус паука для столкновений
   function hitRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r}
   function ouch(){
     st.inv=1.3; st.slow=.7; st.hits++; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.yuck();
-    const now=performance.now(); if(now-st.lastOuch>2500){st.lastOuch=now; talk2(S2,pick(cfg.ouch),1200)}
+    // только облачко, без голоса: запуск речи на телефоне подтормаживает игру
+    const now=performance.now(); if(now-st.lastOuch>2500){st.lastOuch=now; say(S2,bold(pick(cfg.ouch)),1100)}
   }
   function star(x,y,r){g.save();g.translate(x,y);g.rotate(st.t*1.5);g.beginPath();for(let i=0;i<10;i++){const q=i%2?r*.45:r,a=-Math.PI/2+i*Math.PI/5;g.lineTo(Math.cos(a)*q,Math.sin(a)*q)}g.closePath();g.fillStyle='#ffd23a';g.fill();g.strokeStyle='#e0a412';g.lineWidth=1.5;g.stroke();g.restore()}
   (function frame(){
-    if(!alive()) return;
+    if(!alive()){ro.disconnect();return}
     const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt;
-    if(Math.abs(rr().width-st.W)>2||Math.abs(rr().height-st.H)>2) size();
+    if(resized){resized=false;size()}
     const W=st.W,H=st.H, sx=W*.24;
     if(!st.done&&st.tapped){
       const v=cfg.speed(st)*(st.slow>0?.45:1); st.dist+=v*dt;
@@ -2493,14 +2506,15 @@ function arcade(alive,cfg){
     for(const o of st.obs){
       o.sx=o.x-st.dist; if(o.sx<-W*.3||o.sx>W*1.3){if(o.sx<-W*.3)o.gone=true; continue}
       cfg.drawObs(g,o,st);
-      if(o.star){ if(!o.got&&Math.hypot(o.sx-sx,o.sy-st.y)<r+W*.035){o.got=true;stars6++;tone(1400,.08,'sine',0,.06);tone(1900,.12,'sine',.07,.05);burst(rr().left+o.sx,rr().top+o.sy,10,4)}
+      if(o.star){ if(!o.got&&Math.hypot(o.sx-sx,o.sy-st.y)<r+W*.035){o.got=true;stars6++;tone(1400,.08,'sine',0,.06);tone(1900,.12,'sine',.07,.05);burst(st.ox+o.sx,st.oy+o.sy,10,4)}
         else if(!o.got) star(o.sx,o.sy,W*.032); continue }
       if(st.inv<=0&&!st.done&&cfg.hits(o,st,sx,r,hitRect)) ouch();
     }
     st.obs=st.obs.filter(o=>!o.gone);
     g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.textAlign='right';
     g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07);
-    S2.wrap.style.left=sx+'px'; S2.wrap.style.top=st.y+'px'; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st):0)+'deg';
+    // паук двигается через transform: это не пересчитывает раскладку страницы
+    S2.wrap.style.transform=`translate(${sx-st.sw/2}px,${st.y-st.sw*.425}px)`; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st):0)+'deg';
     if(!st.done&&st.dist>=L){st.done=true; p2=EPX[l2].goal; render2(); cfg.finish(st)}
     requestAnimationFrame(frame);
   })();
@@ -2514,7 +2528,7 @@ SCENES.run=function(alive){
   const st=arcade(alive,{
     gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы бежать и прыгать',
     ouch:['Ой! Споткнулся!','Ай! Скользко!','Ух, мокрый пол!'],
-    init(st){st.y=ground(st)-S2.wrap.offsetWidth*.33; st.nextAt=st.W*.5},
+    init(st){st.y=ground(st)-st.sw*.33; st.nextAt=st.W*.5},
     length:st=>st.W*.42*30, speed:st=>st.W*.42*(1+Math.min(.35,st.dist/(st.W*40))),
     gap:st=>st.W*(.55+Math.random()*.45),
     spawn(st,x){
@@ -2524,7 +2538,7 @@ SCENES.run=function(alive){
     },
     tap(st){ if(st.air<2){ st.vy=-st.H*(st.air?1.05:1.25); st.air++; sfx.jump(); restart(S2.btn,'jump') } },
     physics(st,dt){
-      const gy=ground(st)-S2.wrap.offsetWidth*.33;
+      const gy=ground(st)-st.sw*.33;
       if(st.y<gy||st.vy<0){st.vy+=st.H*3.6*dt; st.y+=st.vy*dt; if(st.y>=gy){st.y=gy;st.vy=0;st.air=0}}
       else {st.y=gy; st.air=0}
       S2.btn.classList.toggle('crawl',st.tapped&&st.air===0&&!st.done);
@@ -2560,7 +2574,7 @@ SCENES.run=function(alive){
     },
     async finish(st){
       S2.btn.classList.remove('crawl'); talk2(S2,'Вот он, бассейн! Прыгаю!'); st.vy=-st.H*1.1; st.air=1; sfx.whoosh();
-      await wait(900); if(!alive())return; splash2({x:S2.wrap.offsetLeft,y:st.H*.85}); sfx.water(); S2.wrap.classList.add('vanish');
+      await wait(900); if(!alive())return; splash2({x:st.W*.24,y:st.H*.85}); sfx.water(); S2.wrap.classList.add('vanish');
       try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){}
       await wait(700); if(alive()) celebrate2();
     }
@@ -2618,7 +2632,7 @@ SCENES.swim=function(alive){
     physics(st,dt){
       if(!st.tapped){st.y=st.H*.5+Math.sin(st.t*2)*6; return}
       st.vy=Math.min(st.vy+st.H*1.15*dt,st.H*.55); st.y+=st.vy*dt;
-      const r=S2.wrap.offsetWidth*.3; if(st.y<top(st)+r){st.y=top(st)+r;st.vy=Math.max(0,st.vy)} if(st.y>bot(st)-r){st.y=bot(st)-r;st.vy=Math.min(0,st.vy)}
+      const r=st.sw*.3; if(st.y<top(st)+r){st.y=top(st)+r;st.vy=Math.max(0,st.vy)} if(st.y>bot(st)-r){st.y=bot(st)-r;st.vy=Math.min(0,st.vy)}
       for(const o of st.obs){ if(o.star&&o.gate) o.sy=o.gate.cy??o.sy; }
     },
     tilt:st=>Math.max(-25,Math.min(25,st.vy/st.H*40)),
