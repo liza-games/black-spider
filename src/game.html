@@ -2464,24 +2464,48 @@ SCENES.gear=function(alive){
   });
 };
 
+/* Сердечки: сколько раз можно врезаться. После неудачной попытки в следующий раз даётся на одно больше (до пяти) */
+const fails6={};
+function livesFor(key){return 3+Math.min(2,fails6[key]||0)}
+function drawHearts(g,W,lives,max){
+  const s=W*.032;
+  for(let i=0;i<max;i++){const x=14+s+i*s*2.3, y=W*.06;
+    g.beginPath(); g.moveTo(x,y+s*.9); g.bezierCurveTo(x-s*1.6,y-s*.2,x-s*.7,y-s*1.3,x,y-s*.45); g.bezierCurveTo(x+s*.7,y-s*1.3,x+s*1.6,y-s*.2,x,y+s*.9);
+    g.fillStyle=i<lives?'#e8436f':'rgb(255 255 255/.55)'; g.fill(); g.strokeStyle='rgb(0 0 0/.25)'; g.lineWidth=1.5; g.stroke()}
+}
+function hitSay(t,lives){ // облачко про оставшиеся сердечки
+  say(t,lives>0?`<b>Ой!</b> ${lives===1?'Осталось последнее сердечко!':`Осталось ${lives} ${plural(lives,'сердечко','сердечка','сердечек')}`}`:'<b>Ой-ой!</b>',1300)}
+function failStage(st,stars0){
+  // слишком много столкновений: попытка заканчивается, этап можно начать заново
+  st.done=true; st.failed=true; stars6=stars0; const key=EPX[l2].key; fails6[key]=(fails6[key]||0)+1;
+  S2.btn.classList.remove('crawl'); restart(S2.btn,'sad'); sfx.yuck();
+  setTimeout(()=>{ if(!st.failed||S2==null) return;
+    talk2(S2,`Слишком много ударов… Ничего! Начнём сначала, и сердечек будет ${livesFor(key)}!`,3000);
+    setHint('Сердечки закончились. Нажми, чтобы начать этап сначала');
+    const z=$('r-tz'); if(z){z.textContent='Нажми — начать сначала'; z.style.opacity=1}
+    st.canRetry=true },700);
+}
+
 /* Общий движок для пробежки и заплыва: мир едет влево, паук на месте, нажатие = прыжок или гребок */
 function arcade(alive,cfg){
   room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="tapzone" id="r-tz">${cfg.tapHint}</div>`;
   const cv=$('r-cv'), g=cv.getContext('2d');
   S2=makeMain('small free'); wearAll(S2,cfg.gear);
-  const st={W:0,H:0,dist:0,obs:[],nextAt:0,y:0,vy:0,air:0,inv:0,slow:0,hits:0,last:performance.now(),done:false,t:0,lastOuch:0,tapped:false};
+  const LIVES=livesFor(EPX[l2].key), stars0=stars6;
+  const st={lives:LIVES,W:0,H:0,dist:0,obs:[],nextAt:0,y:0,vy:0,air:0,inv:0,slow:0,hits:0,last:performance.now(),done:false,t:0,lastOuch:0,tapped:false};
   function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1); st.W=r.width; st.H=r.height; st.sw=S2.wrap.offsetWidth; st.ox=r.left; st.oy=r.top;
     cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr); g.setTransform(dpr,0,0,dpr,0,0)}
   size(); cfg.init(st);
   let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
   const L=cfg.length(st);
-  handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if((st.done&&!st.waitJump)||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
+  handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if(st.failed){ if(st.canRetry){st.canRetry=false;enter2(l2)} return }
+    if((st.done&&!st.waitJump)||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
   const sr=()=>st.sw*.3; // радиус паука для столкновений
   function hitRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r}
   function ouch(){
-    st.inv=1.3; st.slow=.7; st.hits++; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.yuck();
-    // только облачко, без голоса: запуск речи на телефоне подтормаживает игру
-    const now=performance.now(); if(now-st.lastOuch>2500){st.lastOuch=now; say(S2,bold(pick(cfg.ouch)),1100)}
+    st.inv=1.3; st.slow=.7; st.hits++; st.lives--; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.yuck();
+    if(st.lives<=0){ S2.wrap.classList.remove('blink'); failStage(st,stars0); return }
+    hitSay(S2,st.lives);   // только облачко, без голоса: запуск речи на телефоне подтормаживает игру
   }
   function star(x,y,r){g.save();g.translate(x,y);g.rotate(st.t*1.5);g.beginPath();for(let i=0;i<10;i++){const q=i%2?r*.45:r,a=-Math.PI/2+i*Math.PI/5;g.lineTo(Math.cos(a)*q,Math.sin(a)*q)}g.closePath();g.fillStyle='#ffd23a';g.fill();g.strokeStyle='#e0a412';g.lineWidth=1.5;g.stroke();g.restore()}
   (function frame(){
@@ -2509,10 +2533,10 @@ function arcade(alive,cfg){
     }
     st.obs=st.obs.filter(o=>!o.gone);
     g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.textAlign='right';
-    g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07);
+    g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07); drawHearts(g,W,st.lives,LIVES);
     // паук двигается через transform: это не пересчитывает раскладку страницы
     S2.wrap.style.transform=`translate(${sx+(st.xoff||0)-st.sw/2}px,${st.y-st.sw*.425}px)`; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st,dt):0)+'deg';
-    if(!st.done&&st.dist>=L){st.done=true; p2=EPX[l2].goal; render2(); cfg.finish(st)}
+    if(!st.done&&st.dist>=L){st.done=true; fails6[EPX[l2].key]=0; p2=EPX[l2].goal; render2(); cfg.finish(st)}
     requestAnimationFrame(frame);
   })();
   return st;
@@ -2521,7 +2545,7 @@ function arcade(alive,cfg){
 /* 2. Пробежка к бассейну: прыжки через препятствия, как в Geometry Dash */
 let cfg_run=null;
 SCENES.run=function(alive){
-  setHint('Нажми — прыжок. Нажми ещё раз в воздухе — двойной прыжок, выше!');
+  setHint(`Нажми — прыжок, ещё раз в воздухе — выше! Сердечек ${livesFor('run')}: врежешься столько раз — начнёшь сначала`);
   setTimeout(()=>alive()&&!st.tapped&&talk2(S2,'Если нажать два раза, я прыгну выше!',2600),500);
   const ground=st=>st.H*.8;
   cfg_run={dive:async st=>{
@@ -2628,7 +2652,7 @@ SCENES.strokes=function(alive){
 /* 4. Заплыв: как во Flappy Bird — паук тонет, нажатие = гребок вверх */
 SCENES.swim=function(alive){
   try{stars6=+localStorage.getItem('spider-ep6-stars-run')||stars6}catch(e){}
-  setHint('Нажимай, чтобы грести вверх. Проплывай между поплавками и собирай звёздочки!');
+  setHint(`Нажимай, чтобы грести вверх, и проплывай между поплавками. Сердечек ${livesFor('swim')}`);
   const top=st=>st.H*.1, bot=st=>st.H*.9;
   arcade(alive,{
     gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы плыть',
@@ -2698,14 +2722,16 @@ SCENES.back=function(alive){
   room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="tapzone" id="r-tz">◀ нажми слева · нажми справа ▶</div>`;
   const cv=$('r-cv'), g=cv.getContext('2d');
   S2=makeMain('small free'); wearAll(S2,['cap','goggles','arms']);
-  setHint('Паук плывёт на спине. Нажимай слева или справа, чтобы оплывать игрушки');
-  const st={W:0,H:0,sw:0,dist:0,lane:1,x:0,obs:[],nextAt:0,inv:0,slow:0,t:0,last:performance.now(),started:false,done:false,lastOuch:0};
+  setHint(`Нажимай слева или справа, чтобы оплывать игрушки. Сердечек ${livesFor('back')}`);
+  const LIVES=livesFor('back'), stars0=stars6;
+  const st={lives:LIVES,W:0,H:0,sw:0,dist:0,lane:1,x:0,obs:[],nextAt:0,inv:0,slow:0,t:0,last:performance.now(),started:false,done:false,lastOuch:0};
   const lx=i=>st.W*(.3+.2*i);
   function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;st.sw=S2.wrap.offsetWidth;st.ox=r.left;st.oy=r.top;cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
   size(); st.x=lx(1); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
   const L=()=>st.H*.34*32, SPEED=()=>st.H*.34;
   setTimeout(()=>alive()&&talk2(S2,'Ложусь на спинку и смотрю в потолок! Плыву!',2400),400);
   handlers2={move(){},down(e){
+    if(st.failed){ if(st.canRetry){st.canRetry=false;enter2(l2)} return }
     if(st.done||busy2) return; if(!st.started){st.started=true;$('r-tz').style.opacity=0}
     const r=rr(), left=(e.clientX-r.left)<r.width/2; st.lane=Math.max(0,Math.min(2,st.lane+(left?-1:1))); tone(left?500:600,.08,'sine',0,.05); sfx.water();
   }};
@@ -2714,8 +2740,9 @@ SCENES.back=function(alive){
     st.obs.push({d,t,lane,ph:Math.random()*6,dir:Math.random()<.5?-1:1});
     if(Math.random()<.65) st.obs.push({d:d+st.H*(.25+Math.random()*.15),star:true,lane:(lane+1+Math.floor(Math.random()*2))%3});
   }
-  function ouch(){st.inv=1.3;st.slow=.7;S2.wrap.classList.add('blink');restart(S2.btn,'shake');sfx.yuck();
-    const now=performance.now(); if(now-st.lastOuch>2500){st.lastOuch=now;say(S2,bold(pick(['Ой! Уточка!','Буль! Не вижу, я же на спине!','Ай! Игрушка!'])),1100)}}
+  function ouch(){st.inv=1.3;st.slow=.7;st.lives--;S2.wrap.classList.add('blink');restart(S2.btn,'shake');sfx.yuck();
+    if(st.lives<=0){S2.wrap.classList.remove('blink');failStage(st,stars0);return}
+    hitSay(S2,st.lives)}
   (function frame(){
     if(!alive()){ro.disconnect();return}
     const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
@@ -2746,10 +2773,10 @@ SCENES.back=function(alive){
       if(st.inv<=0&&!st.done&&Math.abs(x-st.x)<r*.8+rr_&&Math.abs(y-sy)<r*.8+rr_) ouch();
     }
     st.obs=st.obs.filter(o=>!o.gone);
-    g.font=`800 ${Math.round(W*.045)}px Nunito,sans-serif`; g.textAlign='right'; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07);
+    g.font=`800 ${Math.round(W*.045)}px Nunito,sans-serif`; g.textAlign='right'; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07); drawHearts(g,W,st.lives,LIVES);
     S2.wrap.style.transform=`translate(${st.x-st.sw/2}px,${sy-st.sw*.425}px)`; S2.btn.classList.toggle('crawl',st.started&&!st.done);
     const want=Math.floor(Math.min(1,st.dist/L())*25); if(want>p2&&!st.done){p2=want;render2()}
-    if(!st.done&&st.dist>=L()){st.done=true;p2=25;render2();S2.btn.classList.remove('crawl');talk2(S2,'Коснулся бортика! На спине тоже умею!',2400);sfx.fanfare();
+    if(!st.done&&st.dist>=L()){st.done=true;fails6.back=0;p2=25;render2();S2.btn.classList.remove('crawl');talk2(S2,'Коснулся бортика! На спине тоже умею!',2400);sfx.fanfare();
       try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){} setTimeout(()=>alive()&&celebrate2(),1500)}
     requestAnimationFrame(frame);
   })();
