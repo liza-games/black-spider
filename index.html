@@ -401,8 +401,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes rip{to{scale:2.4 2.4;opacity:0}}
 .cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .walker.free{transition:none!important;left:0!important;top:0!important;translate:none!important;will-change:transform}
-.walker.blink{animation:blink .2s steps(2) infinite}
-@keyframes blink{50%{opacity:.35}}
+.walker.blink{animation:blink .45s ease-in-out infinite alternate}
+@keyframes blink{to{opacity:.55}}
 .tapzone{position:absolute;left:50%;bottom:5%;translate:-50% 0;z-index:6;pointer-events:none;font-weight:800;font-size:14px;color:#fff;background:rgb(0 0 0/.35);padding:6px 12px;border-radius:999px;transition:opacity .5s}
 .podium{position:absolute;left:50%;bottom:20%;translate:-50% 0;width:min(70%,280px);display:flex;align-items:flex-end;gap:4px}
 .podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
@@ -2478,7 +2478,7 @@ function arcade(alive,cfg){
   size(); cfg.init(st);
   let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
   const L=cfg.length(st);
-  handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if(st.done||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
+  handlers2={move(){},down(e){e.preventDefault&&e.preventDefault(); if((st.done&&!st.waitJump)||busy2) return; if(!st.tapped){st.tapped=true;$('r-tz').style.opacity=0} cfg.tap(st)}};
   const sr=()=>st.sw*.3; // радиус паука для столкновений
   function hitRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r}
   function ouch(){
@@ -2514,7 +2514,7 @@ function arcade(alive,cfg){
     g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.fillStyle='#fff'; g.strokeStyle='rgb(0 0 0/.35)'; g.lineWidth=3; g.textAlign='right';
     g.strokeText(`⭐ ${stars6}`,W-12,W*.07); g.fillText(`⭐ ${stars6}`,W-12,W*.07);
     // паук двигается через transform: это не пересчитывает раскладку страницы
-    S2.wrap.style.transform=`translate(${sx-st.sw/2}px,${st.y-st.sw*.425}px)`; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st):0)+'deg';
+    S2.wrap.style.transform=`translate(${sx+(st.xoff||0)-st.sw/2}px,${st.y-st.sw*.425}px)`; S2.btn.style.rotate=(cfg.tilt?cfg.tilt(st,dt):0)+'deg';
     if(!st.done&&st.dist>=L){st.done=true; p2=EPX[l2].goal; render2(); cfg.finish(st)}
     requestAnimationFrame(frame);
   })();
@@ -2522,11 +2522,18 @@ function arcade(alive,cfg){
 }
 
 /* 2. Пробежка к бассейну: прыжки через препятствия, как в Geometry Dash */
+let cfg_run=null;
 SCENES.run=function(alive){
-  setHint('Нажимай, чтобы прыгать. Можно прыгнуть ещё раз прямо в воздухе!');
+  setHint('Нажми — прыжок. Нажми ещё раз в воздухе — двойной прыжок, выше!');
+  setTimeout(()=>alive()&&!st.tapped&&talk2(S2,'Если нажать два раза, я прыгну выше!',2600),500);
   const ground=st=>st.H*.8;
+  cfg_run={dive:async st=>{
+    splash2({x:st.W*.24+st.xoff,y:ground(st)+st.H*.06}); sfx.water(); S2.wrap.classList.add('vanish');
+    try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){}
+    await wait(800); if(alive()) celebrate2();
+  }};
   const st=arcade(alive,{
-    gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы бежать и прыгать',
+    gear:['cap','goggles','arms'], tapHint:'Нажми, чтобы бежать. Два нажатия — двойной прыжок',
     ouch:['Ой! Споткнулся!','Ай! Скользко!','Ух, мокрый пол!'],
     init(st){st.y=ground(st)-st.sw*.33; st.nextAt=st.W*.5},
     length:st=>st.W*.42*30, speed:st=>st.W*.42*(1+Math.min(.35,st.dist/(st.W*40))),
@@ -2536,12 +2543,24 @@ SCENES.run=function(alive){
       const o={x,t,ph:Math.random()*6}; st.obs.push(o);
       if(Math.random()<.6) st.obs.push({x:x+(Math.random()<.5?0:W*.2),star:true,sy:ground(st)-H*(.28+Math.random()*.12)});
     },
-    tap(st){ if(st.air<2){ st.vy=-st.H*(st.air?1.05:1.25); st.air++; sfx.jump(); restart(S2.btn,'jump') } },
+    tap(st){
+      if(st.waitJump){ // сама прыгаю в бассейн
+        st.waitJump=false; st.diving=true; st.vy=-st.H*1.15; st.xoff=0; sfx.whoosh(); $('r-tz').style.opacity=0; talk2(S2,'Ура-а-а!',900); return }
+      if(st.air<2){
+        if(st.air===1){ st.doubles=(st.doubles||0)+1; if(st.doubles===1){ tone(880,.1,'sine',0,.06,1320); say(S2,'<b>Двойной прыжок!</b>',900) } $('r-tz').style.opacity=0 }
+        st.vy=-st.H*(st.air?1.05:1.25); st.air++; sfx.jump() } },
     physics(st,dt){
       const gy=ground(st)-st.sw*.33;
+      if(st.diving){ // полёт в бассейн
+        st.xoff+=st.W*.42*dt; st.vy+=st.H*3.2*dt; st.y+=st.vy*dt;
+        if(st.y>ground(st)+st.H*.04&&!st.splashed){st.splashed=true; cfg_run.dive(st)} return }
       if(st.y<gy||st.vy<0){st.vy+=st.H*3.6*dt; st.y+=st.vy*dt; if(st.y>=gy){st.y=gy;st.vy=0;st.air=0}}
       else {st.y=gy; st.air=0}
+      // подсказка про двойной прыжок у первых прыжков, пока его ни разу не сделали
+      if(!st.doubles&&st.air===1&&st.vy>-st.H*.35&&st.vy<st.H*.2&&(st.hintN||0)<4&&!st.hintOn){st.hintOn=true;st.hintN=(st.hintN||0)+1;const z=$('r-tz');z.textContent='Ещё раз — и выше!';z.style.opacity=1}
+      if(st.hintOn&&(st.air===0||st.doubles)){st.hintOn=false;$('r-tz').style.opacity=0}
       S2.btn.classList.toggle('crawl',st.tapped&&st.air===0&&!st.done);
+      if(st.done&&!st.diving) st.inv=1;
       for(const o of st.obs){ if(o.t==='duck') o.x-=st.W*.09*dt; }
     },
     drawBg(g,st,L){
@@ -2551,7 +2570,7 @@ SCENES.run=function(alive){
       for(let x=-off;x<W;x+=ts){g.beginPath();g.moveTo(x,0);g.lineTo(x,gy);g.stroke()} for(let y=ts;y<gy;y+=ts){g.beginPath();g.moveTo(0,y);g.lineTo(W,y);g.stroke()}
       // окна и указатели
       for(let k=Math.floor(st.dist/(W*1.6));k<st.dist/(W*1.6)+2;k++){const x=k*W*1.6-st.dist*.5+W*.5; g.fillStyle='#9fd3ef'; g.fillRect(x,H*.12,W*.22,H*.18); g.strokeStyle='#fff';g.lineWidth=4;g.strokeRect(x,H*.12,W*.22,H*.18)}
-      g.fillStyle='#e9e3d6'; g.fillRect(0,gy,W,H-gy); g.fillStyle='#d5ccb8'; const fs=W*.16, f2=st.dist%fs;
+      g.fillStyle='#e9e3d6'; g.fillRect(0,gy,W,H-gy); g.fillStyle='#e1d9c8'; const fs=W*.16, f2=st.dist%(fs*2);   // период = две плитки, иначе пол мигает
       for(let x=-f2;x<W;x+=fs*2) g.fillRect(x,gy,fs,H-gy);
       g.fillStyle='#bdb29a'; g.fillRect(0,gy,W,3);
       // бассейн в конце
@@ -2572,11 +2591,11 @@ SCENES.run=function(alive){
       if(o.t==='ball') return Math.hypot(o.sx-sx,o.by-st.y)<r+o.r*.9;
       return hitRect(sx,st.y,r*.85,o.sx-o.w/2,gy-o.h,o.w,o.h);
     },
-    async finish(st){
-      S2.btn.classList.remove('crawl'); talk2(S2,'Вот он, бассейн! Прыгаю!'); st.vy=-st.H*1.1; st.air=1; sfx.whoosh();
-      await wait(900); if(!alive())return; splash2({x:st.W*.24,y:st.H*.85}); sfx.water(); S2.wrap.classList.add('vanish');
-      try{localStorage.setItem('spider-ep6-stars-run',String(stars6))}catch(e){}
-      await wait(700); if(alive()) celebrate2();
+    finish(st){
+      // мир остановился у края бассейна: прыгать в воду игрок решает сам
+      S2.btn.classList.remove('crawl'); st.waitJump=true; st.inv=0; S2.wrap.classList.remove('blink');
+      talk2(S2,'Вот он, бассейн! Прыгаем?',2000); setHint('Нажми, и паук прыгнет в бассейн!');
+      const z=$('r-tz'); z.textContent='Нажми — прыжок в бассейн!'; z.style.opacity=1;
     }
   });
 };
@@ -2628,14 +2647,16 @@ SCENES.swim=function(alive){
       st.obs.push(o);
       if(Math.random()<.7) st.obs.push({x:x+(t==='gate'?0:st.W*.3),star:true,sy:t==='gate'?mid:H*(.25+Math.random()*.5),gate:o});
     },
-    tap(st){ st.vy=-st.H*.62; sfx.water(); restart(S2.btn,'jump') },
+    tap(st){ st.push=.18; sfx.water(); S2.btn.classList.add('crawl'); clearTimeout(st.pt); st.pt=setTimeout(()=>S2.btn.classList.remove('crawl'),350) },
     physics(st,dt){
       if(!st.tapped){st.y=st.H*.5+Math.sin(st.t*2)*6; return}
+      // гребок разгоняет вверх не мгновенно, а за долю секунды
+      if(st.push>0){const k=Math.min(dt,st.push); st.push-=dt; st.vy=Math.max(-st.H*.62,st.vy-st.H*4.6*k)}
       st.vy=Math.min(st.vy+st.H*1.15*dt,st.H*.55); st.y+=st.vy*dt;
       const r=st.sw*.3; if(st.y<top(st)+r){st.y=top(st)+r;st.vy=Math.max(0,st.vy)} if(st.y>bot(st)-r){st.y=bot(st)-r;st.vy=Math.min(0,st.vy)}
       for(const o of st.obs){ if(o.star&&o.gate) o.sy=o.gate.cy??o.sy; }
     },
-    tilt:st=>Math.max(-25,Math.min(25,st.vy/st.H*40)),
+    tilt:(st,dt)=>{const want=Math.max(-20,Math.min(20,st.vy/st.H*34)); st.tl=(st.tl||0)+(want-(st.tl||0))*Math.min(1,dt*6); return st.tl},   // наклон догоняет плавно
     drawBg(g,st,L){
       const W=st.W,H=st.H,t=top(st),b=bot(st);
       const gr=g.createLinearGradient(0,0,0,H); gr.addColorStop(0,'#5bb8f0'); gr.addColorStop(1,'#2a7cc4'); g.fillStyle=gr; g.fillRect(0,0,W,H);
