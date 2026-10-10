@@ -391,7 +391,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
 .race-go{position:absolute;inset:0;display:grid;place-items:center;z-index:7;pointer-events:none;font-family:var(--display);font-size:clamp(48px,16vw,80px);color:#fff;text-shadow:0 4px 0 #1d4f8a}
 .race-go.pop{animation:pop .5s}
-.paddle .legs-l{animation:wigL .25s}.paddle .legs-r{animation:wigR .25s}
+.paddle .legs-l{animation:strokeL .32s ease-out}.paddle .legs-r{animation:strokeR .32s ease-out}
+.paddle{animation:surge .32s ease-out}
+@keyframes strokeL{35%{rotate:-30deg}}@keyframes strokeR{35%{rotate:30deg}}@keyframes surge{35%{translate:6px 0}}
 .walker.free{transition:none!important;left:0!important;top:0!important;translate:none!important;will-change:transform}
 .walker.blink{animation:blink .45s ease-in-out infinite alternate}
 @keyframes blink{to{opacity:.55}}
@@ -2764,7 +2766,7 @@ SCENES.race=function(alive){
   function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;st.sw=S2.wrap.offsetWidth;cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
   size(); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
   const L=()=>st.W*4.2, BASE=()=>st.W*.15*raceEase;
-  handlers2={move(){},down(){ if(st.phase!=='go'||busy2) return; st.pv=Math.min(st.W*.32,st.pv+st.W*.05); tone(rand(500,700),.05,'sine',0,.04); restart(S2.btn,'paddle') }};
+  handlers2={move(){},down(){ if(st.phase!=='go'||busy2) return; st.pv=Math.min(st.W*.32,st.pv+st.W*.05); tone(rand(500,700),.05,'sine',0,.04); restart(S2.btn,'paddle'); clearTimeout(st.pT); st.pT=setTimeout(()=>S2.btn.classList.remove('paddle'),340) }};
   (async()=>{
     await wait(400); if(!alive())return; talk2(P,raceEase<1?'Опять наперегонки? Давай!':'Привет! Спорим, я плаваю быстрее?',2600);
     await wait(2700); if(!alive())return; talk2(S2,'Посмотрим!',1200);
@@ -2795,7 +2797,7 @@ SCENES.race=function(alive){
       st.pv*=Math.exp(-1.15*dt); st.px+=st.pv*dt;
       const gapK=Math.max(-.25,Math.min(.25,(st.px-st.rx)/(W*.8)));           // Фиолетовый держится рядом
       st.rv+=(BASE()*(1+gapK)-st.rv)*Math.min(1,dt*2); st.rx+=st.rv*dt;
-      S2.btn.classList.toggle('crawl',st.pv>W*.03); P.btn.classList.add('crawl');
+      P.btn.classList.add('crawl');   // наш паук шевелит лапками только на гребках
       const lead=st.px>st.rx+W*.05?'me':st.rx>st.px+W*.05?'him':st.lead;
       if(lead!==st.lead&&now-st.taunt>2200){st.taunt=now; st.lead=lead;
         say(P,bold(lead==='me'?pick(['Ой! Ты обгоняешь!','Эй, подожди!']):pick(['Догоняй!','Я быстрее!','Хи-хи, не догонишь!'])),1300)}
