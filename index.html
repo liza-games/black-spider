@@ -378,6 +378,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 /* ================= эпизод 6: бассейн ================= */
 .gear-cap,.gear-goggles,.gear-arm,.gear-medal{display:none}
 .silver .gear-medal circle{fill:#d3d9df;stroke:#8a96a3}
+.bronze .gear-medal circle{fill:#d08a4a;stroke:#9a5a24}
 .w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal{display:inline}
 .room.locker .wall{background:linear-gradient(transparent 62%,#c99a6b 62% 64%,transparent 64%),#f1e7d6}
 .room.locker .floor{background:repeating-linear-gradient(90deg,#d9cdb5 0 36px,#cfc2a8 36px 72px)}
@@ -1350,6 +1351,7 @@ const EP6=[
   {key:'swim',   title:'Заплыв на 25 метров',   goal:25, unit:'м',      done:'Я доплыл!'},
   {key:'back',   title:'Плавание на спине',     goal:25, unit:'м',      done:'На спине плавать здорово!'},
   {key:'race',   title:'Гонка с Фиолетовым',    goal:25, unit:'м',      done:''},
+  {key:'race2',  title:'Гонка с Красным',       goal:25, unit:'м',      done:''},
   {key:'medal',  title:'Награждение',           goal:1,  unit:'',       done:''}
 ];
 const STORIES={
@@ -2794,71 +2796,119 @@ SCENES.back=function(alive){
   })();
 };
 
-/* 7. Гонка с Фиолетовым: кто чаще гребёт, тот быстрее плывёт */
-let raceEase=1;   // после каждого проигрыша Фиолетовый плывёт чуть медленнее
-SCENES.race=function(alive){
+/* 7–8. Гонки: каждое нажатие — гребок. С Красным — четыре дорожки и игрушки на воде:
+   нажимаешь на свою верхнюю или нижнюю дорожку, и паук туда переплывает */
+const raceEase={purple:1,red:1};   // после каждого проигрыша соперник плывёт чуть медленнее
+const RIVAL6={
+  purple:{cls:'purple',name:'Фиолетовый',pitch:1.7,base:.15,len:4.2,
+    hi:['Привет! Спорим, я плаваю быстрее?','Опять наперегонки? Давай!'],lead:['Догоняй!','Я быстрее!','Хи-хи, не догонишь!'],behind:['Ой! Ты обгоняешь!','Эй, подожди!'],
+    win:'Ха-ха! Я первый!',lose:'Ух! Ты молодец! В следующий раз я тебя обгоню!',me:'Я первый! Я обогнал Фиолетового!'},
+  red:{cls:'red',name:'Красный',pitch:1.05,base:.19,len:4.6,lanes:true,
+    hi:['Я самый быстрый пловец! А в воде ещё и игрушки!','Снова ты? Я всё равно быстрее!'],lead:['Ха! Я быстрее!','Догоняй, если сможешь!'],behind:['Что?! Не может быть!','Ррр! Обгоняешь?!'],
+    win:'Ха-ха! Я самый быстрый!',lose:'Ничего себе! Ты быстрее меня!',me:'Я обогнал даже Красного!'}
+};
+function raceScene(alive,key){
+  const R6=RIVAL6[key];
   try{stars6=+localStorage.getItem('spider-ep6-stars-run')||stars6}catch(e){}
-  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div><div class="tapzone" id="r-tz">Жми часто-часто, чтобы плыть быстрее!</div>`;
+  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div><div class="tapzone" id="r-tz">${R6.lanes?'Жми на свою дорожку часто-часто!':'Жми часто-часто, чтобы плыть быстрее!'}</div>`;
+  if(R6.lanes) $('r-tz').style.cssText='top:16%;bottom:auto';   // подсказка не закрывает дорожки игрока
   const cv=$('r-cv'), g=cv.getContext('2d');
   S2=makeMain('small free'); wearAll(S2,['cap','goggles','arms']);
-  const P=makeWalker('purple small free',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}); P.wrap.classList.add('w-cap','w-goggles');
-  setHint('Жми на экран часто-часто: каждое нажатие — гребок. Обгони Фиолетового!');
-  const st={W:0,H:0,sw:0,px:0,rx:0,pv:0,rv:0,t:0,last:performance.now(),phase:'count',cam:0,taunt:0,lead:null};
-  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;st.sw=S2.wrap.offsetWidth;cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
+  const P=makeWalker(R6.cls+' small free',{pitch:R6.pitch,rate:1.15,who:key,voice:1,label:R6.name+' паук'}); P.wrap.classList.add('w-cap','w-goggles');
+  setHint(R6.lanes?'Жми на свою верхнюю или нижнюю дорожку: это гребок туда. Оплывай игрушки!'
+                  :'Жми на экран часто-часто: каждое нажатие — гребок. Обгони Фиолетового!');
+  const st={W:0,H:0,sw:0,px:0,rx:0,pv:0,rv:0,t:0,last:performance.now(),phase:'count',cam:0,taunt:0,lead:null,
+            pl:3,rl:0,py:0,ry:0,obs:[],pinv:0,rinv:0};
+  // центры дорожек: 0–1 у соперника, 2–3 у игрока; без дорожек — по одной на каждого
+  const LY=()=>R6.lanes?[.27,.41,.62,.76].map(k=>k*st.H):[.36*st.H,.36*st.H,.66*st.H,.66*st.H];
+  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;st.sw=S2.wrap.offsetWidth;st.oy=r.top;cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
   size(); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
-  const L=()=>st.W*4.2, BASE=()=>st.W*.15*raceEase;
-  handlers2={move(){},down(){ if(st.phase!=='go'||busy2) return; st.pv=Math.min(st.W*.32,st.pv+st.W*.05); tone(rand(500,700),.05,'sine',0,.04); restart(S2.btn,'paddle'); clearTimeout(st.pT); st.pT=setTimeout(()=>S2.btn.classList.remove('paddle'),340) }};
+  st.py=LY()[st.pl]; st.ry=LY()[st.rl];
+  const L=()=>st.W*R6.len, BASE=()=>st.W*R6.base*raceEase[key];
+  if(R6.lanes){ // игрушки на воде: на каждой паре дорожек своя
+    const W=st.W; for(let x=W*.9;x<L()-W*.4;x+=W*(.62+Math.random()*.4)){
+      st.obs.push({x,lane:2+Math.floor(Math.random()*2),t:pick(['duck','ball','board']),ph:Math.random()*6});
+      st.obs.push({x:x+W*(Math.random()*.3-.15),lane:Math.floor(Math.random()*2),t:pick(['duck','ball','board']),ph:Math.random()*6,dodge:Math.random()<.8});
+    }
+  }
+  function stroke(e){
+    if(st.phase!=='go'||busy2) return;
+    if(R6.lanes&&e&&e.clientY!=null){ const ly=LY(), y=e.clientY-st.oy, want=y<(ly[2]+ly[3])/2?2:3;
+      if(want!==st.pl){st.pl=want; tone(want===2?700:500,.07,'sine',0,.05)} }
+    st.pv=Math.min(st.W*.32,st.pv+st.W*.05); tone(rand(500,700),.05,'sine',0,.04);
+    restart(S2.btn,'paddle'); clearTimeout(st.pT); st.pT=setTimeout(()=>S2.btn.classList.remove('paddle'),340);
+  }
+  handlers2={move(){},down:stroke};
   (async()=>{
-    await wait(400); if(!alive())return; talk2(P,raceEase<1?'Опять наперегонки? Давай!':'Привет! Спорим, я плаваю быстрее?',2600);
-    await wait(2700); if(!alive())return; talk2(S2,'Посмотрим!',1200);
-    await wait(1300); if(!alive())return;
+    await wait(400); if(!alive())return; talk2(P,R6.hi[raceEase[key]<1?1:0],2800);
+    await wait(2900); if(!alive())return; talk2(S2,R6.lanes?'Посмотрим! Буду оплывать игрушки!':'Посмотрим!',1600);
+    await wait(1700); if(!alive())return;
     for(const n of ['3','2','1']){ const go=$('r-go'); go.textContent=n; restart(go,'pop'); tone(520,.15,'sine',0,.07); await wait(700); if(!alive())return }
     const go=$('r-go'); go.textContent='Старт!'; restart(go,'pop'); tone(880,.3,'triangle',0,.08); st.phase='go';
     setTimeout(()=>{if(alive()){go.textContent='';$('r-tz').style.opacity=.9}},700);
   })();
   async function finish(win){
-    st.phase='end'; S2.btn.classList.remove('crawl'); P.btn.classList.remove('crawl'); $('r-tz').style.opacity=0;
+    st.phase='end'; P.btn.classList.remove('crawl'); $('r-tz').style.opacity=0;
     if(win){
-      raceEase=1; restart(S2.btn,'jump'); talk2(S2,'Я первый! Я обогнал Фиолетового!',2400); sfx.fanfare(); banner('Победа!');
-      await wait(2500); if(!alive())return; restart(P.btn,'sad'); talk2(P,'Ух! Ты молодец! В следующий раз я тебя обгоню!',2800);
+      raceEase[key]=1; restart(S2.btn,'jump'); talk2(S2,R6.me,2400); sfx.fanfare(); banner('Победа!');
+      await wait(2500); if(!alive())return; restart(P.btn,'sad'); talk2(P,R6.lose,2800);
       try{localStorage.setItem('spider-ep6-stars-run',String(++stars6))}catch(e){}
       await wait(2900); if(alive()) celebrate2();
     } else {
-      raceEase=Math.max(.7,raceEase*.9); restart(P.btn,'laugh'); sfx.laugh(); talk2(P,'Ха-ха! Я первый!',1800);
-      await wait(2000); if(!alive())return; talk2(S2,'Ничего! Ещё раз!',1500); setHint('Фиолетовый приплыл первым. Нажми, чтобы попробовать ещё раз');
+      raceEase[key]=Math.max(.7,raceEase[key]*.9); restart(P.btn,'laugh'); sfx.laugh(); talk2(P,R6.win,1800);
+      await wait(2000); if(!alive())return; talk2(S2,'Ничего! Ещё раз!',1500); setHint(`${R6.name} приплыл первым. Нажми, чтобы попробовать ещё раз`);
       st.phase='retry'; const z=$('r-tz'); z.textContent='Нажми — ещё раз!'; z.style.opacity=1;
       handlers2={move(){},down(){ if(st.phase==='retry'){st.phase='x'; enter2(l2)} }};
     }
   }
+  function drawToy(o,x,y,W){
+    if(o.t==='duck'){const b=Math.sin(st.t*3+o.ph)*2; g.fillStyle='#ffd23a'; g.beginPath(); g.ellipse(x,y+b,W*.06,W*.045,0,0,7); g.fill(); g.beginPath(); g.arc(x+W*.045,y-W*.02+b,W*.03,0,7); g.fill();
+      g.fillStyle='#f39a2e'; g.beginPath(); g.moveTo(x+W*.07,y-W*.03+b); g.lineTo(x+W*.1,y-W*.02+b); g.lineTo(x+W*.07,y-W*.008+b); g.fill(); o.r=W*.055}
+    else if(o.t==='board'){g.fillStyle='#ff6fa8'; g.beginPath(); g.roundRect?g.roundRect(x-W*.08,y-W*.045,W*.16,W*.09,W*.03):g.rect(x-W*.08,y-W*.045,W*.16,W*.09); g.fill(); g.fillStyle='#fff'; g.fillRect(x-2,y-W*.03,4,W*.06); o.r=W*.065}
+    else {o.r=W*.05; ['#e8483c','#fff','#3d6fe0','#fff','#f5c03a','#fff'].forEach((c,i)=>{g.fillStyle=c;g.beginPath();g.moveTo(x,y);g.arc(x,y,o.r,i*Math.PI/3+st.t,(i+1)*Math.PI/3+st.t);g.fill()})}
+  }
   (function frame(){
     if(!alive()){ro.disconnect();return}
     const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
-    const W=st.W,H=st.H, yR=H*.36, yP=H*.66;
+    const W=st.W,H=st.H, ly=LY(), off=W*.12, r=st.sw*.3;
+    st.pinv=Math.max(0,st.pinv-dt); st.rinv=Math.max(0,st.rinv-dt);
     if(st.phase==='go'){
       st.pv*=Math.exp(-1.15*dt); st.px+=st.pv*dt;
-      const gapK=Math.max(-.25,Math.min(.25,(st.px-st.rx)/(W*.8)));           // Фиолетовый держится рядом
+      const gapK=Math.max(-.25,Math.min(.25,(st.px-st.rx)/(W*.8)));           // соперник держится рядом
       st.rv+=(BASE()*(1+gapK)-st.rv)*Math.min(1,dt*2); st.rx+=st.rv*dt;
-      P.btn.classList.add('crawl');   // наш паук шевелит лапками только на гребках
+      // соперник оплывает игрушки (почти всегда)
+      if(R6.lanes){ const ahead=st.obs.find(o=>o.lane<2&&o.lane===st.rl&&o.x>st.rx&&o.x-st.rx<W*.35); if(ahead&&ahead.dodge) st.rl=1-st.rl }
+      // столкновения с игрушками
+      for(const o of st.obs){ if(!o.r) continue;
+        if(o.lane===st.pl&&st.pinv<=0&&Math.abs(o.x-st.px)<r*.8+o.r&&Math.abs(ly[o.lane]-st.py)<r){st.pinv=1;st.pv*=.25;restart(S2.btn,'shake');sfx.yuck();say(S2,pick(['<b>Ой!</b> Игрушка!','<b>Буль!</b>','<b>Ай!</b> Уточка!']),900)}
+        if(o.lane===st.rl&&st.rinv<=0&&Math.abs(o.x-st.rx)<r*.8+o.r&&Math.abs(ly[o.lane]-st.ry)<r){st.rinv=1;st.rv*=.3;restart(P.btn,'shake');say(P,'<b>Ай!</b> Кто тут плавает?!',1000)}
+      }
+      P.btn.classList.add('crawl');
       const lead=st.px>st.rx+W*.05?'me':st.rx>st.px+W*.05?'him':st.lead;
-      if(lead!==st.lead&&now-st.taunt>2200){st.taunt=now; st.lead=lead;
-        say(P,bold(lead==='me'?pick(['Ой! Ты обгоняешь!','Эй, подожди!']):pick(['Догоняй!','Я быстрее!','Хи-хи, не догонишь!'])),1300)}
+      if(lead!==st.lead&&now-st.taunt>2200){st.taunt=now; st.lead=lead; say(P,bold(pick(lead==='me'?R6.behind:R6.lead)),1300)}
       const m=Math.floor(Math.min(1,st.px/L())*25); if(m>p2){p2=m;render2()}
       if(st.px>=L()||st.rx>=L()){ const win=st.px>=st.rx; p2=win?25:p2; render2(); finish(win) }
     }
+    st.py+=(ly[st.pl]-st.py)*Math.min(1,dt*10); st.ry+=(ly[st.rl]-st.ry)*Math.min(1,dt*7);
     st.cam+=(Math.max(0,Math.min(L()+W*.25-W,(st.px+st.rx)/2-W*.35))-st.cam)*Math.min(1,dt*4);
     const c=st.cam;
-    g.fillStyle='#3d9be0'; g.fillRect(0,0,W,H); g.fillStyle='#d8eef2'; g.fillRect(0,0,W,H*.16); g.fillRect(0,H*.86,W,H*.14);
-    for(const y of [H*.2,H*.51,H*.82]) for(let x=-((c)%24),i=Math.floor(c/24);x<W;x+=24,i++){g.fillStyle=i%2?'#e8483c':'#fff';g.beginPath();g.ellipse(x,y,10,7,0,0,7);g.fill()}
-    g.fillStyle='#1d4f8a'; for(const y of [yR,yP]) g.fillRect(0,y+st.sw*.42,W,5);
+    g.fillStyle='#3d9be0'; g.fillRect(0,0,W,H); g.fillStyle='#d8eef2'; g.fillRect(0,0,W,H*.14); g.fillRect(0,H*.86,W,H*.14);
+    const ropes=R6.lanes?[[H*.18,1],[H*.34,.6],[H*.51,1],[H*.69,.6],[H*.83,1]]:[[H*.2,1],[H*.51,1],[H*.82,1]];
+    for(const [y,a] of ropes){ g.globalAlpha=a; for(let x=-(c%24),i=Math.floor(c/24);x<W;x+=24,i++){g.fillStyle=i%2?'#e8483c':'#fff';g.beginPath();g.ellipse(x,y,10,a<1?5:7,0,0,7);g.fill()} g.globalAlpha=1 }
+    g.fillStyle='rgb(29 79 138/.6)'; for(const y of ly) g.fillRect(0,y+st.sw*.42,W,3);
     g.fillStyle='rgb(255 255 255/.75)'; g.font=`800 ${Math.round(W*.04)}px Nunito,sans-serif`; g.textAlign='center';
-    for(let m=5;m<25;m+=5){const x=m/25*L()-c+W*.12; if(x>-30&&x<W+30){g.fillRect(x-1,H*.16,2,H*.7); g.fillText(m+' м',x,H*.13)}}
-    const fx=L()-c+W*.12+st.sw*.4; if(fx<W+20){g.fillStyle='#f1e7d6'; g.fillRect(fx,H*.16,W,H*.7); g.fillStyle='#f5c03a'; g.fillRect(fx-6,H*.16,6,H*.7)}
-    g.fillStyle='#fff'; g.font=`800 ${Math.round(W*.04)}px Nunito,sans-serif`; g.textAlign='left'; g.fillText('Фиолетовый',8,yR-st.sw*.5); g.fillText('Ты',8,yP-st.sw*.5);
-    S2.wrap.style.transform=`translate(${st.px-c+W*.12-st.sw/2}px,${yP-st.sw*.425}px)`;
-    P.wrap.style.transform=`translate(${st.rx-c+W*.12-st.sw/2}px,${yR-st.sw*.425}px)`;
+    for(let m=5;m<25;m+=5){const x=m/25*L()-c+off; if(x>-30&&x<W+30){g.fillRect(x-1,H*.14,2,H*.72); g.fillText(m+' м',x,H*.11)}}
+    const fx=L()-c+off+st.sw*.4; if(fx<W+20){g.fillStyle='#f1e7d6'; g.fillRect(fx,H*.14,W,H*.72); g.fillStyle='#f5c03a'; g.fillRect(fx-6,H*.14,6,H*.72)}
+    for(const o of st.obs){ const x=o.x-c+off; if(x<-60||x>W+60){o.r=o.r||W*.05;continue} drawToy(o,x,ly[o.lane],W) }
+    g.fillStyle='#fff'; g.font=`800 ${Math.round(W*.04)}px Nunito,sans-serif`; g.textAlign='left';
+    g.fillText(R6.name,8,(R6.lanes?H*.18:ly[0])-(R6.lanes?6:st.sw*.5)); g.fillText('Ты',8,(R6.lanes?H*.51:ly[2])-(R6.lanes?6:st.sw*.5));
+    S2.wrap.style.transform=`translate(${st.px-c+off-st.sw/2}px,${st.py-st.sw*.425}px)`;
+    P.wrap.style.transform=`translate(${st.rx-c+off-st.sw/2}px,${st.ry-st.sw*.425}px)`;
     requestAnimationFrame(frame);
   })();
-};
+}
+SCENES.race=alive=>raceScene(alive,'purple');
+SCENES.race2=alive=>raceScene(alive,'red');
 
 /* 5. Награждение */
 SCENES.medal=function(alive){
@@ -2871,6 +2921,8 @@ SCENES.medal=function(alive){
   const top1=anchor(pod.children[1],.5,0); put(S2,{x:top1.x,y:top1.y-S2.wrap.offsetWidth*.38});
   const P=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}); P.wrap.classList.add('w-cap','w-goggles');
   const top2=anchor(pod.children[0],.5,0); put(P,{x:top2.x,y:top2.y-P.wrap.offsetWidth*.32});
+  const Rd=makeWalker('red small',{pitch:1.05,rate:1.15,who:'red',voice:0,label:'Красный паук'}); Rd.wrap.classList.add('w-cap','w-goggles');
+  const top3=anchor(pod.children[2],.5,0); put(Rd,{x:top3.x,y:top3.y-Rd.wrap.offsetWidth*.32});
   const m=$('r-medal'); m.style.left=(s.width*.78)+'px'; m.style.top=(s.height*.3)+'px'; m.style.translate='-50% -50%'; tapme(m,true);
   setHint('Нажми на медаль, и тренер наградит паука');
   setTimeout(()=>alive()&&talk2(C,'Ква! Награждается чемпион заплыва… чёрный паук!',3200),400);
@@ -2883,7 +2935,8 @@ SCENES.medal=function(alive){
     for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.25,.5)*innerHeight,55,10),k*300);
     talk2(S2,`Ура! Я научился плавать! И собрал ${stars6} ${plural(stars6,'звёздочку','звёздочки','звёздочек')}!`,3200);
     setTimeout(()=>{ if(!alive())return; P.wrap.classList.add('w-medal','silver'); restart(P.btn,'jump'); sfx.magic();
-      talk2(P,'Ура, серебро!',1800) },3500);   // коротко, чтобы облачко не закрывало чемпиона
+      speak('Ура, серебро!',P.pitch,P.rate,P.who,P.voice); burst(rr().left+P.wrap.offsetLeft,rr().top+P.wrap.offsetTop,16,5) },3500);
+    setTimeout(()=>{ if(!alive())return; Rd.wrap.classList.add('w-medal','bronze'); restart(Rd.btn,'jump'); sfx.magic(); speak('Бронза — тоже медаль!',Rd.pitch,Rd.rate,Rd.who,Rd.voice); burst(rr().left+Rd.wrap.offsetLeft,rr().top+Rd.wrap.offsetTop,16,5) },5600);   // коротко, чтобы облачко не закрывало чемпиона
     try{ if(stars6>lsGet('spider-ep6-stars',-1)) lsSet('spider-ep6-stars',stars6) }catch(e){}
     EPS.fin=['Паук научился плавать!',`Медаль и ${stars6} ⭐`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
