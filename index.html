@@ -645,7 +645,7 @@ function nextSpeech(){
   // иначе телефон читает русский текст словацким, японским или китайским голосом.
   const all=speechSynthesis.getVoices(), ru=ruVoices(all);
   if(all.length&&!ru.length){noRuVoice(true);speaking=false;sq.length=0;return}
-  if(ru.length){const v=ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
+  if(ru.length){const v=it.voiceIdx==='male'?maleVoice(ru):ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
   u.onend=done; u.onerror=done;
   spTimer=setTimeout(done,1200+it.text.length*120); // на случай, если onend не придёт
   speechSynthesis.resume();
@@ -656,6 +656,9 @@ function ruVoices(all){
   // сначала голоса самого устройства и именно ru-RU: они надёжнее сетевых
   return ru.sort((a,b)=>(b.localService-a.localService)||(/ru[-_]RU/i.test(b.lang)-/ru[-_]RU/i.test(a.lang)));
 }
+// мужской русский голос для папы: Юрий (iPhone/Mac), Павел/Дмитрий (Windows/Edge), Максим; иначе — не тот, которым говорит паук
+const MALE_RE=/yuri|юрий|pavel|павел|dmitr|дмитр|maxim|максим|male|мужск/i;
+function maleVoice(ru){return ru.find(v=>MALE_RE.test(v.name)&&!/female|женск/i.test(v.name))||ru[ru.length-1]}
 function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
 function checkVoices(){const all=speechSynthesis.getVoices(); if(all.length) noRuVoice(!ruVoices(all).length)}
 if('speechSynthesis' in window){
@@ -1746,7 +1749,7 @@ const SCENES={
     room.className='room bedroom';
     room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>`;
     const mom=makeWalker('mom parent',{pitch:1.5,rate:1,who:'mom',voice:1,label:'Мама'});
-    const dad=makeWalker('dad parent',{pitch:.15,rate:.82,who:'dad',voice:2,label:'Папа'});
+    const dad=makeWalker('dad parent',{pitch:.15,rate:.75,who:'dad',voice:'male',label:'Папа'});
     S2=makeMain();
     put(mom,standPos(.17,mom)); put(dad,standPos(.83,dad)); put(S2,standPos(.5,S2));
     setHint('Нажми на маму и на папу'); tapme(mom.btn,true); tapme(dad.btn,true);
@@ -1826,7 +1829,7 @@ SCENES.boat=function(alive){
     <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
     <div class="stone" id="r-st0" style="left:16%;top:80%"></div>`;
   const basket=$('r-basket');
-  const DAD=talkerFor($('pa-dad'),{pitch:.15,rate:.82,who:'dad',voice:2}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+  const DAD=talkerFor($('pa-dad'),{pitch:.15,rate:.75,who:'dad',voice:'male'}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
         GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
   S2=makeMain('small vanish'); put(S2,anchor(basket,.5,.2));
   setHint('Кто это шуршит в корзинке? Нажми на неё'); tapme(basket,true);
@@ -2045,7 +2048,7 @@ SCENES.shore=function(alive){
     <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
     <div class="beach"></div><div class="palm">${SVG.palm}</div>`;
   const boat=$('r-boat'), hit=$('r-hit');
-  const DAD=talkerFor($('pa-dad'),{pitch:.15,rate:.82,who:'dad',voice:2}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+  const DAD=talkerFor($('pa-dad'),{pitch:.15,rate:.75,who:'dad',voice:'male'}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
         GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
   S2=makeMain(); const s=rr(); put(S2,{x:s.width*.4,y:s.height*.7});
   setHint('Паук весь мокрый! Нажимай на него, пусть отряхнётся');
