@@ -1734,7 +1734,7 @@ const SCENES={
     room.className='room bedroom';
     room.innerHTML=BED_ROOM+`<div class="bed" id="r-bed">${SVG.bed}</div>`;
     const mom=makeWalker('mom parent',{pitch:1.5,rate:1,who:'mom',voice:1,label:'Мама'});
-    const dad=makeWalker('dad parent',{pitch:.55,rate:.95,who:'dad',voice:0,label:'Папа'});
+    const dad=makeWalker('dad parent',{pitch:.85,rate:.8,who:'dad',voice:2,label:'Папа'});
     S2=makeMain();
     put(mom,standPos(.17,mom)); put(dad,standPos(.83,dad)); put(S2,standPos(.5,S2));
     setHint('Нажми на маму и на папу'); tapme(mom.btn,true); tapme(dad.btn,true);
@@ -1814,7 +1814,7 @@ SCENES.boat=function(alive){
     <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
     <div class="stone" id="r-st0" style="left:16%;top:80%"></div>`;
   const basket=$('r-basket');
-  const DAD=talkerFor($('pa-dad'),{pitch:.55,rate:.95,who:'dad',voice:0}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+  const DAD=talkerFor($('pa-dad'),{pitch:.85,rate:.8,who:'dad',voice:2}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
         GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
   S2=makeMain('small vanish'); put(S2,anchor(basket,.5,.2));
   setHint('Кто это шуршит в корзинке? Нажми на неё'); tapme(basket,true);
@@ -2033,7 +2033,7 @@ SCENES.shore=function(alive){
     <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
     <div class="beach"></div><div class="palm">${SVG.palm}</div>`;
   const boat=$('r-boat'), hit=$('r-hit');
-  const DAD=talkerFor($('pa-dad'),{pitch:.55,rate:.95,who:'dad',voice:0}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
+  const DAD=talkerFor($('pa-dad'),{pitch:.85,rate:.8,who:'dad',voice:2}), MOM=talkerFor($('pa-mom'),{pitch:1.5,rate:1,who:'mom',voice:1}),
         GIRL=talkerFor($('pa-girl'),{pitch:1.9,rate:1.1,who:'girl',voice:1});
   S2=makeMain(); const s=rr(); put(S2,{x:s.width*.4,y:s.height*.7});
   setHint('Паук весь мокрый! Нажимай на него, пусть отряхнётся');
