@@ -429,6 +429,13 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
 .medalbtn{position:absolute;width:min(16vw,70px);padding:0;border:0;background:none;cursor:pointer;z-index:6;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
 .medalbtn svg{width:100%;height:auto;display:block}
+.piggy{position:absolute;left:62%;top:58%;translate:-50% -50%;width:min(46vw,210px);z-index:3;pointer-events:none}
+.piggy svg{width:100%;height:auto;display:block}
+.piggy.jig svg{animation:boing .45s}
+.piggy .sum{position:absolute;left:0;right:0;top:-34px;text-align:center;font-family:var(--display);font-size:clamp(20px,6vw,28px);color:#8a5a12;text-shadow:0 2px 0 #fff}
+.bag{position:absolute;width:min(17vw,74px);padding:0;border:0;background:none;cursor:pointer;z-index:6;translate:-50% -50%;transition:left .8s ease-in,top .8s ease-in,scale .8s ease-in,opacity .3s .7s}
+.bag svg{width:100%;height:auto;display:block}
+.bag.gone{scale:.3;opacity:0}
 
 /* ================= главное меню ================= */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
@@ -566,6 +573,20 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <circle cx="150" cy="86" r="4" fill="#fff" opacity=".7"/><circle cx="160" cy="76" r="3" fill="#fff" opacity=".7"/><circle cx="44" cy="90" r="3" fill="#fff" opacity=".6"/>
       </svg>
       <span class="ep">Эпизод 6 · бассейн</span><span class="nm">Паук учится плавать</span><span class="st" id="m6s"></span>
+    </button>
+    <button class="card" id="m7">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#8fd07a"/><rect y="0" width="200" height="16" fill="#bfe6f5"/>
+        <rect y="30" width="200" height="72" fill="#d9663f"/><path d="M0 30 H200 M0 54 H200 M0 78 H200 M0 102 H200" stroke="#fff" stroke-width="2"/>
+        <g fill="#fff"><rect x="170" y="30" width="6" height="6"/><rect x="176" y="36" width="6" height="6"/><rect x="170" y="42" width="6" height="6"/><rect x="176" y="48" width="6" height="6"/><rect x="170" y="54" width="6" height="6"/><rect x="176" y="60" width="6" height="6"/><rect x="170" y="66" width="6" height="6"/><rect x="176" y="72" width="6" height="6"/><rect x="170" y="78" width="6" height="6"/><rect x="176" y="84" width="6" height="6"/><rect x="170" y="90" width="6" height="6"/><rect x="176" y="96" width="6" height="6"/></g>
+        <g stroke-width="3" stroke-linecap="round" fill="none">
+          <path d="M60 42 l-10 -6 M60 44 l-12 2 M74 42 l10 -6 M74 44 l12 2" stroke="#7a3cc9"/><path d="M110 66 l-10 -6 M110 68 l-12 2 M124 66 l10 -6 M124 68 l12 2" stroke="#141412"/><path d="M40 90 l-10 -6 M40 92 l-12 2 M54 90 l10 -6 M54 92 l12 2" stroke="#d6332b"/></g>
+        <circle cx="67" cy="43" r="7" fill="#7a3cc9"/><circle cx="117" cy="67" r="8" fill="#141412"/><circle cx="47" cy="91" r="7" fill="#d6332b"/>
+        <circle cx="114" cy="65" r="2.2" fill="#fff"/><circle cx="120" cy="65" r="2.2" fill="#fff"/>
+        <circle cx="150" cy="16" r="13" fill="#f5c03a" stroke="#c98f12" stroke-width="3"/><text x="150" y="22" text-anchor="middle" fill="#8a5a12" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="15">£</text>
+        <path d="M128 66 h-12 M132 72 h-10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+      </svg>
+      <span class="ep">Эпизод 7 · бег</span><span class="nm">Большой забег</span><span class="st" id="m7s"></span>
     </button>
   </div>
 </div>
@@ -1305,6 +1326,8 @@ function showMenu(){
   $('m3s').textContent=c>=EP3.length?'Пройден ✓':c>0?`Этап ${c+1} из ${EP3.length}`:'Начать';
   const f6=lsGet('spider-ep6',0), st6=lsGet('spider-ep6-stars',-1);
   $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
+  const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
+  $('m7s').textContent=(f7>=EP7.length?'Пройден ✓':f7>=3?'Копилка':f7>0?`Забег ${f7+1} из 3`:'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -1326,6 +1349,7 @@ $('m3').addEventListener('click',()=>{unlockAudio();startStory(3)});
 $('m4').addEventListener('click',()=>{unlockAudio();startStory(4)});
 $('m5').addEventListener('click',()=>{unlockAudio();startStory(5)});
 $('m6').addEventListener('click',()=>{unlockAudio();startStory(6)});
+$('m7').addEventListener('click',()=>{unlockAudio();startStory(7)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1371,7 +1395,14 @@ const EP6=[
   {key:'race2',  title:'Гонка с Красным',       goal:25, unit:'м',      done:''},
   {key:'medal',  title:'Награждение',           goal:1,  unit:'',       done:''}
 ];
+const EP7=[
+  {key:'run7a',  title:'Забег: три соперника',  goal:30, unit:'м', done:''},
+  {key:'run7b',  title:'Забег: пять соперников',goal:40, unit:'м', done:''},
+  {key:'run7c',  title:'Большой забег: семь соперников',goal:50, unit:'м', done:''},
+  {key:'bank7',  title:'Копилка',               goal:3,  unit:'',  done:''}   // goal подменяется числом мешочков
+];
 const STORIES={
+  7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион забега!','']},
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
   6:{n:6,levels:EP6,store:'spider-ep6',fin:['Паук научился плавать!','']},
   5:{n:5,levels:EP5,store:'spider-ep5',fin:['Квиз пройден!','']},
@@ -3104,6 +3135,163 @@ SCENES.medal=function(alive){
     EPS.fin=['Паук научился плавать!',`Медаль и ${stars6} ⭐`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
   };
+};
+
+/* =====================================================================
+   ЭПИЗОД 7 — БОЛЬШОЙ ЗАБЕГ
+   Много пауков на беговой дорожке. Обогнал всех — 100 игровых фунтов в копилку паучка.
+   Пришёл не первым — ничего не теряешь, просто бежишь ещё раз (соперники становятся чуть медленнее).
+   ===================================================================== */
+const COL7={purple:['Фиолетовый'],green:['Зелёный'],blue:['Синий'],red:['Красный'],orange:['Оранжевый','#f08a1e'],pink:['Розовый','#e85d9a'],yellow:['Жёлтый','#d9b31a']};
+const RACE7={
+  run7a:{len:3.2,riv:['purple','green','blue'],base:[.125,.14,.15]},
+  run7b:{len:4,  riv:['purple','green','orange','blue','red'],base:[.13,.145,.155,.165,.175]},
+  run7c:{len:4.8,riv:['purple','green','orange','blue','pink','yellow','red'],base:[.13,.14,.15,.16,.17,.18,.19]}
+};
+const ease7={run7a:1,run7b:1,run7c:1};
+const ORD7=['первый','второй','третий','четвёртый','пятый','шестой','седьмой','восьмой'];
+const TAUNT7={pass:['Ой! Обгоняет!','Эй, куда?!','Быстрый какой!'],lead:['Догоняй!','Не догонишь!','Хи-хи!']};
+function race7(alive,key){
+  const R=RACE7[key], N=R.riv.length, n=N+1, me=Math.floor(n/2);
+  if(key==='run7a') lsSet('spider-ep7-run',0);
+  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div><div class="tapzone" id="r-tz">Жми часто-часто, чтобы бежать быстрее!</div>`;
+  $('r-tz').style.bottom='1.5%';
+  const cv=$('r-cv'), g=cv.getContext('2d');
+  S2=makeMain('small free');
+  const riv=R.riv.map((c,i)=>{ const [name,col]=COL7[c];
+    const w=makeWalker((col?'':c)+' small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:name+' паук'});
+    if(col) w.wrap.style.setProperty('--spider',col);
+    return {w,name,lane:i<me?i:i+1,base:R.base[i],sty:['steady','sprint','finish'][i%3],x:0,v:0,fin:false,ph:Math.random()*6} });
+  setHint(`Жми на экран часто-часто: каждое нажатие — шаг. Обгони всех ${N} пауков — получишь 100 фунтов в копилку!`);
+  const st={W:0,H:0,sw:0,px:0,pv:0,t:0,last:performance.now(),phase:'count',cam:0,taunt:0,place:n,pfin:false};
+  const laneY=i=>st.H*(.22+.68*(i+.5)/n);
+  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;
+    const w=Math.min(st.H*.68/n*1.7,st.W*.2); [S2,...riv.map(r=>r.w)].forEach(t=>t.wrap.style.width=w+'px'); st.sw=w;
+    cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
+  size(); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
+  const L=()=>st.W*R.len, goal=EPX[l2].goal;
+  let bank=lsGet('spider-ep7-bank',0);
+  function step(){
+    if(st.phase!=='go'||busy2) return;
+    st.pv=Math.min(st.W*.36,st.pv+st.W*.05); tone(rand(300,420),.04,'triangle',0,.035);
+  }
+  handlers2={move(){},down:step};
+  (async()=>{
+    await wait(400); if(!alive())return;
+    talk2(S2,key==='run7a'?'Сколько пауков! Если я обгоню всех, мне дадут сто фунтов!':key==='run7b'?'Ещё больше пауков! Ещё сто фунтов!':'Большой забег! Обгоню всех семерых!',3000);
+    await wait(3200); if(!alive())return;
+    for(const w of ['На старт!','Внимание!']){ const go=$('r-go'); go.textContent=w; restart(go,'pop'); tone(520,.15,'sine',0,.07); speak(w,1.2,1.05,'ann',1); await wait(1000); if(!alive())return }
+    const go=$('r-go'); go.textContent='Марш!'; restart(go,'pop'); tone(880,.3,'triangle',0,.08); speak('Марш!',1.2,1.1,'ann',1); st.phase='go';
+    setTimeout(()=>{if(alive()){go.textContent='';$('r-tz').style.opacity=.9}},700);
+  })();
+  async function finish(place){
+    st.phase='end'; $('r-tz').style.opacity=0;
+    if(place===1){
+      ease7[key]=1; bank+=100; lsSet('spider-ep7-bank',bank); lsSet('spider-ep7-run',lsGet('spider-ep7-run',0)+1);
+      restart(S2.btn,'jump'); sfx.fanfare(); banner('+100 £');
+      for(let k=0;k<3;k++) setTimeout(()=>burst(rand(.2,.8)*innerWidth,rand(.25,.45)*innerHeight,40,8),k*260);
+      [0,.12,.24,.36,.48].forEach(d=>tone(rand(1500,2100),.08,'sine',d,.05));   // звон монеток
+      talk2(S2,'Я обогнал всех! Мне дали сто фунтов!',2800);
+      await wait(3000); if(alive()) celebrate2();
+    } else {
+      ease7[key]=Math.max(.7,ease7[key]*.9);
+      const w1=riv.find(r=>r.order===1); if(w1){restart(w1.w.btn,'laugh'); sfx.laugh(); say(w1.w,'<b>Ха-ха! Я первый!</b>',1800)}
+      await wait(1600); if(!alive())return;
+      restart(S2.btn,'sad'); talk2(S2,`Я пришёл ${ORD7[place-1]}… Надо обогнать всех! Ещё раз!`,2600);
+      setHint(`Ты ${place}-й. Чтобы получить 100 фунтов, нужно обогнать всех. Нажми, чтобы побежать ещё раз`);
+      st.phase='retry'; const z=$('r-tz'); z.textContent='Нажми — ещё раз!'; z.style.opacity=1;
+      handlers2={move(){},down(){ if(st.phase==='retry'){st.phase='x'; enter2(l2)} }};
+    }
+  }
+  let fins=0;
+  (function frame(){
+    if(!alive()){ro.disconnect();return}
+    const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
+    const W=st.W,H=st.H,Lx=L(),off=W*.14;
+    if(st.phase==='go'||st.phase==='end'||st.phase==='retry'||st.phase==='x'){
+      st.pv*=Math.exp(-(st.pfin?2.5:1.15)*dt); st.px+=st.pv*dt;
+      if(st.phase==='go') riv.forEach((r,i)=>{
+        const pr=r.x/Lx, prof=r.sty==='sprint'?(pr<.4?1.25:.9):r.sty==='finish'?(pr<.6?.88:1.22):1;
+        const rub=Math.max(-.2,Math.min(.2,(st.px-r.x)/(W*.8)));                  // соперники держатся рядом
+        let target=W*r.base*ease7[key]*prof*(1+rub)*(1+.06*Math.sin(st.t*1.7+r.ph));
+        r.v+=(target-r.v)*Math.min(1,dt*2);
+      });
+      riv.forEach(r=>{ if(r.x>Lx+W*.2) r.v*=Math.exp(-3*dt); if(st.phase!=='go'&&!r.fin) r.v=Math.max(r.v,W*.12); r.x+=r.v*dt;
+        if(!r.fin&&r.x>=Lx){r.fin=true; r.order=++fins}
+        r.w.btn.classList.toggle('crawl',r.v>W*.03) });
+      S2.btn.classList.toggle('crawl',st.pv>W*.04);
+      if(st.phase==='go'){
+        const place=1+riv.filter(r=>r.x>st.px).length;
+        if(place!==st.place&&now-st.taunt>2500&&st.t>2){ // ближайший соперник что-то кричит
+          const near=riv.reduce((a,b)=>Math.abs(b.x-st.px)<Math.abs(a.x-st.px)?b:a);
+          say(near.w,bold(pick(place<st.place?TAUNT7.pass:TAUNT7.lead)),1200); st.taunt=now }
+        st.place=place;
+        const m=Math.floor(Math.min(1,st.px/Lx)*goal); if(m>p2){p2=m;render2()}
+        if(st.px>=Lx){ st.pfin=true; p2=goal; render2(); st.place=1+riv.filter(r=>r.fin).length; finish(st.place) }
+      }
+    }
+    st.cam+=(Math.max(0,Math.min(Lx+W*.3-W,st.px-W*.38))-st.cam)*Math.min(1,dt*4);
+    const c=st.cam;
+    // фон: небо, трибуна, трава, дорожки
+    g.fillStyle='#bfe6f5'; g.fillRect(0,0,W,H*.1); g.fillStyle='#8fd07a'; g.fillRect(0,H*.1,W,H); 
+    g.fillStyle='#c9d3de'; g.fillRect(0,H*.1,W,H*.06);
+    for(let x=-(c*.5%18),i=Math.floor(c*.5/18);x<W;x+=18,i++){ g.fillStyle=['#e8483c','#3d6fe0','#f5c03a','#5cbf4f','#e85d9a'][i%5]; g.beginPath(); g.arc(x+9,H*.13+Math.sin(st.t*6+i)*(st.phase==='go'?2:0),5,0,7); g.fill() }   // зрители
+    const top=H*.22, bot=H*.9; g.fillStyle='#d9663f'; g.fillRect(0,top,W,bot-top);
+    const lh=(bot-top)/n; g.fillStyle='rgb(255 255 255/.12)'; g.fillRect(0,top+lh*me,W,lh);   // дорожка игрока светлее
+    g.strokeStyle='#fff'; g.lineWidth=2; g.beginPath(); for(let i=0;i<=n;i++){g.moveTo(0,top+lh*i);g.lineTo(W,top+lh*i)} g.stroke();
+    g.fillStyle='rgb(255 255 255/.8)'; g.font=`800 ${Math.round(W*.035)}px Nunito,sans-serif`; g.textAlign='center';
+    for(let m=10;m<goal;m+=10){const x=m/goal*Lx-c+off; if(x>-30&&x<W+30){g.fillRect(x-1,top,2,bot-top); g.fillText(m+' м',x,top-4)}}
+    const sx=-c+off; if(sx>-10&&sx<W){g.fillStyle='#fff';g.fillRect(sx-2,top,4,bot-top)}
+    const fx=Lx-c+off; if(fx>-20&&fx<W+20){ const q=Math.max(6,lh/4); for(let y=top,k=0;y<bot;y+=q,k++) for(let j=0;j<2;j++){g.fillStyle=(k+j)%2?'#141412':'#fff';g.fillRect(fx+j*q,y,q,q)} }
+    g.fillStyle='#fff8c0'; g.textAlign='left'; g.font=`800 ${Math.round(W*.04)}px Nunito,sans-serif`; g.fillText('Ты',6,top+lh*me+lh*.35);
+    // табло: место и копилка
+    g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.lineWidth=3; g.strokeStyle='rgb(0 0 0/.35)'; g.fillStyle='#fff';
+    g.textAlign='left'; const pl=`Место: ${st.place} из ${n}`; g.strokeText(pl,10,H*.075); g.fillText(pl,10,H*.075);
+    g.textAlign='right'; const bk=`🐷 ${bank} £`; g.strokeText(bk,W-10,H*.075); g.fillText(bk,W-10,H*.075);
+    S2.wrap.style.transform=`translate(${st.px-c+off-st.sw/2}px,${laneY(me)-st.sw*.425}px)`;
+    riv.forEach(r=>{r.w.wrap.style.transform=`translate(${r.x-c+off-st.sw/2}px,${laneY(r.lane)-st.sw*.425}px)`});
+    requestAnimationFrame(frame);
+  })();
+}
+SCENES.run7a=alive=>race7(alive,'run7a');
+SCENES.run7b=alive=>race7(alive,'run7b');
+SCENES.run7c=alive=>race7(alive,'run7c');
+
+/* Копилка: мешочки с выигрышем падают в свинку */
+const PIG=`<svg viewBox="0 0 200 150"><ellipse cx="100" cy="86" rx="80" ry="56" fill="#f5a3c0"/><ellipse cx="174" cy="82" rx="18" ry="22" fill="#f08fb0"/>
+  <circle cx="168" cy="76" r="4" fill="#b8507a"/><circle cx="180" cy="76" r="4" fill="#b8507a"/><path d="M128 36 l10 -24 l14 28z" fill="#f08fb0"/>
+  <circle cx="146" cy="60" r="6" fill="#222"/><circle cx="148" cy="58" r="2" fill="#fff"/><rect x="70" y="30" width="44" height="8" rx="4" fill="#8a3f60"/>
+  <rect x="44" y="124" width="22" height="24" rx="8" fill="#f08fb0"/><rect x="132" y="124" width="22" height="24" rx="8" fill="#f08fb0"/>
+  <path d="M20 80 q-16 -6 -10 -18 q6 -8 12 2" stroke="#f08fb0" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="96" cy="66" rx="38" ry="14" fill="#fff" opacity=".25"/></svg>`;
+const BAG=`<svg viewBox="0 0 80 90"><path d="M26 22 Q40 34 54 22 L50 12 Q40 18 30 12Z" fill="#c98f12"/><path d="M28 26 Q2 46 8 70 Q14 88 40 88 Q66 88 72 70 Q78 46 52 26Z" fill="#f5c03a" stroke="#c98f12" stroke-width="3"/>
+  <path d="M26 24 Q40 32 54 24" stroke="#8a5a12" stroke-width="4" fill="none"/><text x="40" y="70" text-anchor="middle" fill="#8a5a12" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="20">100</text></svg>`;
+SCENES.bank7=function(alive){
+  const bank=lsGet('spider-ep7-bank',0), bags=Math.max(0,Math.min(3,lsGet('spider-ep7-run',0))); EPX[l2].goal=Math.max(1,bags);
+  room.className='room locker';
+  room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="piggy" id="r-pig"><div class="sum" id="r-sum"></div>${PIG}</div>`+
+    Array.from({length:bags},(_,i)=>`<button class="bag" data-i="${i}" aria-label="Мешочек со ста фунтами">${BAG}</button>`).join('');
+  const s=rr(); let shown=bank-bags*100, left=bags; const sum=$('r-sum'), pig=$('r-pig'); sum.textContent=shown+' £';
+  S2=makeMain(); put(S2,{x:s.width*.2,y:s.height*.62});
+  room.querySelectorAll('.bag').forEach((b,i)=>{ b.style.left=(s.width*(.25+i*.25))+'px'; b.style.top=(s.height*.22)+'px'; tapme(b,true) });
+  const done=async()=>{
+    await wait(600); if(!alive())return;
+    restart(S2.btn,'jump'); sfx.fanfare(); banner('Копилка!');
+    talk2(S2,`Ура! В моей копилке ${bank} ${plural(bank,'фунт','фунта','фунтов')}!`,3200);
+    EPS.fin=['Паук — чемпион забега!',`В копилке ${bank} £. Можно бежать ещё и копить дальше!`];
+    l2=EPX.length; lsSet(EPS.store,l2); render2();
+  };
+  if(!bags){ setHint(''); setTimeout(()=>alive()&&done(),400); return }
+  setHint('Нажми на мешочки с деньгами, чтобы положить их в копилку');
+  setTimeout(()=>alive()&&talk2(S2,bags===3?'Я обогнал всех три раза! Положим деньги в копилку!':'Положим деньги в копилку!',2800),400);
+  room.querySelectorAll('.bag').forEach(b=>b.onclick=async()=>{
+    if(b.disabled||busy2) return; b.disabled=true; tapme(b,false);
+    const pr=pig.getBoundingClientRect(), rm=rr(); b.style.left=(pr.left-rm.left+pr.width*.46)+'px'; b.style.top=(pr.top-rm.top+pr.height*.2)+'px'; b.classList.add('gone'); sfx.whoosh();
+    await wait(800); if(!alive())return;
+    [0,.1,.2,.3].forEach(d=>tone(rand(1500,2100),.08,'sine',d,.05)); restart(pig,'jig');
+    shown+=100; sum.textContent=shown+' £'; add2(1,false); burst(pr.left+pr.width/2,pr.top+pr.height*.2,16,5);
+    if(--left===0) done();
+  });
 };
 
 /* ---- старт ---- */
