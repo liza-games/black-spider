@@ -885,7 +885,7 @@ function rivalYuck(s,b){
     setTimeout(()=>say(B,bold(pick(['Хи-хи! Он съел осу!','Ой! Осу съел!'])),1300),1500);
     back(2600);
   } else {
-    talk(s,'Ой-ой! Я обкакиваюсь!',undefined,2200);
+    talk(s,'Ой-ой! Я обкакался!',undefined,2200);
     const c=spiderCenter(s), poo=document.createElement('div'); poo.className='poo'; poo.textContent='💩';
     poo.style.left=c.x+'px'; poo.style.top=c.y+'px'; document.body.appendChild(poo); setTimeout(()=>poo.remove(),1800);
     tone(140,.35,'sawtooth',.3,.06,60);
