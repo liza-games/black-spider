@@ -429,6 +429,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
 .medalbtn{position:absolute;width:min(16vw,70px);padding:0;border:0;background:none;cursor:pointer;z-index:6;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
 .medalbtn svg{width:100%;height:auto;display:block}
+.wc{position:absolute;z-index:2;font-size:clamp(34px,11vw,52px);translate:-50% -50%;pointer-events:none;animation:pop .4s}
+.sw.inwc{opacity:0;transition:opacity .2s}
+.wc.shake{animation:wcshake .5s 2}
+@keyframes wcshake{25%{rotate:-8deg}75%{rotate:8deg}}
 .poo{position:fixed;z-index:30;font-size:30px;translate:-50% -50%;pointer-events:none;animation:poo 1.8s ease-out forwards}
 @keyframes poo{0%{opacity:0;scale:.3}15%{opacity:1;scale:1.2}100%{opacity:0;translate:-50% 40px;scale:1}}
 .piggy{position:absolute;left:62%;top:58%;translate:-50% -50%;width:min(46vw,210px);z-index:3;pointer-events:none}
@@ -837,6 +841,7 @@ function summonRival(key){
 }
 function dismissRival(now){
   if(!R) return; const s=R; R=null; clearTimeout(s.timer);
+  if(s.wcEl){s.wcEl.remove();s.wcEl=null} s.inWc=false; s.yucky=false; s.line.style.opacity=''; s.wrap.classList.remove('inwc','yuck');
   if(s.tickling){clearTimeout(s.tickleT);s.tickling=false;B.tickled=false;B.wrap.classList.remove('tickled')}
   if(s.target){s.target.el.classList.remove('hunted');s.target=null}
   B.anchorT=.5;
@@ -860,9 +865,9 @@ function planRival(){
 
 /* Соперник съел осу или вонючку: очко не засчитывается, он отвлекается, а чёрный паук может поесть */
 function rivalYuck(s,b){
-  s.target=null; s.state='eating'; removeBug(b); clearTimeout(s.timer);
+  s.target=null; s.state='eating'; s.yucky=true; removeBug(b); clearTimeout(s.timer);
   restart(s.btn,'shake'); s.wrap.classList.add('yuck'); sfx.yuck();
-  const back=ms=>setTimeout(()=>{ s.wrap.classList.remove('yuck'); if(spiders.includes(s)&&['eating','flee'].includes(s.state)) s.state='return' },ms);
+  const back=ms=>setTimeout(()=>{ s.wrap.classList.remove('yuck'); s.yucky=false; if(spiders.includes(s)&&['eating','flee'].includes(s.state)) s.state='return' },ms);
   if(b.K===KINDS.wasp){
     talk(s,'Фу! Неприятно! Колется оса!',undefined,2000);
     setTimeout(()=>say(B,bold(pick(['Хи-хи! Он съел осу!','Ой! Осу съел!'])),1300),1500);
@@ -872,9 +877,12 @@ function rivalYuck(s,b){
     const c=spiderCenter(s), poo=document.createElement('div'); poo.className='poo'; poo.textContent='💩';
     poo.style.left=c.x+'px'; poo.style.top=c.y+'px'; document.body.appendChild(poo); setTimeout(()=>poo.remove(),1800);
     tone(140,.35,'sawtooth',.3,.06,60);
-    setTimeout(()=>{ if(!spiders.includes(s)||s.state!=='eating') return; s.state='flee'; say(s,'<b>Мне срочно в туалет!</b>',1400) },1600);
+    setTimeout(()=>{ if(!spiders.includes(s)||s.state!=='eating') return;
+      // рядом появляется туалет, паук бежит туда, прячется, смывает и возвращается
+      const w=rect().width, h=stage.clientHeight, wc=document.createElement('div'); wc.className='wc'; wc.textContent='🚽';
+      s.wcp={x:s.x<w/2?w*.12:w*.88,y:h*.8}; wc.style.left=s.wcp.x+'px'; wc.style.top=s.wcp.y+'px'; stage.appendChild(wc); s.wcEl=wc;
+      s.state='wc'; say(s,'<b>Мне срочно в туалет!</b>',1400) },1600);
     setTimeout(()=>say(B,bold(pick(['Хи-хи-хи! Не надо было есть вонючку!','Фу-у! Хи-хи!'])),1500),2200);
-    back(4800);
   }
 }
 
@@ -1099,7 +1107,7 @@ function rivalCatch(s,b){
     setTimeout(()=>banner('Ещё раз!'),900);
     setTimeout(()=>{prog=0;rprog=0;busy=false;render();talk(B,'Ну всё, теперь я!')},2600);
   }
-  setTimeout(()=>{if(s.state==='eating')s.state='return'},1900);
+  setTimeout(()=>{if(s.state==='eating'&&!s.yucky)s.state='return'},1900);
 }
 
 /* ================= этапы ================= */
@@ -1248,6 +1256,13 @@ function update(s,h){
       else{const v=Math.min(7,d);s.x+=dx/d*v;s.y+=dy/d*v}
       break}
     case 'flee': s.x+=(o.x-s.x)*.12; s.y+=(-h*.2-s.y)*.12; break;
+    case 'wc': { // соперник бежит в туалет после вонючки
+      const p=s.wcp, dx=p.x-s.x, dy=p.y-h*.3-s.y, d=Math.hypot(dx,dy);
+      if(d>4){const v=Math.min(6,d);s.x+=dx/d*v;s.y+=dy/d*v}
+      else if(!s.inWc){ s.inWc=true; s.wrap.classList.add('inwc'); s.line.style.opacity=0; s.wrap.classList.remove('yuck'); restart(s.wcEl,'shake');
+        setTimeout(()=>{ sfx.flush(); setTimeout(()=>{ s.inWc=false; s.wrap.classList.remove('inwc'); s.line.style.opacity=''; s.wcEl&&s.wcEl.remove(); s.wcEl=null;
+          s.yucky=false; if(spiders.includes(s)&&s.state==='wc'){ s.state='return'; say(s,'<b>Фух! Полегчало!</b>',1200) } },1200) },2000) }
+      break}
     case 'hunt': {
       const b=s.target;
       if(!b||b.dead){s.target=null;if(s.feast)feastNext(s);else s.state='return';break}
@@ -1259,7 +1274,7 @@ function update(s,h){
     case 'return': s.x+=(o.x-s.x)*.08; s.y+=(o.y-s.y)*.08;
       if(Math.hypot(o.x-s.x,o.y-s.y)<2){s.x=o.x;s.y=o.y;s.state='home';if(s===R)planRival()} break;
   }
-  s.btn.classList.toggle('crawl',['hunt','return','enter','leave','flee','tickle'].includes(s.state));
+  s.btn.classList.toggle('crawl',['hunt','return','enter','leave','flee','tickle','wc'].includes(s.state));
   return true;
 }
 function frame(){
