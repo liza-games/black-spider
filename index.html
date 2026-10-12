@@ -429,6 +429,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
 .medalbtn{position:absolute;width:min(16vw,70px);padding:0;border:0;background:none;cursor:pointer;z-index:6;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
 .medalbtn svg{width:100%;height:auto;display:block}
+.poo{position:fixed;z-index:30;font-size:30px;translate:-50% -50%;pointer-events:none;animation:poo 1.8s ease-out forwards}
+@keyframes poo{0%{opacity:0;scale:.3}15%{opacity:1;scale:1.2}100%{opacity:0;translate:-50% 40px;scale:1}}
 .piggy{position:absolute;left:62%;top:58%;translate:-50% -50%;width:min(46vw,210px);z-index:3;pointer-events:none}
 .piggy svg{width:100%;height:auto;display:block}
 .piggy.jig svg{animation:boing .45s}
@@ -845,12 +847,35 @@ function planRival(){
   const s=R; if(!s||s.feast||s.tickling) return; clearTimeout(s.timer);
   s.timer=setTimeout(()=>{
     if(R!==s||s.state!=='home') return;
-    const w=rect().width, free=bugs.filter(b=>!b.caught&&!b.dead&&!b.K.bad&&!b.K.poison&&b.x>20&&b.x<w-20);
+    const w=rect().width, ok=b=>!b.caught&&!b.dead&&!b.K.poison&&b.x>20&&b.x<w-20;
+    const bad=bugs.filter(b=>ok(b)&&b.K.bad);
+    let free=bugs.filter(b=>ok(b)&&!b.K.bad);
+    if(bad.length&&(Math.random()<.35||!free.length)) free=bad;   // зазевался и погнался за осой или вонючкой
     if(!free.length){planRival();return}
     free.sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y));
     const b=free[0]; s.target=b; s.state='hunt';
     b.el.style.setProperty('--hc',s.cfg.color); b.el.classList.add('hunted');
   },rand(s.cfg.dmin,s.cfg.dmax));
+}
+
+/* Соперник съел осу или вонючку: очко не засчитывается, он отвлекается, а чёрный паук может поесть */
+function rivalYuck(s,b){
+  s.target=null; s.state='eating'; removeBug(b); clearTimeout(s.timer);
+  restart(s.btn,'shake'); s.wrap.classList.add('yuck'); sfx.yuck();
+  const back=ms=>setTimeout(()=>{ s.wrap.classList.remove('yuck'); if(spiders.includes(s)&&['eating','flee'].includes(s.state)) s.state='return' },ms);
+  if(b.K===KINDS.wasp){
+    talk(s,'Фу! Неприятно! Колется оса!',undefined,2000);
+    setTimeout(()=>say(B,bold(pick(['Хи-хи! Он съел осу!','Ой! Осу съел!'])),1300),1500);
+    back(2600);
+  } else {
+    talk(s,'Ой-ой! Я обкакиваюсь!',undefined,2200);
+    const c=spiderCenter(s), poo=document.createElement('div'); poo.className='poo'; poo.textContent='💩';
+    poo.style.left=c.x+'px'; poo.style.top=c.y+'px'; document.body.appendChild(poo); setTimeout(()=>poo.remove(),1800);
+    tone(140,.35,'sawtooth',.3,.06,60);
+    setTimeout(()=>{ if(!spiders.includes(s)||s.state!=='eating') return; s.state='flee'; say(s,'<b>Мне срочно в туалет!</b>',1400) },1600);
+    setTimeout(()=>say(B,bold(pick(['Хи-хи-хи! Не надо было есть вонючку!','Фу-у! Хи-хи!'])),1500),2200);
+    back(4800);
+  }
 }
 
 /* ================= насекомые ================= */
@@ -1058,6 +1083,7 @@ function rivalCatch(s,b){
     setTimeout(()=>feastNext(s),250);
     return;
   }
+  if(b.K.bad){rivalYuck(s,b);return}
   s.target=null; s.state='eating'; removeBug(b); restart(s.btn,'chomp'); sfx.chomp();
   let won=false;
   if(LEVELS[level]?.race&&!busy){rprog++;render();won=rprog>=LEVELS[level].goal}
@@ -1145,9 +1171,9 @@ function enterLevel(i){
     case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Давай их покрутим!'),200); break;
     case 'jump': spawnOn=false; setTimeout(()=>talk(B,'Теперь попрыгаем!'),200); break;
     case 'eat': spawnOn=true; maxBugs=3; badChance=0; setTimeout(()=>talk(B,'Ух, проголодался!'),200); break;
-    case 'purple': spawnOn=true; maxBugs=4; badChance=0; if(!R) summonRival('purple'); break;
+    case 'purple': spawnOn=true; maxBugs=4; badChance=.2; if(!R) summonRival('purple'); break;
     case 'red': case 'blue': case 'green': {
-      const want=LEVELS[i].race||LEVELS[i].rival, still=()=>level===i&&!R; spawnOn=true; maxBugs=4; badChance=0;
+      const want=LEVELS[i].race||LEVELS[i].rival, still=()=>level===i&&!R; spawnOn=true; maxBugs=5; badChance=.2;
       if(R&&R.cfg.cls!==want){dismissRival();setTimeout(()=>{if(still())summonRival(want)},1800)}
       else if(!R){if(key==='red')summonRival(want);else setTimeout(()=>{if(still())summonRival(want)},1200)}
       if(key==='blue') setTimeout(()=>talk(B,'Ещё один паук? Синий!'),300);
