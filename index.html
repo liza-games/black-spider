@@ -437,6 +437,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .poo{position:fixed;z-index:30;font-size:30px;translate:-50% -50%;pointer-events:none;animation:poo 1.8s ease-out forwards}
 @keyframes poo{0%{opacity:0;scale:.3}15%{opacity:1;scale:1.2}100%{opacity:0;translate:-50% 40px;scale:1}}
 @keyframes pulse{50%{scale:1.12}}
+.cupbtn{position:absolute;width:min(24vw,104px);padding:0;border:0;background:none;cursor:pointer;z-index:6;translate:-50% -50%;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
+.cupbtn svg{width:100%;height:auto;display:block}
 .sbank{position:absolute;left:5%;top:5%;font-family:var(--display);font-size:clamp(20px,6vw,26px);color:#8a5a12;text-shadow:0 2px 0 #fff;z-index:3}
 .shop7{position:absolute;left:4%;right:4%;top:15%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;z-index:3}
 .sitem{border:0;border-radius:14px;background:#fff;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:800 12px Nunito,sans-serif;color:#333;box-shadow:0 3px 0 rgb(0 0 0/.15);cursor:pointer}
@@ -1369,7 +1371,7 @@ function showMenu(){
   const f6=lsGet('spider-ep6',0), st6=lsGet('spider-ep6-stars',-1);
   $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
   const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
-  $('m7s').textContent=(f7>=EP7.length?'Пройден ✓':f7>0?(EP7[f7].key.startsWith('shop')?'Магазин':`Забег ${Math.floor(f7/2)+1} из 3`):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
+  $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||`Забег ${Math.floor(f7/2)+1} из 3`):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -1439,11 +1441,13 @@ const EP6=[
 ];
 const EP7=[
   {key:'run7a',  title:'Стадион: три соперника',      goal:30, unit:'м', done:''},
-  {key:'shop7a', title:'Магазин',                     goal:1,  unit:'',  done:'За покупками — на следующий забег!'},
+  {key:'shop7a', title:'Магазин',                     goal:1,  unit:'',  done:''},
   {key:'run7b',  title:'Лесной забег: пять соперников',goal:40, unit:'м', done:''},
-  {key:'shop7b', title:'Магазин',                     goal:1,  unit:'',  done:'Вперёд, на ночной забег!'},
+  {key:'shop7b', title:'Магазин',                     goal:1,  unit:'',  done:''},
   {key:'run7c',  title:'Ночной забег: семь соперников',goal:50, unit:'м', done:''},
-  {key:'shop7c', title:'Магазин',                     goal:1,  unit:'',  done:''}
+  {key:'shop7c', title:'Магазин',                     goal:1,  unit:'',  done:''},
+  {key:'run7d',  title:'Финал: один на один с Серебристым',goal:60, unit:'м', done:''},
+  {key:'cup7',   title:'Кубок чемпиона',              goal:1,  unit:'',  done:''}
 ];
 const STORIES={
   7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион забега!','']},
@@ -3186,20 +3190,23 @@ SCENES.medal=function(alive){
    Много пауков на беговой дорожке. Обогнал всех — 100 игровых фунтов в копилку паучка.
    Пришёл не первым — ничего не теряешь, просто бежишь ещё раз (соперники становятся чуть медленнее).
    ===================================================================== */
-const COL7={purple:['Фиолетовый'],green:['Зелёный'],blue:['Синий'],red:['Красный'],orange:['Оранжевый','#f08a1e'],pink:['Розовый','#e85d9a'],yellow:['Жёлтый','#d9b31a']};
+const COL7={silver:['Серебристый','#9fb3c8'],purple:['Фиолетовый'],green:['Зелёный'],blue:['Синий'],red:['Красный'],orange:['Оранжевый','#f08a1e'],pink:['Розовый','#e85d9a'],yellow:['Жёлтый','#d9b31a']};
 const RACE7={
   run7a:{len:3.2,riv:['purple','green','blue'],base:[.125,.14,.15]},
   run7b:{len:4,  riv:['purple','green','orange','blue','red'],base:[.13,.145,.155,.165,.175]},
-  run7c:{len:4.8,riv:['purple','green','orange','blue','pink','yellow','red'],base:[.13,.14,.15,.16,.17,.18,.19]}
+  run7c:{len:4.8,riv:['purple','green','orange','blue','pink','yellow','red'],base:[.13,.14,.15,.16,.17,.18,.19]},
+  run7d:{len:5.4,riv:['silver'],base:[.25]}
 };
-const ease7={run7a:1,run7b:1,run7c:1};
+const ease7={run7a:1,run7b:1,run7c:1,run7d:1};
 const ORD7=['первый','второй','третий','четвёртый','пятый','шестой','седьмой','восьмой'];
 const TAUNT7={pass:['Ой! Обгоняет!','Эй, куда?!','Быстрый какой!'],lead:['Догоняй!','Не догонишь!','Хи-хи!']};
-const TRACK7={run7a:{kind:'stadium',obs:['hurdle','puddle']},run7b:{kind:'forest',obs:['root','puddle','stump']},run7c:{kind:'night',obs:['hurdle','stone','puddle']}};
+const TRACK7={run7d:{kind:'stadium',obs:['hurdle','puddle','stone']},run7a:{kind:'stadium',obs:['hurdle','puddle']},run7b:{kind:'forest',obs:['root','puddle','stump']},run7c:{kind:'night',obs:['hurdle','stone','puddle']}};
 const OBS7={hurdle:'Ой! Барьер!',puddle:'Буль! Лужа!',stone:'Ай! Камешек!',root:'Ой! Корень!',stump:'Ай! Пенёк!',banana:'Уи-и-и! Банан!',trip:'Ой! Подножка!'};
 const SHOP7=[
   {k:'shoes',  n:'Кроссовки',        e:'👟',p:150,say:'Кроссовки! Теперь я бегаю быстрее!'},
   {k:'socks',  n:'Прыгучие носочки', e:'🧦',p:120,say:'Прыгучие носочки! Теперь я прыгаю дальше!'},
+  {k:'helmet', n:'Каска-таран',      e:'⛑️',p:180,say:'Каска-таран! Теперь барьеры и камни разлетаются!'},
+  {k:'boots',  n:'Резиновые сапожки',e:'🥾',p:100,say:'Резиновые сапожки! Лужи и бананы мне не страшны!'},
   {k:'cap',    n:'Шапочка',          e:'🧢',p:50, say:'Шапочка! Красота!'},
   {k:'goggles',n:'Очки',             e:'🥽',p:80, say:'Очки! Я как настоящий спортсмен!'},
   {k:'medal',  n:'Золотая медаль',   e:'🏅',p:200,say:'Золотая медаль! Я чемпион!'}
@@ -3238,10 +3245,16 @@ function race7(alive,key){
   window._r7.obs=obs;
   const air=(jt,jd)=>jt>=0&&jt/jd>.08&&jt/jd<.92;
   const jumpH=(jt,jd)=>jt<0?0:Math.sin(Math.PI*Math.min(1,jt/jd))*lh()*1.2;
-  function jump(big){ if(st.phase!=='go'||st.jt>=0) return; st.jt=0; st.jd=JD*(big?1.8:1); big?sfx.boing():sfx.jump(); restart(S2.btn,'jump') }
+  function jump(big,fwd){ if(st.phase!=='go'||st.jt>=0) return; st.jt=0; st.jd=JD*(big?1.8:fwd?1.25:1); st.fwd=!!(fwd||big); big?sfx.boing():sfx.jump(); restart(S2.btn,'jump') }
   function float(text,col){ st.fx.push({x:st.px,y:laneY(me)-st.sw*.6,text,col:col||'#fff',k:0}) }
   function bubble(t,html,ms,force){ const now=performance.now(); if(!force&&now-st.bub<900) return; st.bub=now; say(t,html,ms) }
-  function hit(kind){
+  function hit(kind,o){
+    const X0=()=>{const r=rr();return {x:r.left+(o.x-st.cam+.14)*st.W,y:r.top+laneY(me)}};
+    if(o&&own.includes('helmet')&&['hurdle','stone','root','stump'].includes(kind)){   // каска: препятствие разлетается
+      o.broken=true; const p=X0(); burst(p.x,p.y,22,6); tone(160,.15,'square',0,.07,60); tone(90,.2,'sawtooth',.05,.05,50);
+      st.pv*=.9; float('Бах!','#ffd23a'); restart(S2.btn,'jump'); return }
+    if(own.includes('boots')&&(kind==='puddle'||kind==='banana')){                       // сапожки: не скользко
+      if(o) o.broken=kind==='banana'; float(kind==='puddle'?'Шлёп!':'Не скользко!','#bfe6ff'); if(kind==='puddle') sfx.water(); return }
     st.pv*=kind==='banana'?.08:.15; st.stun=.55; sfx.yuck(); restart(S2.btn,kind==='banana'?'laugh':'shake');
     if(kind==='banana'){ S2.btn.style.rotate='0deg'; S2.btn.animate([{rotate:'0deg'},{rotate:'360deg'}],{duration:600}); sfx.whoosh() }
     bubble(S2,bold(OBS7[kind]),1000,true);
@@ -3253,14 +3266,15 @@ function race7(alive,key){
     down(e){ if(st.phase!=='go'||busy2) return; p0={x:e.clientX,y:e.clientY,used:false}; step(.05); tone(rand(300,420),.04,'triangle',0,.035) },
     move(e){ if(!p0||p0.used||!(e.buttons&1)||st.phase!=='go') return;
       const dx=e.clientX-p0.x, dy=e.clientY-p0.y; if(Math.hypot(dx,dy)<28) return; p0.used=true;
-      if(dy<-20&&-dy>Math.abs(dx)*.45){ jump(); if(dx>15) step(.06) }       // вверх или вверх-вправо
+      if(dy<-20&&-dy>Math.abs(dx)*.45){ const fwd=dx>15&&dx>-dy*.35; jump(false,fwd); if(fwd) step(.08) }   // вверх или вверх-вправо
       else if(dx>0){ step(.08); tone(700,.12,'sine',0,.04,1200); float('Вжух!','#fff') } },  // рывок вправо
     up(){p0=null}
   };
   (async()=>{
     await wait(400); if(!alive())return;
     const intro={run7a:'Стадион! Через барьеры и лужи надо прыгать! Если обгоню всех, мне дадут сто фунтов!',
-                 run7b:'Забег по лесу! Тут корни, пеньки и лужи!',run7c:'Ночной забег! Семь соперников! Ничего не вижу… ой, фонарики!'}[key];
+                 run7b:'Забег по лесу! Тут корни, пеньки и лужи!',run7c:'Ночной забег! Семь соперников! Ничего не вижу… ой, фонарики!',
+                 run7d:'Финал! Серебристый паук — самый быстрый на свете! Кто победит, получит кубок!'}[key];
     talk2(S2,intro,3400);
     await wait(3600); if(!alive())return;
     for(const w of ['На старт!','Внимание!']){ const go=$('r-go'); go.textContent=w; restart(go,'pop'); tone(520,.15,'sine',0,.07); speak(w,1.2,1.05,'ann',1); await wait(1000); if(!alive())return }
@@ -3274,7 +3288,7 @@ function race7(alive,key){
       restart(S2.btn,'jump'); sfx.fanfare(); banner('+100 £');
       for(let k=0;k<3;k++) setTimeout(()=>burst(rand(.2,.8)*innerWidth,rand(.25,.45)*innerHeight,40,8),k*260);
       [0,.12,.24,.36,.48].forEach(d=>tone(rand(1500,2100),.08,'sine',d,.05));
-      talk2(S2,'Я обогнал всех! Мне дали сто фунтов! Пойду в магазин!',3000);
+      talk2(S2,key==='run7d'?'Я обогнал Серебристого! Я чемпион!':'Я обогнал всех! Мне дали сто фунтов! Пойду в магазин!',3000);
       await wait(3000); if(alive()) celebrate2();
     } else {
       ease7[key]=Math.max(.7,ease7[key]*.9);
@@ -3288,7 +3302,8 @@ function race7(alive,key){
   }
   // хитрости соперников
   function specials(dt){
-    const P=riv.find(r=>r.c==='purple'), G=riv.find(r=>r.c==='green'), Bl=riv.find(r=>r.c==='blue');
+    const P=riv.find(r=>r.c==='purple'), G=riv.find(r=>r.c==='green'), Bl=riv.find(r=>r.c==='blue'), Sv=riv.find(r=>r.c==='silver');
+    if(Sv&&st.t>3&&(st.svNext=st.svNext||st.t+rand(5,8))&&st.t>=st.svNext&&Sv.stun<=0){ st.svNext=st.t+rand(6,9); Sv.v=Math.max(Sv.v,.36); bubble(Sv.w,'<b>Вжух!</b> Я быстрее молнии!',1300,true); sfx.whoosh() }
     if(P&&!st.trip&&st.t>4&&Math.abs(P.x-st.px)<.08&&P.stun<=0){ st.trip={at:st.t+1.5}; say(P.w,'<b>Хи-хи!</b> Сейчас подножку поставлю!',1500); float('Прыгай! ↑','#ffe27a') }
     if(st.trip&&!st.trip.done&&st.t>=st.trip.at){ st.trip.done=true;
       if(air(st.jt,st.jd)){ P.stun=.8; say(P.w,'<b>Мимо!</b> Ой-ой!',1200); bubble(S2,'<b>Перепрыгнул!</b>',1000,true); sfx.boing() }
@@ -3307,13 +3322,13 @@ function race7(alive,key){
       st.stun=Math.max(0,st.stun-dt); st.tick=Math.max(0,st.tick-dt); st.turbo=Math.max(0,st.turbo-dt);
       st.pv*=Math.exp(-(st.pfin?2.5:1.15)*dt); if(st.turbo>0) st.pv=Math.max(st.pv,.3);
       if(st.tick>0) st.pv=Math.min(st.pv,.05); st.px+=st.pv*dt;
-      if(st.jt>=0){st.jt+=dt; if(st.jt>=st.jd) st.jt=-1}
+      if(st.jt>=0){st.jt+=dt; if(st.fwd) st.px+=.2*dt; if(st.jt>=st.jd){st.jt=-1; st.fwd=false}}   // прыжок вперёд — паук пролетает дальше
       if(st.phase==='go'){
         for(const o of obs){ if(o.lane!==me||o.done||st.px<o.x-.02) continue; o.done=true;
-          if(!o.bonus){ if(!air(st.jt,st.jd)) hit(o.t); continue }
+          if(!o.bonus){ if(!air(st.jt,st.jd)) hit(o.t,o); continue }
           if(o.t==='coin'){ st.earned+=10; tone(1800,.07,'sine',0,.05); tone(2400,.09,'sine',.06,.04); float('+10 £','#ffe27a') }
           else if(o.t==='fly'){ st.pv=Math.max(st.pv,.42); st.turbo=1.4; sfx.chomp(); bubble(S2,'<b>Ням!</b> Турбо-муха!',900,true); float('ТУРБО!','#9cf') }
-          else if(o.t==='banana'){ if(!air(st.jt,st.jd)) hit('banana') }
+          else if(o.t==='banana'){ if(!air(st.jt,st.jd)) hit('banana',o) }
           else if(o.t==='spring'){ if(!air(st.jt,st.jd)){ st.jt=-1; jump(true); st.pv=Math.max(st.pv,.4); float('Боинг!','#fff') } }
         }
         specials(dt);
@@ -3336,9 +3351,9 @@ function race7(alive,key){
             if(Math.abs(r.x-st.px)<.5) bubble(r.w,'<b>Ой!</b>',700) } } }
         r.x+=r.v*dt;
         if(!r.fin&&r.x>=L){r.fin=true; r.order=++fins}
-        r.w.btn.classList.toggle('crawl',r.v>.03&&r.jt<0);
+        const rr2=r.jt<0&&(r.w.btn.classList.contains('crawl')?r.v>.015:r.v>.05); if(rr2!==r.w.btn.classList.contains('crawl')) r.w.btn.classList.toggle('crawl',rr2);
       });
-      S2.btn.classList.toggle('crawl',st.pv>.04&&st.jt<0);
+      const run=st.jt<0&&(S2.btn.classList.contains('crawl')?st.pv>.015:st.pv>.06); if(run!==S2.btn.classList.contains('crawl')) S2.btn.classList.toggle('crawl',run);
       if(st.phase==='go'){
         const place=1+riv.filter(r=>r.x>st.px).length;
         if(place!==st.place&&now-st.taunt>2500&&st.t>2){
@@ -3353,7 +3368,7 @@ function race7(alive,key){
     const c=st.cam, X=x=>(x-c+off)*W;
     drawTrack7(g,st,TR.kind,c,n,me,W,H,top(),bot(),goal,L);
     // препятствия и бонусы
-    for(const o of obs){ const x=X(o.x); if(x<-60||x>W+60) continue; if(o.bonus&&o.done&&o.t!=='banana') continue;
+    for(const o of obs){ const x=X(o.x); if(x<-60||x>W+60) continue; if(o.broken||o.bonus&&o.done&&o.t!=='banana') continue;
       drawObs7(g,o.t,x,laneY(o.lane)+LH*.22,LH,st.t) }
     // всплывающие надписи
     g.textAlign='center'; g.font=`900 ${Math.round(W*.045)}px Nunito,sans-serif`;
@@ -3364,10 +3379,11 @@ function race7(alive,key){
     g.textAlign='left'; const pl=`Место: ${st.place} из ${n}`; g.strokeText(pl,10,H*.07); g.fillText(pl,10,H*.07);
     g.textAlign='right'; const bk=`🐷 ${bank+st.earned} £`; g.strokeText(bk,W-10,H*.07); g.fillText(bk,W-10,H*.07);
     g.textAlign='left'; g.font=`800 ${Math.round(W*.038)}px Nunito,sans-serif`; g.fillStyle='#fff8c0';
-    g.fillText('Ты'+(own.includes('shoes')?' 👟':'')+(own.includes('socks')?' 🧦':''),6,top()+LH*me+LH*.38);
-    const bob=S2.btn.classList.contains('crawl')?Math.abs(Math.sin(st.t*14))*st.sw*.06:0;
+    g.fillText('Ты '+['shoes','socks','helmet','boots'].filter(k=>own.includes(k)).map(k=>SHOP7.find(x=>x.k===k).e).join(''),6,top()+LH*me+LH*.38);
+    const bob=S2.btn.classList.contains('crawl')?Math.abs(Math.sin(st.t*12))*st.sw*.05*Math.min(1,st.pv/.2):0;
+    S2.btn.style.rotate=st.fwd&&st.jt>=0?'14deg':'';
     S2.wrap.style.transform=`translate(${X(st.px)-st.sw/2}px,${laneY(me)-st.sw*.425-jumpH(st.jt,st.jd)-bob}px)`;
-    riv.forEach(r=>{const b=r.w.btn.classList.contains('crawl')?Math.abs(Math.sin(st.t*13+r.ph))*st.sw*.06:0; r.w.wrap.style.transform=`translate(${X(r.x)-st.sw/2}px,${laneY(r.lane)-st.sw*.425-jumpH(r.jt,.55)-b}px)`});
+    riv.forEach(r=>{const b=r.w.btn.classList.contains('crawl')?Math.abs(Math.sin(st.t*12+r.ph))*st.sw*.05*Math.min(1,r.v/.2):0; r.w.wrap.style.transform=`translate(${X(r.x)-st.sw/2}px,${laneY(r.lane)-st.sw*.425-jumpH(r.jt,.55)-b}px)`});
     requestAnimationFrame(frame);
   })();
 }
@@ -3424,7 +3440,7 @@ function shop7(alive,last){
     <button class="sdone" id="r-sdone">Готово ›</button>`;
   const s=rr(); S2=makeMain(); wearAll(S2,own.filter(k=>LOOK7.includes(k))); put(S2,{x:s.width*.2,y:s.height*.8});
   const upd=()=>{$('r-sbank').textContent=`🐷 ${bank} £`}; upd();
-  setHint('Нажми на вещь, чтобы купить её за деньги из копилки. Кроссовки помогают бегать, носочки — прыгать. Потом нажми «Готово»');
+  setHint('Нажми на вещь, чтобы купить её. Кроссовки — бегать быстрее, носочки — прыгать дальше, каска ломает препятствия, сапожки — не скользить');
   setTimeout(()=>alive()&&talk2(S2,'Магазин! Что бы мне купить?',2200),400);
   room.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{
     if(busy2) return; const it=SHOP7.find(x=>x.k===b.dataset.k);
@@ -3437,17 +3453,48 @@ function shop7(alive,last){
     if(LOOK7.includes(it.k)) S2.wrap.classList.add('w-'+it.k);
     talk2(S2,it.say,2400);
   });
-  $('r-sdone').textContent=last?'Готово ›':'На забег ›';
-  $('r-sdone').onclick=async()=>{ if(busy2||$('r-sdone').disabled) return; $('r-sdone').disabled=true;
-    if(!last){ talk2(S2,'Вперёд, на следующий забег!',1800); await wait(1400); if(alive()) celebrate2(); return }
-    add2(1,false); sfx.fanfare(); banner('Готово!');
-    talk2(S2,own.length?'Я самый нарядный бегун!':'Покуплю что-нибудь в следующий раз!',2400);
-    EPS.fin=['Паук — чемпион забега!',`В копилке ${bank} £. Можно бежать ещё, копить и покупать!`];
-    l2=EPX.length; lsSet(EPS.store,l2); render2() };
+  $('r-sdone').textContent=last?'На финал ›':'На забег ›';
+  $('r-sdone').onclick=async()=>{ if(busy2||$('r-sdone').disabled) return; $('r-sdone').disabled=true; sfx.click();
+    talk2(S2,last?'Теперь финал!':'Вперёд, на следующий забег!',1600); await wait(1500); if(alive()) enter2(l2+1) };
 }
 SCENES.shop7a=alive=>shop7(alive,false);
 SCENES.shop7b=alive=>shop7(alive,false);
 SCENES.shop7c=alive=>shop7(alive,true);
+SCENES.run7d=alive=>race7(alive,'run7d');
+
+/* Кубок чемпиона после финала */
+const CUP7=`<svg viewBox="0 0 120 140"><path d="M30 10 H90 V40 Q90 78 60 82 Q30 78 30 40Z" fill="#f5c03a" stroke="#c98f12" stroke-width="4"/>
+  <path d="M30 22 H14 Q10 50 34 56 M90 22 H106 Q110 50 86 56" fill="none" stroke="#c98f12" stroke-width="6"/>
+  <rect x="52" y="82" width="16" height="22" fill="#e0a412"/><rect x="34" y="104" width="52" height="14" rx="3" fill="#c98f12"/><rect x="28" y="118" width="64" height="14" rx="3" fill="#8a5a12"/>
+  <path d="M60 24 l5 10 11 1.5 -8 7.5 2 11 -10 -5.5 -10 5.5 2 -11 -8 -7.5 11 -1.5z" fill="#fff6"/><path d="M40 18 Q44 40 52 52" stroke="#fff8" stroke-width="4" fill="none"/></svg>`;
+SCENES.cup7=function(alive){
+  const bank=lsGet('spider-ep7-bank',0), own=items7();
+  room.className='room locker';
+  room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="podium" id="r-pod"><div style="height:44px">2</div><div style="height:72px;background:#e0b04a">1</div><div style="height:30px">3</div></div>
+    <button class="cupbtn" id="r-cup" aria-label="Кубок">${CUP7}</button>`;
+  const s=rr(), pod=$('r-pod');
+  S2=makeMain(); wearAll(S2,own.filter(k=>LOOK7.includes(k)));
+  const top1=anchor(pod.children[1],.5,0); put(S2,{x:top1.x,y:top1.y-S2.wrap.offsetWidth*.38});
+  const Sv=makeWalker('small',{pitch:1.1,rate:1.1,who:'r7',voice:1,label:'Серебристый паук'}); Sv.wrap.style.setProperty('--spider','#9fb3c8');
+  const top2=anchor(pod.children[0],.5,0); put(Sv,{x:top2.x,y:top2.y-Sv.wrap.offsetWidth*.32});
+  const R2=makeWalker('red small',{pitch:1.05,rate:1.15,who:'red',voice:0,label:'Красный паук'});
+  const top3=anchor(pod.children[2],.5,0); put(R2,{x:top3.x,y:top3.y-R2.wrap.offsetWidth*.32});
+  const c=$('r-cup'); c.style.left=(s.width*.8)+'px'; c.style.top=(s.height*.28)+'px'; tapme(c,true);
+  setHint('Нажми на кубок, и паук получит его');
+  setTimeout(()=>alive()&&talk2(S2,'Это мой кубок?!',1800),400);
+  setTimeout(()=>alive()&&!c.disabled&&say(Sv,'<b>Ты быстрее молнии!</b>',2200),2400);
+  c.onclick=async()=>{
+    if(c.disabled) return; c.disabled=true; tapme(c,false);
+    const sp=S2.wrap.getBoundingClientRect(), rm=rr(); c.style.left=(sp.left-rm.left+sp.width*.92)+'px'; c.style.top=(sp.top-rm.top+sp.height*.3)+'px'; c.style.scale='.6';   // держит кубок лапкой сбоку, облачко не закрывает sfx.whoosh();
+    await wait(950); if(!alive())return;
+    restart(S2.btn,'jump'); sfx.fanfare(); banner('Чемпион!'); add2(1,false);
+    for(let k=0;k<5;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.2,.5)*innerHeight,55,10),k*300);
+    talk2(S2,'Ура! Кубок мой! Я самый быстрый паук на свете!',3200);
+    setTimeout(()=>{ if(alive()){ restart(Sv.btn,'jump'); restart(R2.btn,'jump'); sfx.magic() } },3300);
+    EPS.fin=['Чёрный паук — чемпион! 🏆',`В копилке ${bank} £. Можно бежать ещё, копить и покупать!`];
+    l2=EPX.length; lsSet(EPS.store,l2); render2();
+  };
+};
 
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
