@@ -429,9 +429,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .cupbtn{position:absolute;width:min(24vw,104px);padding:0;border:0;background:none;cursor:pointer;z-index:6;translate:-50% -50%;transition:left .9s ease-in-out,top .9s ease-in-out,scale .9s}
 .cupbtn svg{width:100%;height:auto;display:block}
 .sbank{position:absolute;left:5%;top:5%;font-family:var(--display);font-size:clamp(20px,6vw,26px);color:#8a5a12;text-shadow:0 2px 0 #fff;z-index:3}
-.shop7{position:absolute;left:4%;right:4%;top:15%;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;z-index:3}
-.sitem{border:0;border-radius:14px;background:#fff;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font:800 12px Nunito,sans-serif;color:#333;box-shadow:0 3px 0 rgb(0 0 0/.15);cursor:pointer}
-.sitem .se{font-size:clamp(26px,8vw,34px)} .sitem .spr{color:#b8860b;font-size:13px}
+.shop7{position:absolute;left:3%;right:3%;top:14%;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;z-index:3}
+.sitem{border:0;border-radius:12px;background:#fff;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;font:800 11px/1.15 Nunito,sans-serif;text-align:center;color:#333;box-shadow:0 3px 0 rgb(0 0 0/.15);cursor:pointer}
+.sitem .se{font-size:clamp(22px,7vw,30px)} .sitem .spr{color:#b8860b;font-size:12px} .sitem .sd{font-weight:600;font-size:10px;color:#777}
 .sitem.own{background:#e3f4da} .sitem.own .spr{color:#2f9e44}
 .sdone{position:absolute;right:5%;bottom:5%;z-index:5;border:0;border-radius:999px;background:var(--accent);color:#fff;font:900 18px Nunito,sans-serif;padding:10px 20px;box-shadow:0 4px 0 #8a2a1c}
 
@@ -3191,13 +3191,13 @@ const TAUNT7={pass:['Ой! Обгоняет!','Эй, куда?!','Быстрый
 const TRACK7={run7d:{kind:'stadium',obs:['hurdle','puddle','stone']},run7a:{kind:'stadium',obs:['hurdle','puddle']},run7b:{kind:'forest',obs:['root','puddle','stump']},run7c:{kind:'night',obs:['hurdle','stone','puddle']}};
 const OBS7={hurdle:'Ой! Барьер!',puddle:'Буль! Лужа!',stone:'Ай! Камешек!',root:'Ой! Корень!',stump:'Ай! Пенёк!',banana:'Уи-и-и! Банан!',trip:'Ой! Подножка!'};
 const SHOP7=[
-  {k:'shoes',  n:'Кроссовки',        e:'👟',p:150,say:'Кроссовки! Теперь я бегаю быстрее!'},
-  {k:'socks',  n:'Прыгучие носочки', e:'🧦',p:120,say:'Прыгучие носочки! Теперь я прыгаю дальше!'},
-  {k:'helmet', n:'Каска-таран',      e:'⛑️',p:180,say:'Каска-таран! Теперь барьеры и камни разлетаются!'},
-  {k:'boots',  n:'Резиновые сапожки',e:'🥾',p:100,say:'Резиновые сапожки! Лужи и бананы мне не страшны!'},
-  {k:'cap',    n:'Шапочка',          e:'🧢',p:50, say:'Шапочка! Красота!'},
-  {k:'goggles',n:'Очки',             e:'🥽',p:80, say:'Очки! Я как настоящий спортсмен!'},
-  {k:'medal',  n:'Золотая медаль',   e:'🏅',p:200,say:'Золотая медаль! Я чемпион!'}
+  {k:'shoes',d:'бег быстрее',  n:'Кроссовки',        e:'👟',p:150,say:'Кроссовки! Теперь я бегаю быстрее!'},
+  {k:'socks',d:'прыжок дальше',  n:'Прыгучие носочки', e:'🧦',p:120,say:'Прыгучие носочки! Теперь я прыгаю дальше!'},
+  {k:'helmet',d:'ломает преграды', n:'Каска-таран',      e:'⛑️',p:180,say:'Каска-таран! Теперь барьеры и камни разлетаются!'},
+  {k:'boots',d:'не скользко',  n:'Резиновые сапожки',e:'🥾',p:100,say:'Резиновые сапожки! Лужи и бананы мне не страшны!'},
+  {k:'cap',d:'для красоты',    n:'Шапочка',          e:'🧢',p:50, say:'Шапочка! Красота!'},
+  {k:'goggles',d:'для красоты',n:'Очки',             e:'🥽',p:80, say:'Очки! Я как настоящий спортсмен!'},
+  {k:'medal',d:'для красоты',  n:'Золотая медаль',   e:'🏅',p:200,say:'Золотая медаль! Я чемпион!'}
 ];
 const items7=()=>{try{return JSON.parse(localStorage.getItem('spider-ep7-items'))||[]}catch(e){return []}};
 const LOOK7=['cap','goggles','medal'];
@@ -3424,11 +3424,11 @@ function shop7(alive,last){
   let bank=lsGet('spider-ep7-bank',0); const own=items7();
   room.className='room locker';
   room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="sbank" id="r-sbank"></div>
-    <div class="shop7">${SHOP7.map(it=>`<button class="sitem${own.includes(it.k)?' own':''}" data-k="${it.k}"><span class="se">${it.e}</span><span class="sn">${it.n}</span><span class="spr">${own.includes(it.k)?'✓ есть':it.p+' £'}</span></button>`).join('')}</div>
+    <div class="shop7">${SHOP7.map(it=>`<button class="sitem${own.includes(it.k)?' own':''}" data-k="${it.k}"><span class="se">${it.e}</span><span class="sn">${it.n}</span><span class="sd">${it.d}</span><span class="spr">${own.includes(it.k)?'✓ есть':it.p+' £'}</span></button>`).join('')}</div>
     <button class="sdone" id="r-sdone">Готово ›</button>`;
-  const s=rr(); S2=makeMain(); wearAll(S2,own.filter(k=>LOOK7.includes(k))); put(S2,{x:s.width*.2,y:s.height*.8});
+  const s=rr(); S2=makeMain(); wearAll(S2,own.filter(k=>LOOK7.includes(k))); put(S2,{x:s.width*.22,y:s.height*.82});
   const upd=()=>{$('r-sbank').textContent=`🐷 ${bank} £`}; upd();
-  setHint('Нажми на вещь, чтобы купить её. Кроссовки — бегать быстрее, носочки — прыгать дальше, каска ломает препятствия, сапожки — не скользить');
+  setHint('Нажми на вещь, чтобы купить её за деньги из копилки');
   setTimeout(()=>alive()&&talk2(S2,'Магазин! Что бы мне купить?',2200),400);
   room.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{
     if(busy2) return; const it=SHOP7.find(x=>x.k===b.dataset.k);
