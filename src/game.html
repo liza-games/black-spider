@@ -677,7 +677,7 @@ function nextSpeech(){
   if(!it){speaking=false;return}
   speaking=true; const id=++spId, done=()=>{if(id===spId)nextSpeech()};
   const u=new SpeechSynthesisUtterance(it.text);
-  u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=it.pitch; u.rate=it.rate;
+  u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=pitchFor(it.pitch); u.rate=it.rate;
   // Говорим только русским голосом. Если на устройстве его нет, лучше молчать:
   // иначе телефон читает русский текст словацким, японским или китайским голосом.
   const all=speechSynthesis.getVoices(), ru=ruVoices(all);
@@ -688,6 +688,8 @@ function nextSpeech(){
   speechSynthesis.resume();
   speechSynthesis.speak(u);
 }
+// английские голоса телефона и так низкие (например, Daniel), поэтому в английской версии все герои звучат выше
+const pitchFor=p=>LANG==='en'?Math.min(2,p+.5):p;
 function ruVoices(all){   // голоса нужного языка (название историческое: сначала был только русский)
   const re=LANG==='en'?/^en([-_]|$)/i:/^ru([-_]|$)/i, main=LANG==='en'?/en[-_]GB/i:/ru[-_]RU/i;
   const ru=all.filter(v=>re.test(v.lang||''));
@@ -704,7 +706,7 @@ $('vtest').onclick=()=>{
   if(!soundOn){show('Звук выключен — включи его кнопкой «Звук» внизу.');return}
   const all=speechSynthesis.getVoices(), ru=ruVoices(all), v=ru[0];
   speechSynthesis.cancel(); speaking=false; sq.length=0;
-  const u=new SpeechSynthesisUtterance('Привет! Я чёрный паук!'); u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=.4;
+  const u=new SpeechSynthesisUtterance('Привет! Я чёрный паук!'); u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=pitchFor(.4);
   if(v){u.voice=v; u.lang=v.lang.replace('_','-')}
   const base=v?`Голос: ${v.name} (${v.lang}).`:all.length?'На устройстве нет голоса для этого языка.':'Список голосов пока пуст — нажми ещё раз.';
   show(base+' Говорю…');
