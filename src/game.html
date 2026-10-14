@@ -442,6 +442,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .langsw{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--bubble);border:1.5px solid var(--web)}
 .langsw button{border:0;border-radius:999px;padding:10px 22px;min-height:44px;background:none;color:var(--muted);font:800 14px var(--body);cursor:pointer}
 .langsw button.on{background:var(--accent);color:#fff}
+.vtest{border:1.5px solid var(--web);border-radius:999px;background:var(--bubble);color:var(--fg);font:800 14px var(--body);padding:10px 18px;min-height:44px;cursor:pointer}
+.vinfo{max-width:520px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;line-height:1.35}
+.vinfo:empty{display:none}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
@@ -498,6 +501,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
   <div class="sub">Игра про паука</div>
   <h2>Чёрный паук</h2>
   <div class="langsw" role="group" aria-label="Language"><button data-lang="ru">Русский</button><button data-lang="en">English</button></div>
+  <button class="vtest" id="vtest">🔊 Проверить голос</button><div class="vinfo" id="vinfo" aria-live="polite"></div>
   <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
   <div class="cards">
     <button class="card" id="m1">
@@ -693,6 +697,22 @@ function ruVoices(all){   // голоса нужного языка (назва�
 // мужской русский голос для папы: Юрий (iPhone/Mac), Павел/Дмитрий (Windows/Edge), Максим; иначе — не тот, которым говорит паук
 const MALE_RE=/yuri|юрий|pavel|павел|dmitr|дмитр|maxim|максим|daniel|arthur|oliver|george|rishi|fred|aaron|gordon|thomas|ryan|guy|male|мужск/i;
 function maleVoice(ru){return ru.find(v=>MALE_RE.test(v.name)&&!/female|женск/i.test(v.name))||ru[ru.length-1]}
+// проверка голоса из меню: говорит фразу и пишет, каким голосом и что пошло не так
+$('vtest').onclick=()=>{
+  const info=$('vinfo'), show=t=>{info.textContent=t};
+  if(!('speechSynthesis' in window)){show('Этот браузер не умеет говорить вслух.');return}
+  if(!soundOn){show('Звук выключен — включи его кнопкой «Звук» внизу.');return}
+  const all=speechSynthesis.getVoices(), ru=ruVoices(all), v=ru[0];
+  speechSynthesis.cancel(); speaking=false; sq.length=0;
+  const u=new SpeechSynthesisUtterance('Привет! Я чёрный паук!'); u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=.4;
+  if(v){u.voice=v; u.lang=v.lang.replace('_','-')}
+  const base=v?`Голос: ${v.name} (${v.lang}).`:all.length?'На устройстве нет голоса для этого языка.':'Список голосов пока пуст — нажми ещё раз.';
+  show(base+' Говорю…');
+  u.onstart=()=>show(base+' Говорю…');
+  u.onend=()=>show(base+' Если ничего не было слышно, проверь громкость и беззвучный режим телефона.');
+  u.onerror=e=>show(base+' Ошибка: '+(e.error||'неизвестная'));
+  speechSynthesis.resume(); speechSynthesis.speak(u);
+};
 function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
 function checkVoices(){const all=speechSynthesis.getVoices(); if(all.length) noRuVoice(!ruVoices(all).length)}
 if('speechSynthesis' in window){

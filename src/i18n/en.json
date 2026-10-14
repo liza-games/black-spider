@@ -21,7 +21,8 @@
   "Паук учится плавать": "The Spider Learns to Swim",
   "Эпизод 7 · бег": "Episode 7 · running",
   "Большой забег": "The Big Race",
-  "Русский": "Русский"
+  "Русский": "Русский",
+  "🔊 Проверить голос": "🔊 Test the voice"
  },
  "js": {
   "'🔊 Звук'": "'🔊 Sound'",
@@ -815,6 +816,15 @@
   "'<b>Ты быстрее молнии!</b>'": "'<b>You\\'re faster than lightning!</b>'",
   "'Ура! Кубок мой! Я самый быстрый паук на свете!'": "'Hooray! The cup is mine! I\\'m the fastest spider in the world!'",
   "'Чёрный паук — чемпион! 🏆'": "'Black Spider is the champion! 🏆'",
-  "`В копилке ${bank} £. Можно бежать ещё, копить и покупать!`": "`There's £${bank} in the piggy bank. You can run again, save up and buy things!`"
+  "`В копилке ${bank} £. Можно бежать ещё, копить и покупать!`": "`There's £${bank} in the piggy bank. You can run again, save up and buy things!`",
+  "'Этот браузер не умеет говорить вслух.'": "'This browser cannot speak aloud.'",
+  "'Звук выключен — включи его кнопкой «Звук» внизу.'": "'Sound is off — turn it on with the Sound button at the bottom.'",
+  "`Голос: ${v.name} (${v.lang}).`": "`Voice: ${v.name} (${v.lang}).`",
+  "'На устройстве нет голоса для этого языка.'": "'This device has no voice for this language.'",
+  "'Список голосов пока пуст — нажми ещё раз.'": "'The voice list is still empty — tap again.'",
+  "' Говорю…'": "' Speaking…'",
+  "' Если ничего не было слышно, проверь громкость и беззвучный режим телефона.'": "' If you heard nothing, check the volume and the phone’s silent mode.'",
+  "' Ошибка: '": "' Error: '",
+  "'неизвестная'": "'unknown'"
  }
 }
