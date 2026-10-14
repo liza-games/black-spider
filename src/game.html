@@ -380,10 +380,11 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .score-stars{font-size:clamp(34px,10vw,48px);letter-spacing:.1em;color:var(--gold);text-align:center;line-height:1}
 
 /* ================= эпизод 6: бассейн ================= */
-.gear-cap,.gear-goggles,.gear-arm,.gear-medal{display:none}
+.gear-cap,.gear-goggles,.gear-arm,.gear-medal,.gear-helmet,.gear-shoes,.gear-socks,.gear-boots{display:none}
 .silver .gear-medal circle{fill:#d3d9df;stroke:#8a96a3}
 .bronze .gear-medal circle{fill:#d08a4a;stroke:#9a5a24}
-.w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal{display:inline}
+.w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal,.w-helmet .gear-helmet,.w-shoes .gear-shoes,.w-socks .gear-socks,.w-boots .gear-boots{display:inline}
+.w-boots .gear-shoes{display:none}   /* в сапожках кроссовки не видны */
 .room.locker .wall{background:linear-gradient(transparent 62%,#c99a6b 62% 64%,transparent 64%),#f1e7d6}
 .room.locker .floor{background:repeating-linear-gradient(90deg,#d9cdb5 0 36px,#cfc2a8 36px 72px)}
 .room.poolside{background:linear-gradient(#d8eef2 0 50%,#3d9be0 50%)}
@@ -438,6 +439,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 /* ================= главное меню ================= */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
+.langsw{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--bubble);border:1.5px solid var(--web)}
+.langsw button{border:0;border-radius:999px;padding:7px 16px;background:none;color:var(--muted);font:800 14px var(--body);cursor:pointer}
+.langsw button.on{background:var(--accent);color:#fff}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
@@ -491,6 +495,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 </footer>
 
 <div class="menu" id="menu">
+  <div class="langsw" role="group" aria-label="Language"><button data-lang="ru">Русский</button><button data-lang="en">English</button></div>
   <div class="sub">Игра про паука</div>
   <h2>Чёрный паук</h2>
   <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
@@ -601,6 +606,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
           <path class="leg" d="M78 100 L36 84 L8 112"/>
           <path class="leg" d="M78 110 L38 116 L16 148"/>
           <path class="leg" d="M82 118 L52 140 L40 166"/>
+          <g class="gear-socks"><circle cx="18" cy="84" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="15" cy="86" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M14 85 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="9.5" y="73.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="15" cy="91.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M11.5 78 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="8" cy="112" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="5" cy="114" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M4 113 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="-0.5" y="101.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="5" cy="119.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M1.5 106 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="16" cy="148" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="13" cy="150" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M12 149 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="7.5" y="137.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="13" cy="155.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M9.5 142 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="40" cy="166" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="37" cy="168" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M36 167 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="31.5" y="155.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="37" cy="173.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M33.5 160 h13" stroke="#e8483c" stroke-width="2.5"/></g>
         </g>
         <g class="legs-r">
           <path class="leg" d="M120 92 L156 60 L182 84"/>
@@ -608,6 +614,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
           <path class="leg" d="M122 100 L164 84 L192 112"/>
           <path class="leg" d="M122 110 L162 116 L184 148"/>
           <path class="leg" d="M118 118 L148 140 L160 166"/>
+          <g class="gear-socks"><circle cx="182" cy="84" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="185" cy="86" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M178 85 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="173.5" y="73.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="185" cy="91.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M175.5 78 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="192" cy="112" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="195" cy="114" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M188 113 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="183.5" y="101.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="195" cy="119.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M185.5 106 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="184" cy="148" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="187" cy="150" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M180 149 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="175.5" y="137.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="187" cy="155.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M177.5 142 h13" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-socks"><circle cx="160" cy="166" r="9.5" fill="#fff" stroke="#e8483c" stroke-width="4" stroke-dasharray="5 3"/></g><g class="gear-shoes"><ellipse cx="163" cy="168" rx="13" ry="8" fill="#fff" stroke="#9aa7b2" stroke-width="2.5"/><path d="M156 167 h8" stroke="#e8483c" stroke-width="2.5"/></g><g class="gear-boots"><rect x="151.5" y="155.0" width="17" height="19" rx="3.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><ellipse cx="163" cy="173.0" rx="12" ry="5.5" fill="#ffd23a" stroke="#c98f12" stroke-width="2"/><path d="M153.5 160 h13" stroke="#e8483c" stroke-width="2.5"/></g>
         </g>
         <ellipse class="body" cx="100" cy="122" rx="34" ry="30"/>
         <circle class="body" cx="100" cy="86" r="26"/>
@@ -618,6 +625,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
         <path class="mouth" d="M92 98 Q100 104 108 98" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <path class="gear-cap" d="M73 84 A27 27 0 0 1 127 84 Q100 74 73 84Z" fill="#2f7de0"/><path class="gear-cap" d="M80 70 Q100 62 120 70" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/>
         <g class="gear-goggles"><path d="M74 81 H80 M120 81 H126" stroke="#2f7de0" stroke-width="3"/><circle cx="90" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><circle cx="110" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><path d="M100 82 h0" stroke="#2f7de0" stroke-width="3" stroke-linecap="round"/></g>
+        <g class="gear-helmet"><path d="M71 80 A29 29 0 0 1 129 80 Z" fill="#e8483c"/><rect x="64" y="77" width="72" height="7" rx="3.5" fill="#c4302a"/><path d="M100 57 v14 M93 64 h14" stroke="#fff" stroke-width="4"/><path d="M80 66 Q90 58 100 57" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/></g>
         <g class="gear-medal"><path d="M90 100 L100 118 L110 100" stroke="#3d6fe0" stroke-width="4" fill="none"/><circle cx="100" cy="124" r="10" fill="#f5c03a" stroke="#c98f12" stroke-width="2"/><path d="M100 118 l2 4 4 .5 -3 3 1 4 -4 -2 -4 2 1 -4 -3 -3 4 -.5z" fill="#fff6"/></g>
         <g class="teeth"><path class="tooth" d="M86 95 Q100 120 114 95 Z" stroke="#fff" stroke-width="1"/><path d="M93 96 v6 M100 96 v8 M107 96 v6" stroke="rgb(0 0 0/.25)" stroke-width="1.5"/></g>
         <g class="bow"><path d="M100 61 L84 52 V70Z M100 61 L116 52 V70Z" fill="#ff5a9b"/><circle cx="100" cy="61" r="5" fill="#ff86b0"/></g>
@@ -629,6 +637,13 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 
 <script>
 const $=id=>document.getElementById(id);
+// язык: 'ru' или 'en'. Английская версия собирается из этого же файла (build.py + src/i18n/en.json),
+// поэтому здесь от языка зависят только голос, склонения и ключи сохранений
+const LANG=window.SPIDER_LANG==='en'?'en':'ru';
+document.querySelectorAll('.langsw button').forEach(b=>{
+  b.classList.toggle('on',b.dataset.lang===LANG);
+  b.onclick=()=>{ if(b.dataset.lang===LANG) return; try{localStorage.setItem('spider-lang',b.dataset.lang)}catch(e){} try{speechSynthesis.cancel()}catch(e){} location.reload() };
+});
 const stage=$('stage'), threads=$('threads');
 const rect=()=>stage.getBoundingClientRect();
 const pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -658,7 +673,7 @@ function nextSpeech(){
   if(!it){speaking=false;return}
   speaking=true; const id=++spId, done=()=>{if(id===spId)nextSpeech()};
   const u=new SpeechSynthesisUtterance(it.text);
-  u.lang='ru-RU'; u.pitch=it.pitch; u.rate=it.rate;
+  u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=it.pitch; u.rate=it.rate;
   // Говорим только русским голосом. Если на устройстве его нет, лучше молчать:
   // иначе телефон читает русский текст словацким, японским или китайским голосом.
   const all=speechSynthesis.getVoices(), ru=ruVoices(all);
@@ -669,13 +684,14 @@ function nextSpeech(){
   speechSynthesis.resume();
   speechSynthesis.speak(u);
 }
-function ruVoices(all){
-  const ru=all.filter(v=>/^ru([-_]|$)/i.test(v.lang||''));
-  // сначала голоса самого устройства и именно ru-RU: они надёжнее сетевых
-  return ru.sort((a,b)=>(b.localService-a.localService)||(/ru[-_]RU/i.test(b.lang)-/ru[-_]RU/i.test(a.lang)));
+function ruVoices(all){   // голоса нужного языка (название историческое: сначала был только русский)
+  const re=LANG==='en'?/^en([-_]|$)/i:/^ru([-_]|$)/i, main=LANG==='en'?/en[-_]GB/i:/ru[-_]RU/i;
+  const ru=all.filter(v=>re.test(v.lang||''));
+  // сначала голоса самого устройства и основной вариант языка (ru-RU / en-GB): они надёжнее сетевых
+  return ru.sort((a,b)=>(b.localService-a.localService)||(main.test(b.lang)-main.test(a.lang)));
 }
 // мужской русский голос для папы: Юрий (iPhone/Mac), Павел/Дмитрий (Windows/Edge), Максим; иначе — не тот, которым говорит паук
-const MALE_RE=/yuri|юрий|pavel|павел|dmitr|дмитр|maxim|максим|male|мужск/i;
+const MALE_RE=/yuri|юрий|pavel|павел|dmitr|дмитр|maxim|максим|daniel|arthur|oliver|george|rishi|fred|aaron|gordon|thomas|ryan|guy|male|мужск/i;
 function maleVoice(ru){return ru.find(v=>MALE_RE.test(v.name)&&!/female|женск/i.test(v.name))||ru[ru.length-1]}
 function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
 function checkVoices(){const all=speechSynthesis.getVoices(); if(all.length) noRuVoice(!ruVoices(all).length)}
@@ -691,7 +707,7 @@ function unlockAudio(){
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume()}catch(e){}
   if(unlocked||!('speechSynthesis' in window)) return;
   unlocked=true;
-  const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang='ru-RU';
+  const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang=LANG==='en'?'en-GB':'ru-RU';
   speechSynthesis.speak(u);
 }
 ['touchend','click','keydown'].forEach(t=>addEventListener(t,unlockAudio,{capture:true}));
@@ -2453,7 +2469,7 @@ const INSTR={violin:{ins:'со скрипочкой',on:'на скрипочке
 const NUMF=['ноль','одна','две','три','четыре','пять','шесть','семь','восемь','девять','десять','одиннадцать','двенадцать']; // женский род: ягодки, точки
 const NUMQ=['ноль','один','два','три','четыре','пять','шесть','семь','восемь','девять','десять','одиннадцать','двенадцать'];
 const cap=w=>w[0].toUpperCase()+w.slice(1);
-const plural=(n,one,few,many)=>{const a=n%10,b=n%100;return a===1&&b!==11?one:a>=2&&a<=4&&(b<12||b>14)?few:many};
+const plural=(n,one,few,many)=>{if(LANG==='en') return n===1?one:many; const a=n%10,b=n%100;return a===1&&b!==11?one:a>=2&&a<=4&&(b<12||b>14)?few:many};
 function newV5(){
   const rnd=a=>a[Math.floor(Math.random()*a.length)];
   return {snail:rnd(['Тоня','Соня','Нюша']),lady:rnd(['Мила','Ника','Тася']),hopper:rnd(['Гоша','Кеша','Тёма']),
@@ -2462,9 +2478,10 @@ function newV5(){
     shelter:rnd(['leaf','mushroom']),rainbow:5+Math.floor(Math.random()*3),n:9+Math.floor(Math.random()*4)};
 }
 let V5=newV5(), BOOK5=[], QUIZ5=[];
+const V5KEY=LANG==='en'?'spider-ep5-v-en':'spider-ep5-v';   // имена героев на своём языке
 function ensureV5(fresh){
-  let v=null; if(!fresh){try{v=JSON.parse(localStorage.getItem('spider-ep5-v'))}catch(e){}}
-  V5=v&&v.snail?v:newV5(); try{localStorage.setItem('spider-ep5-v',JSON.stringify(V5))}catch(e){}
+  let v=null; if(!fresh){try{v=JSON.parse(localStorage.getItem(V5KEY))}catch(e){}}
+  V5=v&&v.snail?v:newV5(); try{localStorage.setItem(V5KEY,JSON.stringify(V5))}catch(e){}
   BOOK5=makeBook5(V5); QUIZ5=makeQuiz5(V5);
 }
 function makeBook5(v){
@@ -2625,7 +2642,7 @@ SCENES.quiz=function(alive){
       talk2(S2,(QUIZ5.length!==10&&pct>=70?'Даже с непривычным числом вопросов справился! ':'')+(pct>=100?'Сто процентов! Я всё запомнил!':pct>=70?`${pct} процентов! Ура, я молодец!`:`${pct} процентов. Не страшно! Перечитаю книжку и попробую ещё.`),3600);
     },1250);
     // ещё раз: та же книжка, но другое число вопросов и другие вопросы
-    $('r-again').onclick=()=>{V5.n=9+Math.floor(Math.random()*4);try{localStorage.setItem('spider-ep5-v',JSON.stringify(V5))}catch(e){}enter2(EPX.findIndex(L=>L.key==='quiz'))};
+    $('r-again').onclick=()=>{V5.n=9+Math.floor(Math.random()*4);try{localStorage.setItem(V5KEY,JSON.stringify(V5))}catch(e){}enter2(EPX.findIndex(L=>L.key==='quiz'))};
     EPS.fin=['Квиз пройден!',`Результат: ${pct}%`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
   }
@@ -3200,7 +3217,7 @@ const SHOP7=[
   {k:'medal',d:'для красоты',  n:'Золотая медаль',   e:'🏅',p:200,say:'Золотая медаль! Я чемпион!'}
 ];
 const items7=()=>{try{return JSON.parse(localStorage.getItem('spider-ep7-items'))||[]}catch(e){return []}};
-const LOOK7=['cap','goggles','medal'];
+const LOOK7=['cap','goggles','medal','helmet','shoes','socks','boots'];   // всё купленное видно на пауке
 function race7(alive,key){
   const R=RACE7[key], TR=TRACK7[key], N=R.riv.length, n=N+1, me=Math.floor(n/2), own=items7();
   const stepK=own.includes('shoes')?1.1:1, JD=own.includes('socks')?.75:.55;
