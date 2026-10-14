@@ -437,10 +437,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sdone{position:absolute;right:5%;bottom:5%;z-index:5;border:0;border-radius:999px;background:var(--accent);color:#fff;font:900 18px Nunito,sans-serif;padding:10px 20px;box-shadow:0 4px 0 #8a2a1c}
 
 /* ================= главное меню ================= */
-.menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:24px 16px}
+.menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:72px 16px 24px}   /* сверху место под кнопки приложения, чтобы до всего можно было дотянуться */
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
 .langsw{display:flex;gap:6px;padding:4px;border-radius:999px;background:var(--bubble);border:1.5px solid var(--web)}
-.langsw button{border:0;border-radius:999px;padding:7px 16px;background:none;color:var(--muted);font:800 14px var(--body);cursor:pointer}
+.langsw button{border:0;border-radius:999px;padding:10px 22px;min-height:44px;background:none;color:var(--muted);font:800 14px var(--body);cursor:pointer}
 .langsw button.on{background:var(--accent);color:#fff}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
@@ -495,9 +495,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 </footer>
 
 <div class="menu" id="menu">
-  <div class="langsw" role="group" aria-label="Language"><button data-lang="ru">Русский</button><button data-lang="en">English</button></div>
   <div class="sub">Игра про паука</div>
   <h2>Чёрный паук</h2>
+  <div class="langsw" role="group" aria-label="Language"><button data-lang="ru">Русский</button><button data-lang="en">English</button></div>
   <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
   <div class="cards">
     <button class="card" id="m1">
