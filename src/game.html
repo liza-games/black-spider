@@ -689,7 +689,7 @@ function nextSpeech(){
   speechSynthesis.speak(u);
 }
 // английские голоса телефона и так низкие (например, Daniel), поэтому в английской версии все герои звучат выше
-const pitchFor=p=>LANG==='en'?Math.min(2,p+.5):p;
+const pitchFor=p=>LANG==='en'?Math.min(2,p+.9):p;
 function ruVoices(all){   // голоса нужного языка (название историческое: сначала был только русский)
   const re=LANG==='en'?/^en([-_]|$)/i:/^ru([-_]|$)/i, main=LANG==='en'?/en[-_]GB/i:/ru[-_]RU/i;
   const ru=all.filter(v=>re.test(v.lang||''));
