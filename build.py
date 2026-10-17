@@ -9,7 +9,7 @@ src/game.html — русский исходник без обёртки <html>/<
 Результат:
   build/game.html — страница для чата Claude (без обёртки), в ней обе версии;
   index.html      — она же с обёрткой, для GitHub Pages.
-При запуске страница берёт язык из localStorage 'spider-lang' (по умолчанию русский)
+При запуске страница берёт язык из localStorage 'spider-lang', а если его не выбирали — язык телефона
 и вставляет разметку и скрипт нужной версии. Переключатель — в главном меню.
 """
 import json, subprocess, sys
@@ -32,7 +32,10 @@ boot = f"""<script>
 /* обе версии игры; выбирается одна по сохранённому языку */
 (function(){{
   var P={{ru:{pack(data['ru'])},en:{pack(data['en'])}}}, T={pack(titles)};
-  var L='ru'; try{{ if(localStorage.getItem('spider-lang')==='en') L='en' }}catch(e){{}}
+  // язык: выбранный вручную, иначе язык телефона (русский, украинский, белорусский, казахский → русский, остальные → английский)
+  var saved=null; try{{ saved=localStorage.getItem('spider-lang') }}catch(e){{}}
+  var dev=((navigator.languages&&navigator.languages[0])||navigator.language||'ru').toLowerCase();
+  var L=saved==='en'||saved==='ru'?saved:(/^(ru|uk|be|kk)([-_]|$)/.test(dev)?'ru':'en');
   window.SPIDER_LANG=L; document.documentElement.lang=L; document.title=T[L];
   var me=document.currentScript;
   me.insertAdjacentHTML('beforebegin',P[L].html);
