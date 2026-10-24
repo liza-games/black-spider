@@ -978,14 +978,15 @@ const FUSE=2800; // сколько живёт синяя вонючка до «�
 let spawnOn=false, maxBugs=0, badChance=0, poisonChance=0;
 function spawnBug(){
   const roll=Math.random();
-  const r=rect(), k=roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
+  const onlyBad=bugs.length>0&&bugs.every(q=>q.K.bad);   // на экране одни невкусные — следующая точно вкусная
+  const r=rect(), k=onlyBad?pick(TASTY):roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
   const el=document.createElement('button');
   el.className='bug'; el.setAttribute('aria-label',K.bad?K.name+' — невкусная!':K.name);
   el.innerHTML=`<svg viewBox="0 0 60 60">${K.svg}</svg>`;
   stage.appendChild(el);
   const fromLeft=Math.random()<.5;
   const b={el,k,K,x:fromLeft?-30:r.width+30,y:r.height*.38+Math.random()*(r.height*.52),
-    a:fromLeft?0:Math.PI,t:Math.random()*100,caught:false,dead:false};
+    a:fromLeft?0:Math.PI,t:Math.random()*100,caught:false,dead:false,born:performance.now(),life:K.bad?rand(7000,10000):0};
   if(K.poison){b.fuse=performance.now()+FUSE+1200;el.classList.add('poison');el.setAttribute('aria-label','синяя вонючка — съешь её быстрее!')}
   el.addEventListener('pointerdown',e=>{e.preventDefault();hunt(b)});
   el.addEventListener('click',e=>{if(e.detail===0)hunt(b)});
@@ -1324,16 +1325,20 @@ function frame(){
     b.el.classList.toggle('hurry',rem<2000);
     if(rem<=0) explode(b);
   }
-  for(const b of bugs){
+  // осы и зелёные вонючки не живут вечно: покружатся и улетают за край (а если вкусных нет — улетают быстрее)
+  const tastyHere=bugs.some(q=>!q.K.bad&&!q.dead);
+  for(const b of bugs) if(b.life&&!b.leaving&&!b.caught&&now-b.born>(tastyHere?b.life:Math.min(b.life,3500))){b.leaving=true; b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<r.width/2?(b.a<0?-Math.PI:Math.PI):0}
+  for(const b of [...bugs]){
     if(b.caught){b.el.style.transform=`translate(${b.x}px,${b.y}px)`;continue}
     b.t+=.02;
-    b.a+=Math.sin(b.t*1.7+b.x*.01)*.05+(Math.random()-.5)*.08;
+    if(b.leaving){ b.a+=(b.exitDir-b.a)*.06; if(b.x<-25||b.x>r.width+25){removeBug(b);continue} }
+    else b.a+=Math.sin(b.t*1.7+b.x*.01)*.05+(Math.random()-.5)*.08;
     const m=40, top=r.height*.32;
-    if(b.x<m&&Math.cos(b.a)<0||b.x>r.width-m&&Math.cos(b.a)>0) b.a=Math.PI-b.a;
+    if(!b.leaving&&(b.x<m&&Math.cos(b.a)<0||b.x>r.width-m&&Math.cos(b.a)>0)) b.a=Math.PI-b.a;
     if(b.y<top&&Math.sin(b.a)<0||b.y>r.height-m&&Math.sin(b.a)>0) b.a=-b.a;
     for(const s of spiders){
       const dx=b.x-s.x, dy=b.y-(s.y+h*.4), d=Math.hypot(dx,dy);
-      if(d<h*.8) b.a+=(Math.atan2(dy,dx)-b.a)*.08;
+      if(d<h*.8&&!b.leaving) b.a+=(Math.atan2(dy,dx)-b.a)*.08;
     }
     const sp=b.K.speed*(level>=6?1.2:1);
     b.x+=Math.cos(b.a)*sp; b.y+=Math.sin(b.a)*sp;
