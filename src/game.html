@@ -1156,9 +1156,9 @@ const LEVELS=[
   {key:'eyes',title:'Разминка: покрутим глазками',hint:'Води пальцем по кругу вокруг паука',goal:3,unit:'круга',done:'Глазки размяты!'},
   {key:'jump',title:'Разминка: попрыгай',hint:'Нажимай на паука',goal:5,unit:'прыжков',done:'Я готов!'},
   {key:'eat',title:'Пора обедать!',hint:'Тапай по букашкам — паук их поймает',goal:5,unit:'',done:'Вкусно! Ещё хочу!'},
+  {key:'yuck',title:'Осторожно, невкусные!',hint:'Не ешь ос и зелёных вонючек. Нужно 8 вкусных',goal:8,unit:'',done:'Я всё различаю!'},
   {key:'purple',title:'Фиолетовый ворует еду',hint:'Успей съесть 7 раньше него',goal:7,unit:'',done:'Я обогнал Фиолетового!'},
   {key:'red',race:'red',title:'Гонка с Красным',hint:'Съешь 8 раньше, чем он',goal:8,unit:'',done:'Я быстрее Красного!'},
-  {key:'yuck',title:'Осторожно, невкусные!',hint:'Не ешь ос и зелёных вонючек. Нужно 8 вкусных',goal:8,unit:'',done:'Я всё различаю!'},
   {key:'poison',title:'Синие ядовитые вонючки',hint:'Съешь синюю, пока не кончилось колечко, иначе паук отравится. Нужно 8',goal:8,unit:'',done:'Я победил яд!'},
   {key:'blue',race:'blue',title:'Гонка с Синим',hint:'Он быстрее Красного! Съешь 8 раньше него',goal:8,unit:'',done:'Я быстрее всех пауков!'},
   {key:'green',rival:'green',title:'Зелёный щекотун',hint:'Съешь 8. Зелёный тоже ест букашек, а если его тронуть — защекочет!',goal:8,unit:'',done:'Я всех победил!'}
@@ -1345,7 +1345,7 @@ function frame(){
       const dx=b.x-s.x, dy=b.y-(s.y+h*.4), d=Math.hypot(dx,dy);
       if(d<h*.8&&!b.leaving) b.a+=(Math.atan2(dy,dx)-b.a)*.08;
     }
-    const sp=b.K.speed*(level>=6?1.2:1);
+    const sp=b.K.speed*(level>=LEVELS.findIndex(L=>L.key==='red')?1.2:1);   // с гонки с Красным букашки шустрее
     b.x+=Math.cos(b.a)*sp; b.y+=Math.sin(b.a)*sp;
     b.x=Math.min(Math.max(b.x,-30),r.width+30); b.y=Math.min(Math.max(b.y,20),r.height-20);
     const turn=b.k==='ladybug'||b.k==='stinkbug';
