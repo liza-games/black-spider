@@ -38,7 +38,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .bars{width:100%;max-width:280px;display:flex;flex-direction:column;gap:4px;margin-top:2px}
 .bar{height:12px;border-radius:999px;background:var(--track);overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .35s cubic-bezier(.3,1.4,.5,1)}
-.bar i.live{transition:width .12s linear}
+.bar i.live{transition:none}
 .bar.rival{height:8px}.bar.rival i{background:var(--red)}
 .count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
 .count b{font-family:var(--display);font-weight:400;color:var(--accent)}
@@ -1169,6 +1169,9 @@ function save(){try{localStorage.setItem('spider-level',level)}catch(e){}}
 window.claude?.hot?.snapshot?.(()=>({level,episode,l2}));
 
 $('steps').innerHTML=LEVELS.map(()=>'<i></i>').join('');
+// полоска при кручении глаз: обновляется один раз за кадр и сразу, без анимации
+let eyeRaf=0;
+function eyeBar(){ if(eyeRaf) return; eyeRaf=requestAnimationFrame(()=>{ eyeRaf=0; const L=LEVELS[level]; if(L&&L.key==='eyes') $('barMe').style.width=Math.min(100,eyeAcc/TAU/L.goal*100)+'%' }) }
 function render(){
   [...$('steps').children].forEach((d,i)=>{d.className=i<level?'done':i===level?'now':''});
   const fin=level>=LEVELS.length;
@@ -1267,11 +1270,11 @@ addEventListener('pointermove',e=>{
   const a=Math.atan2(dy,dx);
   if(lastA!==null){
     let d=a-lastA; while(d>Math.PI)d-=TAU; while(d<-Math.PI)d+=TAU;
-    if(Math.abs(d)<1){
+    if(Math.abs(d)<2.2){      // быстрый круг на телефоне даёт редкие события — большие шаги тоже засчитываем
       const before=Math.floor(eyeAcc/(TAU/4));
       eyeAcc+=Math.abs(d);
-      if(Math.floor(eyeAcc/(TAU/4))>before) sfx.tick(Math.floor(eyeAcc/(TAU/4)));
-      render();
+      if(Math.floor(eyeAcc/(TAU/4))>before){ sfx.tick(Math.floor(eyeAcc/(TAU/4))); render() }   // счёт кругов — только на четвертях
+      eyeBar();
       if(eyeAcc>=LEVELS[level].goal*TAU) complete();
     }
   }
