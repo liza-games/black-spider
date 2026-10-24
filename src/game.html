@@ -38,6 +38,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .bars{width:100%;max-width:280px;display:flex;flex-direction:column;gap:4px;margin-top:2px}
 .bar{height:12px;border-radius:999px;background:var(--track);overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .35s cubic-bezier(.3,1.4,.5,1)}
+.bar i.live{transition:width .12s linear}
 .bar.rival{height:8px}.bar.rival i{background:var(--red)}
 .count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
 .count b{font-family:var(--display);font-weight:400;color:var(--accent)}
@@ -1180,6 +1181,7 @@ function render(){
   $('task').textContent=L.title; $('hint').textContent=L.hint;
   const turns=eyeAcc/TAU;
   const frac=L.key==='eyes'?turns/L.goal:prog/L.goal;
+  $('barMe').classList.toggle('live',L.key==='eyes');   // при кручении глаз полоска едет за пальцем без пружинки
   $('barMe').style.width=Math.min(100,frac*100)+'%';
   $('barRivalWrap').hidden=!L.race;
   if(L.race) $('barR').style.background=RIVALS[L.race].color;
