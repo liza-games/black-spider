@@ -107,6 +107,12 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 @keyframes stir{25%{rotate:-10deg}75%{rotate:10deg}}
 @keyframes laugh{0%,100%{translate:0 0;rotate:0deg}25%{translate:0 -8px;rotate:-6deg}75%{translate:0 -8px;rotate:6deg}}
 @keyframes sad{30%{translate:0 8px;scale:1.05 .92}100%{translate:0 0}}
+.flip7{animation:flip7 1.1s ease-in-out}
+@keyframes flip7{0%{translate:0 0;rotate:0deg}40%{translate:0 -60px;rotate:-180deg}80%{translate:0 -10px;rotate:-360deg}100%{translate:0 0;rotate:-360deg}}
+.dance7{animation:dance7 .44s ease-in-out 5}
+@keyframes dance7{0%,100%{rotate:0deg;translate:0 0}25%{rotate:-14deg;translate:-6px -6px}75%{rotate:14deg;translate:6px -6px}}
+.spin7{animation:spin7 1.6s cubic-bezier(.3,0,.3,1)}
+@keyframes spin7{to{rotate:720deg}}
 @keyframes shake{25%{translate:-6px 0}75%{translate:6px 0}}
 
 .bubble{position:absolute;bottom:calc(100% - 16px);left:55%;transform:scale(.4);transform-origin:0 100%;opacity:0;
@@ -888,9 +894,10 @@ function dismissRival(now){
   talk(s,s.cfg.bye); setTimeout(()=>{s.state='leave';sfx.whoosh()},900);
 }
 function planRival(){
-  const s=R; if(!s||s.feast||s.tickling) return; clearTimeout(s.timer);
+  const s=R; if(!s||s.feast||s.tickling||s.showing) return; clearTimeout(s.timer);
   s.timer=setTimeout(()=>{
     if(R!==s||s.state!=='home') return;
+    if(s.cfg.cls==='purple'&&bugs.length&&Math.random()<.35&&performance.now()-(s.lastShow||0)>7000){ showOff(s); return }
     const w=rect().width, ok=b=>!b.caught&&!b.dead&&b.x>20&&b.x<w-20;   // синих вонючек соперник тоже ест (и обезвреживает)
     const bad=bugs.filter(b=>ok(b)&&b.K.bad);
     let free=bugs.filter(b=>ok(b)&&!b.K.bad);
@@ -923,6 +930,16 @@ function rivalYuck(s,b){
       s.state='wc'; say(s,'<b>Мне срочно в туалет!</b>',1400) },1600);
     setTimeout(()=>say(B,bold(pick(['Хи-хи-хи! Не надо было есть вонючку!','Фу-у! Хи-хи!'])),1500),2200);
   }
+}
+
+/* Фиолетовый-хвастун: иногда останавливается показать трюк и пару секунд ничего не ловит */
+function showOff(s){
+  s.lastShow=performance.now(); s.showing=true;
+  const trick=pick([{t:'Смотри, как я умею! Сальто!',c:'flip7',ms:1100},{t:'А я умею танцевать! Ля-ля-ля!',c:'dance7',ms:2200},{t:'Смотри! Я кручусь, как волчок!',c:'spin7',ms:1600}]);
+  talk(s,trick.t,undefined,2200); sfx.magic();
+  setTimeout(()=>{ if(R===s&&s.showing) restart(s.btn,trick.c) },350);
+  if(Math.random()<.6) setTimeout(()=>{ if(R===s&&s.showing) say(B,bold(pick(['Пока он хвастается — я ем!','Хи-хи, покажи ещё!','Красиво! А я пока поем!'])),1400) },900);
+  setTimeout(()=>{ s.showing=false; s.btn.classList.remove(trick.c); if(R===s){ restart(s.btn,'laugh'); planRival() } },2600);
 }
 
 /* ================= насекомые ================= */
