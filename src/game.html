@@ -1792,8 +1792,9 @@ const EP2=[
 const EP3=[
   {key:'boat',   title:'На лодке',             goal:1, unit:'',       done:''},
   {key:'stones1',title:'Сложение: лови муху с ответом', goal:5, unit:'камней', done:'Я умею складывать!'},
-  {key:'stones2',title:'Вычитание: наперегонки с рыбой', goal:5, unit:'камней', done:'Я быстрее рыбы!'},
-  {key:'stones3',title:'Умножение',            goal:5, unit:'камней', done:'Я умею умножать!'},
+  {key:'stones2',title:'Вычитание: наперегонки с карпом', goal:5, unit:'камней', done:'Я быстрее карпа!'},
+  {key:'stones3',title:'Умножение: наперегонки с Золотинкой', goal:5, unit:'камней', done:'Я умею умножать!'},
+  {key:'stones5',title:'Наперегонки со щукой', goal:5, unit:'камней', done:'Я обогнал даже щуку!'},
   {key:'stones4',title:'Не упади в воду',      goal:5, unit:'камней', done:'Берег! Я допрыгал!'},
   {key:'shore',  title:'На берегу',            goal:4, unit:'',       done:''}
 ];
@@ -2412,7 +2413,8 @@ function stonesScene(alive,ops,opt={}){
     miss=0; colorShift++;
     // круг рыбы от края до края; на новый пример у паука всегда есть хотя бы 5 секунд
     // каждый пример — одна из трёх рыб; самая быстрая (щука) доплывает до ответа за 6 секунд
-    if(fishEl){ const prev=fishK; fishK=pickFish(opt.fishMix); if(fishK!==prev) meetFish() }
+    // одна рыба на весь этап; плывёт к дальнему краю, чтобы весь путь было видно (щука — 6 секунд)
+    if(fishEl&&!fishBusy){ dir=pos<.5?1:-1; fishEl.classList.toggle('left',dir<0) }
     const FK=FISHES[fishK]||FISHES.gold, T=Math.max(6000,(FK.base+(FK.base>6000?ex.tier*1000:0))*speedK), rem=dir>0?1-pos:pos; rate=rem/T; taunted=false;
     restart($('r-ex'),'pop');
     $('r-ex').textContent=`${ex.a} ${ex.sym} ${ex.b} = ?`;
@@ -2465,10 +2467,13 @@ function stonesScene(alive,ops,opt={}){
       await wait(1200); if(!alive())return; ask();
     }
   }
-  function meetFish(){
-    const F=FISHES[fishK]; FISHES_ALL.forEach(k=>fishEl.classList.toggle('k-'+k,k===fishK));
-    restart(fishEl,'hop'); splash2({x:fishX(rr().width),y:rr().height*FISH_Y}); sfx.splash();
-    setTimeout(()=>alive()&&talk2(FISH,F.hi,2000),250);
+  // в начале этапа рыба выпрыгивает, представляется, а паук ей отвечает — и только потом первый пример
+  async function meetFish(){
+    const F=FISHES[fishK]; fishEl.classList.add('k-'+fishK);
+    await wait(300); if(!alive())return; restart(fishEl,'hop'); splash2({x:fishX(rr().width),y:rr().height*FISH_Y}); sfx.splash();
+    await wait(350); if(!alive())return; talk2(FISH,F.hi,2600);
+    await wait(2700); if(!alive())return; talk2(S2,F.reply,2400);
+    await wait(2500); if(alive()) ask();
   }
   async function fishEats(){
     fishBusy=true; lock=true; const s=rr(), f=flies.find(q=>q.v===ex.ans)||flies[0]; f.held=true;
@@ -2516,14 +2521,17 @@ function stonesScene(alive,ops,opt={}){
     leaving=leaving.filter(f=>!f.gone);
     requestAnimationFrame(tick);
   })();
-  setTimeout(()=>alive()&&ask(),500);
+  if(fishEl){ fishK=opt.fish; meetFish() } else setTimeout(()=>alive()&&ask(),500);
 }
 SCENES.stones1=alive=>stonesScene(alive,['add']);
-const FISHES={slow:{base:13000,hi:'Я карп Толстячок. Я не тороплюсь…'},gold:{base:9500,hi:'Я рыбка Золотинка! Посчитаем?'},fast:{base:6000,hi:'Я щука Молния! Я самая быстрая!'}}, FISHES_ALL=Object.keys(FISHES);
-function pickFish(mix=[.4,.4,.2]){ const r=Math.random(); return r<mix[0]?'slow':r<mix[0]+mix[1]?'gold':'fast' }
-SCENES.stones2=alive=>stonesScene(alive,['sub'],{fish:true,fishMix:[.4,.4,.2]});
-SCENES.stones3=alive=>stonesScene(alive,['mul'],{fish:true,fishMix:[.35,.4,.25]});
-SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:true,strict:true,last:true,fishMix:[.25,.4,.35]});
+const FISHES={
+  slow:{base:13000,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
+  gold:{base:9500,hi:'А я рыбка Золотинка! Я считаю быстрее карпа!',reply:'Ещё одна рыба! Золотая! Ну держись!'},
+  fast:{base:6000,hi:'Я щука Молния! Я самая быстрая в море!',reply:'Ой-ой, щука! Надо считать очень быстро!'}};
+SCENES.stones2=alive=>stonesScene(alive,['sub'],{fish:'slow'});
+SCENES.stones3=alive=>stonesScene(alive,['mul'],{fish:'gold'});
+SCENES.stones5=alive=>stonesScene(alive,['add','sub'],{fish:'fast'});
+SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:'gold',strict:true,last:true});
 
 /* 5. Берег */
 SCENES.shore=function(alive){
