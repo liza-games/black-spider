@@ -468,7 +468,12 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sdone{position:absolute;right:5%;bottom:5%;z-index:5;border:0;border-radius:999px;background:var(--accent);color:#fff;font:900 18px Nunito,sans-serif;padding:10px 20px;box-shadow:0 4px 0 #8a2a1c}
 
 /* ================= главное меню ================= */
-.wake{position:fixed;left:0;right:0;top:-25vh;bottom:-25vh;z-index:60;cursor:pointer;background:radial-gradient(ellipse 60% 6% at 50% 50%,rgb(255 245 220/.5),transparent 70%)}
+.wake{position:fixed;left:0;right:0;top:-25vh;bottom:-25vh;z-index:60;cursor:pointer;background:radial-gradient(ellipse 45% 4% at 50% 50%,#fff6dc,rgb(255 240 210/.6) 55%,transparent 80%)}
+.wake .iris{position:absolute;left:50%;top:50%;width:min(30vw,120px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(circle,#141412 0 30%,#5b3a1e 31%,#8a5a2c 58%,#3b2410 70%);box-shadow:0 0 0 4px rgb(0 0 0/.15);animation:look 4s ease-in-out infinite}
+.wake .iris i{position:absolute;left:28%;top:24%;width:16%;height:16%;border-radius:50%;background:#fff}
+@keyframes look{0%,40%,100%{transform:translateX(0)}50%,65%{transform:translateX(-18%)}75%,90%{transform:translateX(18%)}}   /* глаз за щёлочкой поглядывает по сторонам */
+.wake.open .iris{opacity:0;transition:opacity .8s .9s}
 .wake .lid{position:absolute;left:-2%;width:104%;height:50.5%;display:block}
 .wake .lid.top{top:0;transform:translateY(-3px);animation:lidT 3.2s ease-in-out infinite}
 .wake .lid.bot{bottom:0;transform:translateY(3px);animation:lidB 3.2s ease-in-out infinite}
@@ -552,7 +557,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
 </footer>
 
 <div class="wake" id="wake" hidden role="button" tabindex="0" aria-label="Открыть глаза / Open your eyes">
-  <svg class="lid top" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H100 V103 Q50 95 0 103 Z" fill="#0b0b0d"/></svg><svg class="lid bot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 H100 V-3 Q50 5 0 -3 Z" fill="#0b0b0d"/></svg>
+  <div class="iris"><i></i></div><svg class="lid top" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" overflow="visible"><path d="M0 0 H100 V103 Q50 90 0 103 Z" fill="#0b0b0d"/></svg><svg class="lid bot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 H100 V-3 Q50 10 0 -3 Z" fill="#0b0b0d"/></svg>
   <div class="wtext"><span class="wfinger">👆</span><b class="wru">Нажми, чтобы открыть глаза</b><b class="wen">Tap to open your eyes</b></div>
 </div>
 <div class="menu" id="menu">
@@ -855,6 +860,17 @@ const sfx={
   splash:()=>{noise(.45,2500,400,.12,0,'lowpass',.9);tone(300,.15,'sine',0,.05,90)},
   thud:()=>{tone(110,.15,'sine',0,.12,45);noise(.1,700,200,.07,0,'lowpass',1)}
 };
+// мягкое пробуждение: тихий тёплый аккорд медленно нарастает и тает, сверху лёгкий «вдох»
+function wakeSound(){
+  if(!soundOn) return;
+  try{ const out=bus(), t0=ac.currentTime+.05;
+    [[523.25,0],[659.25,.18],[783.99,.36],[1046.5,.6]].forEach(([f,d])=>{
+      const o=ac.createOscillator(), g=ac.createGain(); o.type='sine'; o.frequency.value=f;
+      const t=t0+d; g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.035,t+.45); g.gain.exponentialRampToValueAtTime(.0008,t+2.2);
+      o.connect(g).connect(out); o.start(t); o.stop(t+2.3) });
+    noise(1.4,400,1400,.018,0,'lowpass',.5);
+  }catch(e){}
+}
 // вибрация к звукам: Android — настоящая, iPhone — лёгкий «тик» через системный переключатель (работает не на всех версиях)
 const HAPT={jump:'tap',click:'tap',boing:'tap',pop:'tap',tick:'tap',chomp:'good',magic:'good',yuck:'bad',poison:'bad',thud:'bad',splash:'tap',fanfare:'win'};
 const hapEl=(()=>{try{const l=document.createElement('label'); l.setAttribute('aria-hidden','true'); l.style.cssText='position:fixed;left:-200px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
@@ -3780,7 +3796,7 @@ else{
   let awake=false; try{awake=sessionStorage.getItem('spider-awake')==='1'}catch(e){}
   if(!awake){
     const w=$('wake'); w.hidden=false; document.body.classList.add('sleepy');
-    const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); document.body.classList.remove('sleepy'); sfx.magic(); playMusic(0);
+    const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); document.body.classList.remove('sleepy'); wakeSound(); setTimeout(()=>playMusic(0),900);
       try{sessionStorage.setItem('spider-awake','1')}catch(e){} setTimeout(()=>w.remove(),2000) };
     w.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); w.addEventListener('pointerdown',e=>e.preventDefault()); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
   }
