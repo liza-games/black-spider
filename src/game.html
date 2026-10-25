@@ -53,7 +53,19 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
 .count b{font-family:var(--display);font-weight:400;color:var(--accent)}
 .count em{font-style:normal;font-family:var(--display);color:var(--red)}
-#replay{font:inherit;font-family:var(--display);font-size:16px;color:#fff;background:var(--accent);border:0;border-radius:999px;padding:12px 22px;cursor:pointer;margin-top:4px}
+#replay{font:inherit;background:none;border:0;padding:0;margin-top:2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--accent)}
+#replay svg{width:clamp(78px,24vw,110px);height:auto;overflow:visible;animation:starbob 1.6s ease-in-out infinite;filter:drop-shadow(0 4px 10px rgb(224 164 18/.45))}
+#replay span{font-family:var(--display);font-size:15px}
+#replay .sglow{transform-origin:60px 62px;animation:sglow 1.6s ease-in-out infinite}
+#replay .sshine{transform-box:fill-box;transform-origin:center;animation:sshine 2.4s ease-in-out infinite}
+@keyframes starbob{0%,100%{transform:scale(1) rotate(-6deg)}50%{transform:scale(1.1) rotate(6deg)}}
+@keyframes sglow{50%{transform:scale(1.18);opacity:.4}}
+@keyframes sshine{0%,60%,100%{transform:scale(0)}75%{transform:scale(1.2)}}
+#replay.taken svg{animation:starfly 1s cubic-bezier(.5,-.3,.6,1) forwards}
+#replay.taken span{opacity:0;transition:opacity .2s}
+@keyframes starfly{0%{transform:scale(1)}30%{transform:scale(1.45) rotate(-20deg)}100%{transform:translateY(-70vh) scale(.3) rotate(360deg);opacity:0}}
+.card.justdone{animation:cardpop .9s ease-out;box-shadow:0 0 0 3px #ffd23a,0 8px 28px rgb(224 164 18/.45)}
+@keyframes cardpop{0%{transform:scale(1)}35%{transform:scale(1.06)}60%{transform:scale(.98)}100%{transform:scale(1)}}
 
 /* ---- сцена ---- */
 .stage{position:relative;flex:1;width:100%;max-width:680px;overflow:hidden;touch-action:none}
@@ -540,7 +552,13 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
     <div class="bar rival" id="barRivalWrap" hidden><i id="barR"></i></div>
   </div>
   <div class="count" id="count"></div>
-  <button id="replay" hidden>Играть снова</button>
+  <button id="replay" hidden aria-label="Забрать звезду и вернуться в меню">
+    <svg viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="stg" cx="40%" cy="35%"><stop offset="0" stop-color="#fff6b0"/><stop offset=".55" stop-color="#ffd23a"/><stop offset="1" stop-color="#e0a412"/></radialGradient></defs>
+      <circle class="sglow" cx="60" cy="62" r="54" fill="#ffd23a" opacity=".22"/>
+      <path d="M60 10 L73 44 L110 46 L81 69 L91 105 L60 85 L29 105 L39 69 L10 46 L47 44Z" fill="url(#stg)" stroke="#c98f12" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="49" cy="58" r="4.5" fill="#3a2a10"/><circle cx="71" cy="58" r="4.5" fill="#3a2a10"/><path d="M50 70 Q60 79 70 70" stroke="#3a2a10" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      <path class="sshine" d="M38 30 l3 -9 3 9 9 3 -9 3 -3 9 -3 -9 -9 -3z" fill="#fff"/></svg>
+    <span>Забери звезду!</span></button>
 </header>
 
 <main class="stage" id="stage" hidden>
@@ -1394,10 +1412,9 @@ function eyeBar(){ if(eyeRaf) return; eyeRaf=requestAnimationFrame(()=>{ eyeRaf=
 function render(){
   [...$('steps').children].forEach((d,i)=>{d.className=i<level?'done':i===level?'now':''});
   const fin=level>=LEVELS.length;
-  $('replay').textContent='Играть снова';
   $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin;
   if(fin){$('eyebrow').textContent='Все этапы пройдены';$('task').textContent='Ты чемпион!';
-    $('hint').textContent='Лови букашек сколько хочешь или сыграй снова';return}
+    $('hint').textContent='Лови букашек сколько хочешь или забери звезду';return}
   const L=LEVELS[level];
   $('eyebrow').textContent=`Эпизод 1 · этап ${level+1} из ${LEVELS.length}`;
   $('task').textContent=L.title; $('hint').textContent=L.hint;
@@ -1617,7 +1634,16 @@ function resetAll(){
   B.target=null; B.state='home'; B.anchorT=.5; B.scared=false; B.tickled=false; B.wrap.classList.remove('tickled'); busy=false;
 }
 $('restart').addEventListener('click',()=>{if(episode===7){lsSet('spider-ep7-bank',0);lsSet('spider-ep7-items','[]')} if(episode>=2){enter2(0);return}resetAll();enterLevel(0)});
-$('replay').addEventListener('click',()=>{if(episode>=2){showMenu();return}resetAll();enterLevel(0)});
+// конец эпизода: звезда улетает с салютом, потом сами возвращаемся в меню, и карточка эпизода радостно подпрыгивает
+$('replay').addEventListener('click',()=>{
+  const b=$('replay'); if(b.classList.contains('taken')) return; b.classList.add('taken');
+  const r=b.querySelector('svg').getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,70,10); ringFx(r.left+r.width/2,r.top+r.height/2,'#ffd23a'); sfx.magic();
+  const ep=episode; setTimeout(()=>{ b.classList.remove('taken'); showMenu(); celebrateCard(ep) },1050);
+});
+function celebrateCard(ep){
+  const c=$('m'+ep); if(!c) return; try{c.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
+  setTimeout(()=>{ restart(c,'justdone'); const r=c.getBoundingClientRect(); burst(r.left+r.width*.25,r.top+r.height/2,40,8); sfx.love(); setTimeout(()=>c.classList.remove('justdone'),2600) },600);
+}
 
 requestAnimationFrame(frame);
 
@@ -1653,7 +1679,7 @@ function startEp1(){
   showScreen(1);
   $('steps').innerHTML=LEVELS.map(()=>'<i></i>').join('');
   resetAll();
-  enterLevel(Math.min(Math.max(0,lsGet('spider-level',0)|0),LEVELS.length));
+  const sv=Math.max(0,lsGet('spider-level',0)|0); enterLevel(sv>=LEVELS.length?0:sv);   // пройденный эпизод из меню начинается сначала
 }
 function startStory(n,at){
   EPS=STORIES[n]; EPX=EPS.levels; showScreen(n);
@@ -1779,7 +1805,7 @@ function placeEl(el,p,instant){if(instant)el.classList.add('noanim');el.style.le
 function render2(){
   $('steps').innerHTML=EPX.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
   const fin=l2>=EPX.length;
-  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin; $('replay').textContent='В меню';
+  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin;
   $('barRivalWrap').hidden=true;
   if(fin){$('eyebrow').textContent=`Эпизод ${EPS.n} пройден`;$('task').textContent=EPS.fin[0];$('hint').textContent=EPS.fin[1];return}
   const L=EPX[l2];
