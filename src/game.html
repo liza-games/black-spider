@@ -1684,6 +1684,19 @@ function stardust(dur=1.6,vol=.03){   // звёздная пыль: тихие �
 }
 function showEndStar(){
   if(endShown) return; endShown=true;
+  // ждём, пока паук договорит последнюю фразу (но не дольше 6 секунд)
+  const t0=performance.now(), sid=episode;
+  (function wait(){ if(!endShown||episode!==sid) return; const el=performance.now()-t0;
+    if((el>2200&&!speaking)||el>6000) reallyShowEndStar(); else setTimeout(wait,200) })();
+}
+// эпичный аккорд при переходе в меню: быстрый взлёт, торжественный аккорд, удар литавры и блеск
+function epicSting(){
+  [392,523.25,659.25,783.99].forEach((f,i)=>{ tone(f,.16,'triangle',i*.07,.06); tone(f*2,.1,'sine',i*.07,.02) });
+  const t=.32; [523.25,659.25,783.99,1046.5].forEach(f=>{ tone(f,1.5,'triangle',t,.045); tone(f*1.005,1.5,'sine',t,.03) });
+  tone(130.8,.9,'sine',t,.14,65); noise(.5,300,120,.09,t,'lowpass',.8);          // «бум» литавры
+  noise(1.4,5000,9000,.03,t,'highpass',.6); stardust(1.6,.025);                   // блеск сверху
+}
+function reallyShowEndStar(){
   stopMusic(); stardust(1.8,.028); setTimeout(()=>tone(1046.5,1.2,'sine',0,.03),200);
   const o=document.createElement('div'); o.className='endfx'; o.innerHTML=`<div class="erays"></div><div class="eglow"></div>
     ${Array.from({length:14},()=>`<i class="espark" style="left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px"></i>`).join('')}
@@ -1694,9 +1707,9 @@ function showEndStar(){
     e.stopPropagation(); if(o.classList.contains('taken')) return; o.classList.add('taken');
     const r=star.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
     burst(x,y,90,12,['#ffe27a','#fff6c0','#ffd23a','#ffffff','#ffb3d0']); ringFx(x,y,'#ffd23a');
-    [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>tone(f,.5,'sine',i*.06,.04)); stardust(2.2,.03);
+    [783.99,1046.5,1318.5].forEach((f,i)=>tone(f,.35,'sine',i*.05,.035));
     const ep=episode;
-    setTimeout(()=>{ o.classList.add('out'); noise(.9,500,2600,.035,0,'bandpass',.8); tone(784,1,'sine',.25,.025) },650);
+    setTimeout(()=>{ o.classList.add('out'); epicSting() },550);
     setTimeout(()=>{ menuMusicLater=true; showMenu(); o.remove(); celebrateCard(ep);
       setTimeout(()=>{ menuMusicLater=false; if(episode===0&&!musTrack) playMusic(0) },2200) },1150);
   };
