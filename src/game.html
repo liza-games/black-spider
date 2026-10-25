@@ -112,6 +112,18 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .dance7{animation:dance7 .44s ease-in-out 5}
 @keyframes dance7{0%,100%{rotate:0deg;translate:0 0}25%{rotate:-14deg;translate:-6px -6px}75%{rotate:14deg;translate:6px -6px}}
 .spin7{animation:spin7 1.6s cubic-bezier(.3,0,.3,1)}
+.head7{animation:head7 1.8s ease-in-out}
+@keyframes head7{0%{rotate:0deg;translate:0 0}25%,75%{rotate:180deg;translate:0 -18px}85%{rotate:190deg;translate:3px -18px}100%{rotate:360deg;translate:0 0}}
+.flex7{animation:flex7 .5s ease-in-out 3}
+@keyframes flex7{50%{scale:1.25 1.1}}
+.hop7{animation:hop7 1.2s cubic-bezier(.3,.8,.4,1)}
+@keyframes hop7{0%,100%{translate:0 0;scale:1 1}10%{translate:0 6px;scale:1.15 .85}45%{translate:0 -110px;scale:.95 1.08}85%{translate:0 0;scale:1.1 .9}}
+.ghost7{animation:ghost7 1.7s ease-in-out}
+@keyframes ghost7{20%,70%{opacity:.12;scale:1.08}}
+.wobble7{animation:wobble7 .6s ease-in-out 3;transform-origin:50% 100%}
+@keyframes wobble7{25%{rotate:-18deg}75%{rotate:18deg}}
+.dizzy7{animation:dizzy7 .35s ease-in-out 4}
+@keyframes dizzy7{25%{rotate:-10deg;translate:-4px 2px}75%{rotate:10deg;translate:4px 2px}}
 @keyframes spin7{to{rotate:720deg}}
 @keyframes shake{25%{translate:-6px 0}75%{translate:6px 0}}
 
@@ -877,7 +889,12 @@ function summonRival(key){
   if(episode!==1) return;
   const cfg=RIVALS[key], s=makeSpider(cfg.cls,.73,cfg.label);
   s.cfg=cfg; s.init=true; s.x=rect().width*.73; s.y=-H()*1.5; s.state='enter';
-  s.onArrive=()=>{talk(s,cfg.hi);planRival()};
+  s.onArrive=()=>{talk(s,cfg.hi); planRival();
+    if(cfg.cls==='purple'){ s.lastShow=performance.now()-2500;   // первый трюк — через пару секунд после прихода, дальше каждые 5–7 секунд
+      s.showT=setInterval(()=>{ if(R!==s){clearInterval(s.showT);return}
+        if(s.showing||s.feast||!['home','return','hunt'].includes(s.state)||performance.now()-s.lastShow<rand(4000,6000)) return;
+        if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+        clearTimeout(s.timer); s.state='show'; showOff(s) },700) } };
   s.btn.addEventListener('click',()=>{
     if(cfg.cls==='blue'){brysh(s);return}
     if(cfg.cls==='green'){tickle(s);return}
@@ -885,7 +902,7 @@ function summonRival(key){
   B.anchorT=.27; R=s; sfx.whoosh();
 }
 function dismissRival(now){
-  if(!R) return; const s=R; R=null; clearTimeout(s.timer);
+  if(!R) return; const s=R; R=null; clearTimeout(s.timer); clearInterval(s.showT); s.showing=false;
   if(s.wcEl){s.wcEl.remove();s.wcEl=null} s.inWc=false; s.yucky=false; s.line.style.opacity=''; s.wrap.classList.remove('inwc','yuck','tremble');
   if(s.tickling){clearTimeout(s.tickleT);s.tickling=false;B.tickled=false;B.wrap.classList.remove('tickled')}
   if(s.target){s.target.el.classList.remove('hunted');s.target=null}
@@ -897,8 +914,7 @@ function planRival(){
   const s=R; if(!s||s.feast||s.tickling||s.showing) return; clearTimeout(s.timer);
   s.timer=setTimeout(()=>{
     if(R!==s||s.state!=='home') return;
-    if(s.cfg.cls==='purple'&&bugs.length&&Math.random()<.35&&performance.now()-(s.lastShow||0)>7000){ showOff(s); return }
-    const w=rect().width, ok=b=>!b.caught&&!b.dead&&b.x>20&&b.x<w-20;   // синих вонючек соперник тоже ест (и обезвреживает)
+        const w=rect().width, ok=b=>!b.caught&&!b.dead&&b.x>20&&b.x<w-20;   // синих вонючек соперник тоже ест (и обезвреживает)
     const bad=bugs.filter(b=>ok(b)&&b.K.bad);
     let free=bugs.filter(b=>ok(b)&&!b.K.bad);
     if(bad.length&&(Math.random()<.35||!free.length)) free=bad;   // зазевался и погнался за осой или вонючкой
@@ -933,13 +949,30 @@ function rivalYuck(s,b){
 }
 
 /* Фиолетовый-хвастун: иногда останавливается показать трюк и пару секунд ничего не ловит */
+const TRICKS7=[
+  {t:'Смотри, как я умею! Сальто!',c:'flip7',ms:1100},
+  {t:'А я умею танцевать! Ля-ля-ля!',c:'dance7',ms:2200},
+  {t:'Смотри! Я кручусь, как волчок!',c:'spin7',ms:1600},
+  {t:'А я могу стоять на голове!',c:'head7',ms:1800},
+  {t:'Смотри, какие у меня мускулы!',c:'flex7',ms:1500},
+  {t:'Я прыгаю выше всех! Опа!',c:'hop7',ms:1200},
+  {t:'Смотри, я невидимка! Ууу!',c:'ghost7',ms:1700},
+  {t:'А я умею пускать сердечки!',c:'jump',ms:1000,hearts:true},
+  {t:'Смотри, я на одной ножке!',c:'wobble7',ms:1800}
+];
 function showOff(s){
   s.lastShow=performance.now(); s.showing=true;
-  const trick=pick([{t:'Смотри, как я умею! Сальто!',c:'flip7',ms:1100},{t:'А я умею танцевать! Ля-ля-ля!',c:'dance7',ms:2200},{t:'Смотри! Я кручусь, как волчок!',c:'spin7',ms:1600}]);
+  const trick=pick(TRICKS7.filter(x=>x!==s.lastTrick)); s.lastTrick=trick;
   talk(s,trick.t,undefined,2200); sfx.magic();
-  setTimeout(()=>{ if(R===s&&s.showing) restart(s.btn,trick.c) },350);
-  if(Math.random()<.6) setTimeout(()=>{ if(R===s&&s.showing) say(B,bold(pick(['Пока он хвастается — я ем!','Хи-хи, покажи ещё!','Красиво! А я пока поем!'])),1400) },900);
-  setTimeout(()=>{ s.showing=false; s.btn.classList.remove(trick.c); if(R===s){ restart(s.btn,'laugh'); planRival() } },2600);
+  setTimeout(()=>{ if(R!==s||!s.showing) return; restart(s.btn,trick.c);
+    if(trick.hearts){ const r=s.btn.getBoundingClientRect(); hearts(r.left+r.width/2,r.top+r.height*.4,14) } },350);
+  if(Math.random()<.6) setTimeout(()=>{ if(R===s&&s.showing) say(B,bold(pick(['Пока он хвастается — я ем!','Хи-хи, покажи ещё!','Красиво! А я пока поем!','Ого! А я пока муху поймаю!'])),1400) },900);
+  const end=()=>{ s.showing=false; s.btn.classList.remove(trick.c,'dizzy7'); if(s.state==='show') s.state='return'; s.lastShow=performance.now(); if(R===s){ restart(s.btn,'laugh'); planRival() } };
+  // иногда трюк не удаётся: голова кружится — ещё секунда без охоты
+  if(Math.random()<.35) setTimeout(()=>{ if(R!==s||!s.showing) return; s.btn.classList.remove(trick.c); restart(s.btn,'dizzy7');
+      say(s,bold(pick(['Ой… голова кружится…','Ой-ой, не получилось!','Хи… упс!'])),1300); sfx.boing();
+      setTimeout(()=>say(B,bold(pick(['Ха-ха! Закружился!','Хвастунишка!'])),1200),500); setTimeout(end,1400) },2300);
+  else setTimeout(end,2300);
 }
 
 /* ================= насекомые ================= */
@@ -994,17 +1027,17 @@ const TASTY=Object.keys(KINDS).filter(k=>!KINDS[k].bad&&!KINDS[k].poison), BAD=O
 const bugs=[];
 const FUSE=2800; // сколько живёт синяя вонючка до «пшика»
 let spawnOn=false, maxBugs=0, badChance=0, poisonChance=0;
-function spawnBug(){
+function spawnBug(force){
   const roll=Math.random();
   const onlyBad=bugs.length>0&&bugs.every(q=>q.K.bad);   // на экране одни невкусные — следующая точно вкусная
-  const r=rect(), k=onlyBad?pick(TASTY):roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
+  const r=rect(), k=force?force():onlyBad?pick(TASTY):roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
   const el=document.createElement('button');
   el.className='bug'; el.setAttribute('aria-label',K.bad?K.name+' — невкусная!':K.name);
   el.innerHTML=`<svg viewBox="0 0 60 60">${K.svg}</svg>`;
   stage.appendChild(el);
   const fromLeft=Math.random()<.5;
   const b={el,k,K,x:fromLeft?-30:r.width+30,y:r.height*.38+Math.random()*(r.height*.52),
-    a:fromLeft?0:Math.PI,t:Math.random()*100,caught:false,dead:false,born:performance.now(),life:K.bad?rand(7000,10000):0};
+    a:fromLeft?0:Math.PI,t:Math.random()*100,caught:false,dead:false,born:performance.now(),life:K.bad?(LEVELS[level]?.key==='yuck'?rand(11000,15000):rand(7000,10000)):0};   // на этапе про невкусных они задерживаются дольше
   if(K.poison){b.fuse=performance.now()+FUSE+1200;el.classList.add('poison');el.setAttribute('aria-label','синяя вонючка — съешь её быстрее!')}
   el.addEventListener('pointerdown',e=>{e.preventDefault();hunt(b)});
   el.addEventListener('click',e=>{if(e.detail===0)hunt(b)});
@@ -1036,6 +1069,11 @@ function poisonSpider(){
 }
 function cureSpider(){clearTimeout(poisonT);B.poisoned=false;B.wrap.classList.remove('poisoned')}
 setInterval(()=>{if(spawnOn&&bugs.length<maxBugs) spawnBug()},800);
+// новый вид букашек: старые улетают, а новые сразу прилетают втроём, чтобы их было видно
+function introBugs(kind){
+  const w=rect().width; for(const b of bugs) if(!b.caught){ b.leaving=true; b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<w/2?(b.a<0?-Math.PI:Math.PI):0 }
+  [300,900,1500].forEach(d=>setTimeout(()=>{ if(spawnOn) spawnBug(kind) },d));
+}
 function removeBug(b){
   b.dead=true; b.el.classList.add('gone');
   setTimeout(()=>b.el.remove(),250);
@@ -1234,7 +1272,7 @@ function enterLevel(i){
   render(); restart($('hud'),'pop');
   poisonChance=0;
   switch(key){
-    case 'poison': spawnOn=true; maxBugs=5; badChance=.2; poisonChance=.35;
+    case 'poison': spawnOn=true; maxBugs=5; badChance=.1; poisonChance=.72; introBugs(()=> 'bluebug');
       setTimeout(()=>talk(B,'Синие вонючки! Их надо съесть, пока не пшикнули!'),1200); break;
     case 'wake': spawnOn=false; break;
     case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Давай их покрутим!'),200); break;
@@ -1248,7 +1286,7 @@ function enterLevel(i){
       if(key==='blue') setTimeout(()=>talk(B,'Ещё один паук? Синий!'),300);
       if(key==='green') setTimeout(()=>talk(B,'Ой, а этот зелёный!'),300);
       break}
-    case 'yuck': spawnOn=true; maxBugs=5; badChance=.4; dismissRival();
+    case 'yuck': spawnOn=true; maxBugs=5; badChance=.75; dismissRival(); introBugs(()=>pick(BAD));
       setTimeout(()=>talk(B,'Осторожно! Осы и вонючки невкусные!'),1200); break;
     default: spawnOn=true; maxBugs=5; badChance=.2; poisonChance=.15; dismissRival();
       sfx.fanfare(); banner('Чемпион!');
