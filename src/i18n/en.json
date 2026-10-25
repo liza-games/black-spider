@@ -856,6 +856,10 @@
   "'Чпок-чпок! Ещё!'": "'Pop-pop! More!'",
   "'🔇 Звук'": "'🔇 Sound'",
   "'Лови букашек сколько хочешь или забери звезду'": "'Catch as many bugs as you like, or take the star'",
-  "`<div class=\"erays\"></div><div class=\"eglow\"></div>\n    ${Array.from({length:14},()=>`<i class=\"espark\" style=\"left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px\"></i>`).join('')}\n    <button class=\"estar\" aria-label=\"Забрать звезду и вернуться в меню\">${CUTE_STAR}</button><div class=\"ecap\">Забери звезду!</div>`": "`<div class=\"erays\"></div><div class=\"eglow\"></div>\n    ${Array.from({length:14},()=>`<i class=\"espark\" style=\"left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px\"></i>`).join('')}\n    <button class=\"estar\" aria-label=\"Take the star and go back to the menu\">${CUTE_STAR}</button><div class=\"ecap\">Take the star!</div>`"
+  "`<div class=\"erays\"></div><div class=\"eglow\"></div>\n    ${Array.from({length:14},()=>`<i class=\"espark\" style=\"left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px\"></i>`).join('')}\n    <button class=\"estar\" aria-label=\"Забрать звезду и вернуться в меню\">${CUTE_STAR}</button><div class=\"ecap\">Забери звезду!</div>`": "`<div class=\"erays\"></div><div class=\"eglow\"></div>\n    ${Array.from({length:14},()=>`<i class=\"espark\" style=\"left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px\"></i>`).join('')}\n    <button class=\"estar\" aria-label=\"Take the star and go back to the menu\">${CUTE_STAR}</button><div class=\"ecap\">Take the star!</div>`",
+  "'Я карп Толстячок. Я не тороплюсь…'": "\"I'm Chubby the carp. I'm in no hurry…\"",
+  "'Я рыбка Золотинка! Посчитаем?'": "\"I'm Goldie the fish! Shall we count?\"",
+  "'Я щука Молния! Я самая быстрая!'": "\"I'm Lightning the pike! I'm the fastest!\"",
+  "'Нажми на лодку, и я прыгну к ним!'": "\"Tap the boat and I'll jump to them!\""
  }
 }

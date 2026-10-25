@@ -344,6 +344,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .boat.back{left:150%;top:17%;width:min(62vw,250px);transition:left 2.6s ease-out}
 .boat.back.arrive{left:56%}
 .boat .hit{position:absolute;inset:0;border:0;background:none;padding:0;cursor:pointer}
+.boat.glow svg{animation:boatglow 1.2s ease-in-out infinite}
+@keyframes boatglow{50%{filter:drop-shadow(0 0 14px #fff6b0) drop-shadow(0 0 4px #ffd23a)}}
+.bighand{position:absolute;z-index:8;font-size:clamp(44px,14vw,64px);translate:-50% 0;pointer-events:none;animation:bighand 1s ease-in-out infinite;filter:drop-shadow(0 3px 4px rgb(0 0 0/.3))}
+@keyframes bighand{50%{transform:translateY(-18px)}}
 .boat .hit:disabled{cursor:default}
 .basket{position:absolute;left:13%;top:44%;translate:-50% 0;width:17%;padding:0;border:0;background:none;cursor:pointer}
 .pa{position:absolute;width:30px;height:30px;translate:-50% -50%;pointer-events:none}
@@ -375,6 +379,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .fish{position:absolute;left:7%;top:68%;width:min(19vw,82px);translate:-50% -50%;z-index:3;pointer-events:none}
 .fish.leap{transition:left .45s ease-in-out,top .45s ease-in-out;z-index:5}
 .fish svg{transition:scale .3s}.fish.left svg{scale:-1 1}
+.fish.k-slow{width:min(24vw,104px);filter:hue-rotate(290deg) saturate(.9)}   /* карп: большой, сиреневый, медленный */
+.fish.k-fast{width:min(21vw,90px);scale:1.15 .8;filter:hue-rotate(75deg) saturate(1.2)}          /* щука: длинная, зелёная, быстрая */
 #stage2.enter .room{animation:fadein .5s}
 .quiz .ex.pop{animation:pop .35s}
 .fish svg{display:block;width:100%;height:auto}
@@ -2390,7 +2396,7 @@ function stonesScene(alive,ops,opt={}){
          :opt.fish?'Успей съесть муху с ответом, пока рыба не доплыла. За ошибку на камень назад'
          :'Нажми на муху с правильным ответом. За ошибку паук отлетает на камень назад');
   const fishEl=$('r-fish'), FISH=fishEl&&talkerFor(fishEl,{pitch:1.7,rate:1.15,who:'fish',voice:1});
-  let ex=null, lock=true, flies=[], speedK=1, fishBusy=false, last=performance.now(), tAsk=0, miss=0, colorShift=0;
+  let fishK=null, ex=null, lock=true, flies=[], speedK=1, fishBusy=false, last=performance.now(), tAsk=0, miss=0, colorShift=0;
   let pos=0, dir=1, rate=0, taunted=false; // рыба плавает туда-сюда и не возвращается в начало при новом примере
   const fishX=w=>w*(.07+.86*pos);
   const FISH_Y=.68;
@@ -2405,7 +2411,9 @@ function stonesScene(alive,ops,opt={}){
     clearFlies(); const op=pick(ops), s=rr(); ex=makeExample(op,tierOf(op),ex);
     miss=0; colorShift++;
     // круг рыбы от края до края; на новый пример у паука всегда есть хотя бы 5 секунд
-    const T=(7000+ex.tier*1500)*speedK, rem=dir>0?1-pos:pos; rate=rem/Math.max(rem*T,5000); taunted=false;
+    // каждый пример — одна из трёх рыб; самая быстрая (щука) доплывает до ответа за 6 секунд
+    if(fishEl){ const prev=fishK; fishK=pickFish(opt.fishMix); if(fishK!==prev) meetFish() }
+    const FK=FISHES[fishK]||FISHES.gold, T=Math.max(6000,(FK.base+(FK.base>6000?ex.tier*1000:0))*speedK), rem=dir>0?1-pos:pos; rate=rem/T; taunted=false;
     restart($('r-ex'),'pop');
     $('r-ex').textContent=`${ex.a} ${ex.sym} ${ex.b} = ?`;
     $('r-lvl').innerHTML=Array.from({length:5},(_,i)=>`<i class="${i<=ex.tier?'on':''}"></i>`).join('');
@@ -2457,6 +2465,11 @@ function stonesScene(alive,ops,opt={}){
       await wait(1200); if(!alive())return; ask();
     }
   }
+  function meetFish(){
+    const F=FISHES[fishK]; FISHES_ALL.forEach(k=>fishEl.classList.toggle('k-'+k,k===fishK));
+    restart(fishEl,'hop'); splash2({x:fishX(rr().width),y:rr().height*FISH_Y}); sfx.splash();
+    setTimeout(()=>alive()&&talk2(FISH,F.hi,2000),250);
+  }
   async function fishEats(){
     fishBusy=true; lock=true; const s=rr(), f=flies.find(q=>q.v===ex.ans)||flies[0]; f.held=true;
     fishEl.classList.add('leap'); fishEl.style.left=f.x+'px'; fishEl.style.top=f.y+'px'; sfx.whoosh();
@@ -2506,9 +2519,11 @@ function stonesScene(alive,ops,opt={}){
   setTimeout(()=>alive()&&ask(),500);
 }
 SCENES.stones1=alive=>stonesScene(alive,['add']);
-SCENES.stones2=alive=>stonesScene(alive,['sub'],{fish:true});
-SCENES.stones3=alive=>stonesScene(alive,['mul'],{fish:true});
-SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:true,strict:true,last:true});
+const FISHES={slow:{base:13000,hi:'Я карп Толстячок. Я не тороплюсь…'},gold:{base:9500,hi:'Я рыбка Золотинка! Посчитаем?'},fast:{base:6000,hi:'Я щука Молния! Я самая быстрая!'}}, FISHES_ALL=Object.keys(FISHES);
+function pickFish(mix=[.4,.4,.2]){ const r=Math.random(); return r<mix[0]?'slow':r<mix[0]+mix[1]?'gold':'fast' }
+SCENES.stones2=alive=>stonesScene(alive,['sub'],{fish:true,fishMix:[.4,.4,.2]});
+SCENES.stones3=alive=>stonesScene(alive,['mul'],{fish:true,fishMix:[.35,.4,.25]});
+SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:true,strict:true,last:true,fishMix:[.25,.4,.35]});
 
 /* 5. Берег */
 SCENES.shore=function(alive){
@@ -2551,10 +2566,15 @@ SCENES.shore=function(alive){
     restart(S2.btn,'jump'); talk2(S2,'Хм… А в море больше не бросите?',2400);
     await wait(2500); if(!alive())return;
     talk2(GIRL,'Никогда! Честное слово!',2000);
-    step=2; hit.disabled=false; tapme(boat,true); setHint('Нажми на лодку, и паук вернётся к друзьям');
+    step=2; hit.disabled=false; tapme(boat,true); boat.classList.add('glow'); setHint('Нажми на лодку, и паук вернётся к друзьям');
+    // большая рука показывает на лодку; нажать можно и на лодку, и на паука, и просто на воду
+    const hand=document.createElement('div'); hand.className='bighand'; hand.textContent='👆'; const br=boat.getBoundingClientRect(), st=rr();
+    hand.style.left=(br.left-st.left+br.width*.5)+'px'; hand.style.top=(br.bottom-st.top-br.height*.05)+'px'; room.appendChild(hand);
+    talk2(S2,'Нажми на лодку, и я прыгну к ним!',2600);
+    handlers2={move(){},down(){ hit.onclick() }};
   }
   hit.onclick=async()=>{
-    if(step!==2) return; step=3; tapme(boat,false); hit.disabled=true;
+    if(step!==2) return; step=3; tapme(boat,false); hit.disabled=true; boat.classList.remove('glow'); room.querySelector('.bighand')?.remove(); handlers2={move(){}};
     talk2(S2,'Ладно! Плыву с вами!'); sfx.jump();
     S2.wrap.classList.add('small'); restart(S2.wrap,'fly'); put(S2,anchor(boat,.2,.5));
     await wait(1300); if(!alive())return;
