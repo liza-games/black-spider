@@ -376,6 +376,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .quiz .lvl i{width:7px;height:7px;border-radius:50%;background:var(--track)}
 .quiz .lvl i.on{background:var(--gold)}
 .afly b{position:absolute;left:50%;top:65%;translate:-50% -50%;font-family:var(--display);font-weight:400;font-size:19px;color:#2a2620;font-variant-numeric:tabular-nums}
+.turtle{position:absolute;left:0;top:0;width:min(30vw,130px);translate:-50% -50%;z-index:2;pointer-events:none;transition:left 1.3s ease-out,top 1.3s ease-out}
+.turtle svg{display:block;width:100%;height:auto;animation:tbob 1.6s ease-in-out infinite}
+@keyframes tbob{50%{translate:0 4px;rotate:2deg}}
+.turtle .bubble{bottom:88%}
 .fish{position:absolute;left:7%;top:68%;width:min(19vw,82px);translate:-50% -50%;z-index:3;pointer-events:none}
 .fish.leap{transition:left .45s ease-in-out,top .45s ease-in-out;z-index:5}
 .fish svg{transition:scale .3s}.fish.left svg{scale:-1 1}
@@ -1959,6 +1963,14 @@ const SVG={
     <g class="suds" fill="#fff" stroke="#cfe3f0"><circle cx="40" cy="42" r="6"/><circle cx="52" cy="38" r="5"/><circle cx="64" cy="42" r="6"/><circle cx="30" cy="38" r="4"/></g></svg>`,
   brush:`<svg viewBox="0 0 140 40"><rect x="30" y="16" width="108" height="10" rx="5" fill="#3ab0a0"/><rect x="4" y="12" width="36" height="16" rx="5" fill="#dff1ee"/>
     <rect x="6" y="2" width="32" height="12" rx="3" fill="#fff" stroke="#9cc" stroke-width="1.5"/></svg>`,
+  turtle:`<svg viewBox="0 0 140 80" aria-hidden="true"><ellipse cx="70" cy="62" rx="62" ry="10" fill="#2d6fb3" opacity=".35"/>
+    <ellipse cx="34" cy="58" rx="14" ry="7" fill="#7cbf6a"/><ellipse cx="104" cy="58" rx="14" ry="7" fill="#7cbf6a"/>
+    <path d="M28 52 Q30 18 70 16 Q110 18 112 52 Z" fill="#5a9e4a" stroke="#3f7a34" stroke-width="3"/>
+    <path d="M48 50 L52 32 L70 26 L88 32 L92 50 M52 32 L70 40 L88 32 M70 40 V26" stroke="#3f7a34" stroke-width="2.5" fill="none"/>
+    <ellipse cx="124" cy="40" rx="15" ry="13" fill="#8fd07a"/><circle cx="126" cy="36" r="3" fill="#222"/><circle cx="127" cy="35" r="1" fill="#fff"/>
+    <circle cx="126" cy="36" r="6" fill="none" stroke="#a07a3a" stroke-width="1.8"/><path d="M120 34 h-3" stroke="#a07a3a" stroke-width="1.8"/>
+    <path d="M128 45 q4 3 8 0" stroke="#2a4a22" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M112 30 Q118 22 126 26" stroke="#e85d9a" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="114" cy="28" r="4" fill="#ff86b0"/></svg>`,
   shower:`<svg viewBox="0 0 120 64"><path d="M112 0 V18 Q112 28 102 28 H66" fill="none" stroke="#9aa7b2" stroke-width="8" stroke-linecap="round"/>
     <path d="M36 24 H84 L94 40 H26Z" fill="#b9c4cc"/><g fill="#7f8c96"><circle cx="40" cy="36" r="1.6"/><circle cx="52" cy="36" r="1.6"/><circle cx="64" cy="36" r="1.6"/><circle cx="76" cy="36" r="1.6"/></g></svg>`,
   valve:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="#c9d3da" stroke="var(--line)" stroke-width="2"/>
@@ -2293,7 +2305,7 @@ SVG.palm=`<svg viewBox="0 0 170 220"><path d="M78 220 Q70 140 92 70 L104 74 Q88 
   <g fill="#3fa652"><path d="M96 72 Q40 40 6 70 Q50 60 96 80Z"/><path d="M96 72 Q60 10 20 14 Q66 30 92 78Z"/><path d="M96 72 Q110 10 156 8 Q122 30 102 78Z"/><path d="M96 72 Q150 44 168 78 Q132 62 98 82Z"/><path d="M96 72 Q120 100 110 130 Q104 100 90 80Z"/></g>
   <circle cx="92" cy="78" r="8" fill="#7a4a2a"/><circle cx="104" cy="82" r="7" fill="#8a5a36"/></svg>`;
 
-function splash2(p){const c=document.createElement('div');c.className='cloud';c.style.transform=`translate(${p.x}px,${p.y}px) scale(.6)`;room.appendChild(c);setTimeout(()=>c.remove(),1500)}
+function splash2(p){const c=document.createElement('div');c.className='cloud';c.style.left=p.x+'px';c.style.top=p.y+'px';c.style.transform='scale(.6)';room.appendChild(c);setTimeout(()=>c.remove(),1500)}
 function onStone(el){const p=anchor(el,.5,.2);p.y-=S2.wrap.offsetWidth*.32;return p}
 function wetDrops(x,y,n=22){for(let i=0;i<n;i++){const a=rand(0,TAU),v=rand(3,8);
   parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,r:0,vr:0,w:rand(5,8),h:rand(8,12),c:pick(['#4ea3e6','#8cc8f5','#3d8fd1']),life:rand(30,50)})}}
@@ -2467,6 +2479,35 @@ function stonesScene(alive,ops,opt={}){
       await wait(1200); if(!alive())return; ask();
     }
   }
+  // Бабушка Черепаха спасает барахтающегося паука, сажает на первый камень и объясняет про волшебные камни
+  async function turtleIntro(){
+    const s=rr(), st0=onStone($('r-st0')), tu=document.createElement('div'); tu.className='turtle'; tu.innerHTML=`<div class="bubble"></div>${SVG.turtle}`;
+    room.appendChild(tu); const TU=talkerFor(tu,{pitch:1.05,rate:.85,who:'turtle',voice:1}); const hint0=hint2; setHint('Паук упал в воду! Кто же его спасёт?');
+    const water={x:s.width*.3,y:s.height*.74};
+    S2.wrap.classList.add('noanim'); put(S2,water); S2.wrap.classList.add('tickled'); setTimeout(()=>S2.wrap.classList.remove('noanim'),50);
+    tu.style.left=(-s.width*.2)+'px'; tu.style.top=(water.y+s.width*.05)+'px';
+    talk2(S2,'Буль-буль! Помогите!',1800); splash2(water); sfx.splash();
+    await wait(900); if(!alive())return;
+    tu.style.left=water.x+'px'; sfx.water();                                              // черепаха подплывает
+    await wait(1400); if(!alive())return;
+    talk2(TU,'Ой, кто это барахтается? Держись за мой панцирь, малыш!',3000);
+    await wait(3100); if(!alive())return;
+    S2.wrap.classList.remove('tickled'); dur('1.4s'); tu.style.transition='left 1.4s ease-in-out,top 1.4s ease-in-out';
+    tu.style.left=st0.x+'px'; tu.style.top=(st0.y+s.width*.11)+'px'; put(S2,st0); S2.btn.classList.add('crawl');   // везёт к первому камню
+    await wait(1500); if(!alive())return; S2.btn.classList.remove('crawl'); dur(''); restart(S2.btn,'jump'); sfx.jump();
+    talk2(S2,'Спасибо, бабушка Черепаха!',2000);
+    await wait(2100); if(!alive())return;
+    talk2(TU,'Не бойся! До берега можно допрыгать по камням.',2800);
+    await wait(2900); if(!alive())return;
+    talk2(TU,'Но камни волшебные: прыгнуть можно только с мухой, у которой правильный ответ!',4000);
+    await wait(4100); if(!alive())return;
+    restart(S2.btn,'jump'); talk2(S2,'Я умею считать! Попробую!',2200);
+    await wait(2300); if(!alive())return;
+    talk2(TU,'Молодец! А я поплыву рядом.',1800);
+    await wait(1200); if(!alive())return;
+    tu.style.left=(s.width*.12)+'px'; tu.style.top=(s.height*.82)+'px';                       // отплывает в уголок и смотрит
+    await wait(900); if(!alive())return; setHint(hint0); ask();
+  }
   // в начале этапа рыба выпрыгивает, представляется, а паук ей отвечает — и только потом первый пример
   async function meetFish(){
     const F=FISHES[fishK]; fishEl.classList.add('k-'+fishK);
@@ -2521,9 +2562,9 @@ function stonesScene(alive,ops,opt={}){
     leaving=leaving.filter(f=>!f.gone);
     requestAnimationFrame(tick);
   })();
-  if(fishEl){ fishK=opt.fish; meetFish() } else setTimeout(()=>alive()&&ask(),500);
+  if(opt.turtle) turtleIntro(); else if(fishEl){ fishK=opt.fish; meetFish() } else setTimeout(()=>alive()&&ask(),500);
 }
-SCENES.stones1=alive=>stonesScene(alive,['add']);
+SCENES.stones1=alive=>stonesScene(alive,['add'],{turtle:true});
 const FISHES={
   slow:{base:13000,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
   gold:{base:9500,hi:'А я рыбка Золотинка! Я считаю быстрее карпа!',reply:'Ещё одна рыба! Золотая! Ну держись!'},
