@@ -1139,7 +1139,8 @@ let spawnOn=false, maxBugs=0, badChance=0, poisonChance=0;
 function spawnBug(force){
   const roll=Math.random();
   const onlyBad=bugs.length>0&&bugs.every(q=>q.K.bad);   // на экране одни невкусные — следующая точно вкусная
-  const r=rect(), k=force?force():onlyBad?pick(TASTY):roll<poisonChance?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
+  const blues=bugs.filter(q=>q.K.poison&&!q.dead).length;
+  const r=rect(), k=force?force():onlyBad?pick(TASTY):roll<poisonChance&&blues<2?'bluebug':roll<poisonChance+badChance?pick(BAD):pick(TASTY), K=KINDS[k];
   const el=document.createElement('button');
   el.className='bug'; el.setAttribute('aria-label',K.bad?K.name+' — невкусная!':K.name);
   el.innerHTML=`<svg viewBox="0 0 60 60">${K.svg}</svg>`;
@@ -1155,7 +1156,7 @@ function spawnBug(force){
 /* синяя вонючка не съедена вовремя — пшик, паук отравился */
 function puff(x,y){
   const c=document.createElement('div'); c.className='cloud';
-  c.style.transform=`translate(${x}px,${y}px)`; stage.appendChild(c);
+  c.style.left=x+'px'; c.style.top=y+'px'; stage.appendChild(c);
   setTimeout(()=>c.remove(),1500);
 }
 function explode(b){
@@ -1179,9 +1180,9 @@ function poisonSpider(){
 function cureSpider(){clearTimeout(poisonT);B.poisoned=false;B.wrap.classList.remove('poisoned')}
 setInterval(()=>{if(spawnOn&&bugs.length<maxBugs) spawnBug()},800);
 // новый вид букашек: старые улетают, а новые сразу прилетают втроём, чтобы их было видно
-function introBugs(kind){
+function introBugs(kind,n=3){
   const w=rect().width; for(const b of bugs) if(!b.caught){ b.leaving=true; b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<w/2?(b.a<0?-Math.PI:Math.PI):0 }
-  [300,900,1500].forEach(d=>setTimeout(()=>{ if(spawnOn) spawnBug(kind) },d));
+  [300,900,1500].slice(0,n).forEach(d=>setTimeout(()=>{ if(spawnOn) spawnBug(kind) },d));
 }
 function removeBug(b){
   b.dead=true; b.el.classList.add('gone');
@@ -1388,7 +1389,7 @@ function enterLevel(i){
   render(); restart($('hud'),'pop');
   poisonChance=0;
   switch(key){
-    case 'poison': spawnOn=true; maxBugs=5; badChance=.1; poisonChance=.72; introBugs(()=> 'bluebug');
+    case 'poison': spawnOn=true; maxBugs=5; badChance=.1; poisonChance=.72; introBugs(()=>'bluebug',2);
       setTimeout(()=>talk(B,'Синие вонючки! Их надо съесть, пока не пшикнули!'),1200); break;
     case 'wake': spawnOn=false; break;
     case 'eyes': spawnOn=false; setTimeout(()=>talk(B,'Ой, глаза затекли! Давай их покрутим!'),200); break;
@@ -1495,7 +1496,9 @@ function update(s,h){
 function frame(){
   if(episode!==1){drawFx();requestAnimationFrame(frame);return}   // в других эпизодах первый не считается в фоне
   const r=rect(), h=H(), now=performance.now();
+  const fdt=Math.min(100,now-(frame.lastNow||now)); frame.lastNow=now;
   for(const b of bugs.filter(b=>b.K.poison&&!b.caught&&!b.dead)){
+    if(B.poisoned){ b.fuse+=fdt; b.fuse=Math.max(b.fuse,now+2000) }   // пока паук отходит от яда — никто не пшикает
     const rem=b.fuse-now;
     b.el.style.setProperty('--p',Math.max(0,Math.min(1,rem/FUSE)));
     b.el.classList.toggle('hurry',rem<2000);
@@ -1520,7 +1523,8 @@ function frame(){
     b.x+=Math.cos(b.a)*sp; b.y+=Math.sin(b.a)*sp;
     b.x=Math.min(Math.max(b.x,-30),r.width+30); b.y=Math.min(Math.max(b.y,20),r.height-20);
     const turn=b.k==='ladybug'||b.k==='stinkbug';
-    b.el.style.transform=`translate(${b.x}px,${b.y}px) rotate(${turn?b.a*57.3+90:0}deg) scaleX(${turn?1:(Math.cos(b.a)<0?-1:1)})`;
+    b.el.style.transform=`translate(${b.x}px,${b.y}px) rotate(${turn?b.a*57.3+90:0}deg)`;
+    const fl=turn?1:(Math.cos(b.a)<0?-1:1); if(b.fl!==fl){ b.fl=fl; b.el.firstElementChild.style.transform=`scaleX(${fl})` }
   }
   for(const s of [...spiders]){
     if(!update(s,h)) continue;
@@ -2523,7 +2527,9 @@ function taleScene(alive,from,count,book=TALE,opts={}){
   };
   const read=i=>{speak(book[from+i].t,.5,.92,'B',0); lock=true; setTimeout(()=>{lock=false},900)};
   render(0);
-  S2=makeMain('small'); const p=anchor(sb,.8,0); p.y-=S2.wrap.offsetWidth*.42; put(S2,p); // сидит на верхнем краю книжки
+  S2=makeMain('small'); S2.wrap.style.zIndex=8; const p=anchor(sb,.82,0); p.y-=S2.wrap.offsetWidth*.32;
+  { const rt=rr(); p.y=Math.max(p.y,S2.wrap.offsetWidth*.45) }   // сидит на краю книжки поверх неё; если книжка у самого верха — опускаем, чтобы голова не обрезалась
+  put(S2,p); // сидит на верхнем краю книжки
   setHint(hidOn?'На каждой странице спрятана звёздочка — найди её! Чтобы читать дальше, нажми на текст'
                :'Нажимай на картинку, там всё живое. Чтобы читать дальше, нажми на текст');
   setTimeout(()=>alive()&&read(0),600);
