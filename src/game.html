@@ -1558,6 +1558,10 @@ function frame(){
     if(b.leaving){ b.a+=(b.exitDir-b.a)*.06; if(b.x<-25||b.x>r.width+25){removeBug(b);continue} }
     else b.a+=Math.sin(b.t*1.7+b.x*.01)*.05+(Math.random()-.5)*.08;
     const m=40, top=r.height*.32;
+    // у края не ползаем: в полосе у края букашку мягко тянет к середине (синих — сильнее, чтобы их было видно целиком)
+    const E=Math.max(62,r.width*.14)*(b.K.poison?1.3:1);
+    if(!b.leaving&&(b.x<E||b.x>r.width-E||b.y>r.height-E*.8)){
+      const ta=Math.atan2(r.height*.62-b.y,r.width/2-b.x); let d=ta-b.a; d=Math.atan2(Math.sin(d),Math.cos(d)); b.a+=d*(b.K.poison?.16:.09) }
     if(!b.leaving&&(b.x<m&&Math.cos(b.a)<0||b.x>r.width-m&&Math.cos(b.a)>0)) b.a=Math.PI-b.a;
     if(b.y<top&&Math.sin(b.a)<0||b.y>r.height-m&&Math.sin(b.a)>0) b.a=-b.a;
     for(const s of spiders){
