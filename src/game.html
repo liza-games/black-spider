@@ -2610,14 +2610,11 @@ SCENES.shore=function(alive){
     await wait(2500); if(!alive())return;
     talk2(GIRL,'Никогда! Честное слово!',2000);
     step=2; hit.disabled=false; tapme(boat,true); boat.classList.add('glow'); setHint('Нажми на лодку, и паук вернётся к друзьям');
-    // большая рука показывает на лодку; нажать можно и на лодку, и на паука, и просто на воду
-    const hand=document.createElement('div'); hand.className='bighand'; hand.textContent='👆'; const br=boat.getBoundingClientRect(), st=rr();
-    hand.style.left=(br.left-st.left+br.width*.5)+'px'; hand.style.top=(br.bottom-st.top-br.height*.05)+'px'; room.appendChild(hand);
-    talk2(S2,'Нажми на лодку, и я прыгну к ним!',2600);
+    // лодка светится; нажать можно и на лодку, и на паука, и просто на воду
     handlers2={move(){},down(){ hit.onclick() }};
   }
   hit.onclick=async()=>{
-    if(step!==2) return; step=3; tapme(boat,false); hit.disabled=true; boat.classList.remove('glow'); room.querySelector('.bighand')?.remove(); handlers2={move(){}};
+    if(step!==2) return; step=3; tapme(boat,false); hit.disabled=true; boat.classList.remove('glow'); handlers2={move(){}};
     talk2(S2,'Ладно! Плыву с вами!'); sfx.jump();
     S2.wrap.classList.add('small'); restart(S2.wrap,'fly'); put(S2,anchor(boat,.2,.5));
     await wait(1300); if(!alive())return;
