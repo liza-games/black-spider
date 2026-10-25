@@ -1447,7 +1447,7 @@ function eyeBar(){ if(eyeRaf) return; eyeRaf=requestAnimationFrame(()=>{ eyeRaf=
 function render(){
   [...$('steps').children].forEach((d,i)=>{d.className=i<level?'done':i===level?'now':''});
   const fin=level>=LEVELS.length;
-  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
+  $('bars').style.visibility=$('count').style.visibility=fin?'hidden':'';   /* место остаётся — сцена в конце не прыгает */ $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
   if(fin){$('eyebrow').textContent='Все этапы пройдены';$('task').textContent='Ты чемпион!';
     $('hint').textContent='Лови букашек сколько хочешь или забери звезду';return}
   const L=LEVELS[level];
@@ -1900,7 +1900,7 @@ function placeEl(el,p,instant){if(instant)el.classList.add('noanim');el.style.le
 function render2(){
   $('steps').innerHTML=EPX.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
   const fin=l2>=EPX.length;
-  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
+  $('bars').style.visibility=$('count').style.visibility=fin?'hidden':'';   /* место остаётся — сцена в конце не прыгает */ $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
   $('barRivalWrap').hidden=true;
   if(fin){$('eyebrow').textContent=`Эпизод ${EPS.n} пройден`;$('task').textContent=EPS.fin[0];$('hint').textContent=EPS.fin[1];return}
   const L=EPX[l2];
