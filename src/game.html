@@ -53,6 +53,31 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
 .count b{font-family:var(--display);font-weight:400;color:var(--accent)}
 .count em{font-style:normal;font-family:var(--display);color:var(--red)}
+.endfx{position:fixed;inset:-10vh 0;z-index:50;display:grid;place-items:center;overflow:hidden;
+  background:radial-gradient(circle at 50% 50%,rgb(255 247 210/.97),rgb(255 226 150/.92) 35%,rgb(255 190 210/.85) 70%,rgb(200 170 255/.85));animation:efade .5s ease-out}
+@keyframes efade{from{opacity:0}}
+.endfx .erays{position:absolute;left:50%;top:50%;width:260vmax;height:260vmax;translate:-50% -50%;
+  background:repeating-conic-gradient(from 0deg,rgb(255 255 255/.55) 0 3deg,transparent 3deg 9deg,rgb(255 255 255/.25) 9deg 11deg,transparent 11deg 18deg);
+  -webkit-mask:radial-gradient(circle,transparent 9%,#000 22%,#000 60%,transparent 75%);mask:radial-gradient(circle,transparent 9%,#000 22%,#000 60%,transparent 75%);animation:erays 14s linear infinite}
+@keyframes erays{to{rotate:360deg}}
+.endfx .eglow{position:absolute;left:50%;top:50%;width:min(90vw,460px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;
+  background:radial-gradient(circle,rgb(255 255 255/.95),rgb(255 240 170/.6) 35%,transparent 68%);animation:eglow 1.8s ease-in-out infinite}
+@keyframes eglow{50%{scale:1.12;opacity:.85}}
+.endfx .espark{position:absolute;width:var(--sz);height:var(--sz);background:#fff;clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:espark 2s ease-in-out infinite;opacity:0}
+@keyframes espark{0%,100%{opacity:0;scale:.3;rotate:0deg}50%{opacity:1;scale:1;rotate:45deg}}
+.endfx .estar{position:relative;z-index:2;width:min(58vw,280px);padding:0;border:0;background:none;cursor:pointer;animation:esway 2.4s ease-in-out infinite,epop .7s cubic-bezier(.3,1.6,.5,1)}
+.endfx .estar svg{width:100%;height:auto;display:block;overflow:visible;filter:drop-shadow(0 10px 24px rgb(230 150 20/.45))}
+.endfx .ceyes{transform-box:fill-box;transform-origin:center;animation:eblink 3.6s infinite}
+@keyframes eblink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+@keyframes esway{0%,100%{transform:rotate(-7deg) translateY(0) scale(1)}50%{transform:rotate(7deg) translateY(-14px) scale(1.04)}}
+@keyframes epop{from{scale:.2;opacity:0}}
+.endfx .ecap{position:absolute;left:0;right:0;top:calc(50% + min(31vw,150px));z-index:2;text-align:center;font-family:var(--display);font-size:clamp(20px,6vw,28px);color:#d8432f;text-shadow:0 2px 0 #fff;animation:ecap 1.2s ease-in-out infinite}
+@keyframes ecap{50%{scale:1.06}}
+.endfx.taken .estar{animation:etake .7s cubic-bezier(.4,-.4,.6,1) forwards}
+@keyframes etake{40%{transform:scale(1.35) rotate(-12deg)}100%{transform:scale(0) rotate(200deg);opacity:0}}
+.endfx.taken .ecap{opacity:0;transition:opacity .2s}
+.endfx.out{animation:eout .55s ease-in forwards}
+@keyframes eout{to{opacity:0;filter:brightness(1.6) blur(6px)}}
 #replay{font:inherit;background:none;border:0;padding:0;margin-top:2px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--accent)}
 #replay svg{width:clamp(78px,24vw,110px);height:auto;overflow:visible;animation:starbob 1.6s ease-in-out infinite;filter:drop-shadow(0 4px 10px rgb(224 164 18/.45))}
 #replay span{font-family:var(--display);font-size:15px}
@@ -1412,7 +1437,7 @@ function eyeBar(){ if(eyeRaf) return; eyeRaf=requestAnimationFrame(()=>{ eyeRaf=
 function render(){
   [...$('steps').children].forEach((d,i)=>{d.className=i<level?'done':i===level?'now':''});
   const fin=level>=LEVELS.length;
-  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin;
+  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
   if(fin){$('eyebrow').textContent='Все этапы пройдены';$('task').textContent='Ты чемпион!';
     $('hint').textContent='Лови букашек сколько хочешь или забери звезду';return}
   const L=LEVELS[level];
@@ -1640,6 +1665,42 @@ $('replay').addEventListener('click',()=>{
   const r=b.querySelector('svg').getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,70,10); ringFx(r.left+r.width/2,r.top+r.height/2,'#ffd23a'); sfx.magic();
   const ep=episode; setTimeout(()=>{ b.classList.remove('taken'); showMenu(); celebrateCard(ep) },1050);
 });
+/* Конец эпизода: на весь экран — сияние с лучами «как в аниме» и милая пухлая звёздочка.
+   Музыка эпизода стихает, сыплется звёздная пыль. Нажал — звезда рассыпается искрами, мягкий переход в меню,
+   карточка эпизода подпрыгивает, и только потом начинается мелодия меню */
+let endShown=false, menuMusicLater=false;
+const CUTE_STAR=`<svg viewBox="0 0 160 160" aria-hidden="true"><defs>
+  <radialGradient id="cs1" cx="42%" cy="34%"><stop offset="0" stop-color="#fffbd6"/><stop offset=".5" stop-color="#ffdf5c"/><stop offset="1" stop-color="#f6b928"/></radialGradient></defs>
+  <path d="M80 18 L98 58 L141 62 L108 90 L118 133 L80 111 L42 133 L52 90 L19 62 L62 58 Z" fill="#e9a21c" stroke="#e9a21c" stroke-width="26" stroke-linejoin="round"/>
+  <path d="M80 18 L98 58 L141 62 L108 90 L118 133 L80 111 L42 133 L52 90 L19 62 L62 58 Z" fill="url(#cs1)" stroke="url(#cs1)" stroke-width="18" stroke-linejoin="round"/>
+  <ellipse cx="62" cy="46" rx="12" ry="6" fill="#fff" opacity=".55" transform="rotate(-30 62 46)"/>
+  <ellipse cx="60" cy="96" rx="9" ry="5.5" fill="#ff8fb0" opacity=".65"/><ellipse cx="100" cy="96" rx="9" ry="5.5" fill="#ff8fb0" opacity=".65"/>
+  <g class="ceyes"><ellipse cx="66" cy="80" rx="7" ry="9" fill="#3a2410"/><ellipse cx="94" cy="80" rx="7" ry="9" fill="#3a2410"/>
+  <circle cx="68.5" cy="76" r="2.8" fill="#fff"/><circle cx="96.5" cy="76" r="2.8" fill="#fff"/></g>
+  <path d="M72 96 Q80 104 88 96" stroke="#3a2410" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+function stardust(dur=1.6,vol=.03){   // звёздная пыль: тихие высокие «динь» сыплются сверху вниз
+  const sc=[1568,1760,2093,2349,2637,3136,3520]; const n=Math.round(dur*14);
+  for(let i=0;i<n;i++){ const f=sc[Math.floor(Math.random()*sc.length)]*(1-i/n*.25); tone(f,.18,'sine',i*dur/n+Math.random()*.05,vol*(1-i/n*.6),f*.98) }
+}
+function showEndStar(){
+  if(endShown) return; endShown=true;
+  stopMusic(); stardust(1.8,.028); setTimeout(()=>tone(1046.5,1.2,'sine',0,.03),200);
+  const o=document.createElement('div'); o.className='endfx'; o.innerHTML=`<div class="erays"></div><div class="eglow"></div>
+    ${Array.from({length:14},()=>`<i class="espark" style="left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px"></i>`).join('')}
+    <button class="estar" aria-label="Забрать звезду и вернуться в меню">${CUTE_STAR}</button><div class="ecap">Забери звезду!</div>`;
+  document.body.appendChild(o);
+  const star=o.querySelector('.estar');
+  o.onclick=e=>{   // нажать можно на звезду или в любое место экрана
+    e.stopPropagation(); if(o.classList.contains('taken')) return; o.classList.add('taken');
+    const r=star.getBoundingClientRect(), x=r.left+r.width/2, y=r.top+r.height/2;
+    burst(x,y,90,12,['#ffe27a','#fff6c0','#ffd23a','#ffffff','#ffb3d0']); ringFx(x,y,'#ffd23a');
+    [523.25,659.25,783.99,1046.5,1318.5].forEach((f,i)=>tone(f,.5,'sine',i*.06,.04)); stardust(2.2,.03);
+    const ep=episode;
+    setTimeout(()=>{ o.classList.add('out'); noise(.9,500,2600,.035,0,'bandpass',.8); tone(784,1,'sine',.25,.025) },650);
+    setTimeout(()=>{ menuMusicLater=true; showMenu(); o.remove(); celebrateCard(ep);
+      setTimeout(()=>{ menuMusicLater=false; if(episode===0&&!musTrack) playMusic(0) },2200) },1150);
+  };
+}
 function celebrateCard(ep){
   const c=$('m'+ep); if(!c) return; try{c.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}
   setTimeout(()=>{ restart(c,'justdone'); const r=c.getBoundingClientRect(); burst(r.left+r.width*.25,r.top+r.height/2,40,8); sfx.love(); setTimeout(()=>c.classList.remove('justdone'),2600) },600);
@@ -1654,7 +1715,7 @@ let episode=0;
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catch(e){return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function showScreen(ep){
-  if(ep!==episode) playMusic(ep);   // у меню тоже своя мелодия
+  if(ep!==episode&&!(ep===0&&menuMusicLater)) playMusic(ep);   // у меню тоже своя мелодия (после звезды — чуть позже)
   episode=ep;
   $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep<2;
 }
@@ -1805,7 +1866,7 @@ function placeEl(el,p,instant){if(instant)el.classList.add('noanim');el.style.le
 function render2(){
   $('steps').innerHTML=EPX.map((_,i)=>`<i class="${i<l2?'done':i===l2?'now':''}"></i>`).join('');
   const fin=l2>=EPX.length;
-  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=!fin;
+  $('bars').hidden=fin; $('count').hidden=fin; $('replay').hidden=true; if(fin) showEndStar(); else endShown=false;
   $('barRivalWrap').hidden=true;
   if(fin){$('eyebrow').textContent=`Эпизод ${EPS.n} пройден`;$('task').textContent=EPS.fin[0];$('hint').textContent=EPS.fin[1];return}
   const L=EPX[l2];
