@@ -39,6 +39,16 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .bar{height:12px;border-radius:999px;background:var(--track);overflow:hidden}
 .bar i{display:block;height:100%;width:0;border-radius:inherit;background:var(--accent);transition:width .35s cubic-bezier(.3,1.4,.5,1)}
 .bar i.live{transition:none}
+.bub{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin:calc(var(--s)/-2);padding:0;border-radius:50%;z-index:6;cursor:pointer;
+  border:2px solid rgb(255 255 255/.85);background:radial-gradient(circle at 32% 30%,#fff 0 10%,rgb(255 255 255/.2) 11%,rgb(190 230 255/.25) 45%,rgb(255 190 240/.3) 75%,rgb(180 255 230/.35));
+  box-shadow:inset -4px -6px 10px rgb(150 120 255/.25);animation:bubrise var(--t) ease-in forwards}
+@keyframes bubrise{0%{transform:translate(0,0) scale(.3)}10%{transform:translate(0,-10px) scale(1)}50%{transform:translate(calc(var(--dx)*.6),-130px) scale(1.04,.96)}100%{transform:translate(var(--dx),-300px) scale(.98,1.03);opacity:.85}}
+.bub.pop{animation:bubpop .26s ease-out forwards}
+@keyframes bubpop{to{scale:1.7;opacity:0;border-width:0}}
+.ringfx{position:fixed;width:16px;height:16px;margin:-8px;border-radius:50%;border:3px solid #fff8c0;pointer-events:none;z-index:40;animation:ringfx .45s ease-out forwards}
+@keyframes ringfx{to{transform:scale(4.5);opacity:0;border-width:1px}}
+.jolt{animation:jolt .32s ease-out}
+@keyframes jolt{20%{translate:-5px 2px}40%{translate:5px -2px}60%{translate:-3px 1px}80%{translate:2px 0}}
 .bar.rival{height:8px}.bar.rival i{background:var(--red)}
 .count{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
 .count b{font-family:var(--display);font-weight:400;color:var(--accent)}
@@ -168,9 +178,11 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 @keyframes spin{to{rotate:360deg}}
 @keyframes stink{0%,100%{opacity:.2;translate:0 2px}50%{opacity:.9;translate:0 -3px}}
 
-footer{position:relative;z-index:5;padding-block:8px 18px;display:flex;gap:10px;align-items:center;justify-content:center}
+footer{position:relative;z-index:5;padding-block:8px 18px;display:flex;gap:8px;padding-inline:8px;align-items:center;justify-content:center}
 footer button{font:inherit;font-weight:800;font-size:14px;color:var(--fg);background:var(--bubble);border:1.5px solid var(--web);
-  border-radius:999px;padding:8px 14px;cursor:pointer}
+  border-radius:999px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+#music{padding:8px 11px}
+#music.off{opacity:.45;text-decoration:line-through}
 footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.jump,.chomp,.flap,.laugh,.sad,.stir,.shake,.ring,.zzz span{animation-duration:.01s}}
 
@@ -515,6 +527,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 <footer>
   <button id="menuBtn">☰ Меню</button>
   <button id="sound" aria-pressed="true">🔊 Звук</button>
+  <button id="music" aria-pressed="true" aria-label="Музыка">🎵</button>
   <button id="restart">↺ Сначала</button>
 </footer>
 
@@ -761,50 +774,146 @@ function unlockAudio(){
   speechSynthesis.speak(u);
 }
 ['touchend','click','keydown'].forEach(t=>addEventListener(t,unlockAudio,{capture:true}));
+// все звуки идут через общую шину с компрессором: громкие места не хрипят, тихие слышно
+let sfxBus=null, noiseBuf=null;
+function bus(){
+  ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+  if(!sfxBus){ const c=ac.createDynamicsCompressor(); c.threshold.value=-18; c.ratio.value=4; c.connect(ac.destination);
+    sfxBus=ac.createGain(); sfxBus.gain.value=1.25; sfxBus.connect(c); sfxBus.comp=c }
+  return sfxBus;
+}
 function tone(f,dur,type='triangle',delay=0,vol=.07,f2){
   if(!soundOn) return;
   try{
-    ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    const out=bus();
     const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+delay;
     o.type=type;o.frequency.setValueAtTime(f,t);
     if(f2) o.frequency.exponentialRampToValueAtTime(f2,t+dur);
-    g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur+.05);
-    o.connect(g).connect(ac.destination);o.start(t);o.stop(t+dur+.06);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.006);g.gain.exponentialRampToValueAtTime(.001,t+dur+.05);
+    o.connect(g).connect(out);o.start(t);o.stop(t+dur+.06);
+  }catch(e){}
+}
+// шум через фильтр: хруст, всплеск, шорох, свист ветра
+function noise(dur,f1,f2,vol=.08,delay=0,type='bandpass',q=1.2){
+  if(!soundOn) return;
+  try{
+    const out=bus();
+    if(!noiseBuf){ noiseBuf=ac.createBuffer(1,ac.sampleRate,ac.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1 }
+    const src=ac.createBufferSource(), f=ac.createBiquadFilter(), g=ac.createGain(), t=ac.currentTime+delay;
+    src.buffer=noiseBuf; src.loop=true; f.type=type; f.Q.value=q;
+    f.frequency.setValueAtTime(f1,t); if(f2) f.frequency.exponentialRampToValueAtTime(f2,t+dur);
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.004); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+    src.connect(f).connect(g).connect(out); src.start(t,Math.random()*.5); src.stop(t+dur+.05);
   }catch(e){}
 }
 const sfx={
-  jump:()=>tone(180,.15,'square',0,.07,520),
-  chomp:()=>{tone(300,.12,'sawtooth',0,.06,90);tone(280,.12,'sawtooth',.18,.06,80)},
-  tick:n=>tone(520+n*70,.09,'sine',0,.08),
-  yuck:()=>{tone(160,.35,'sawtooth',0,.07,70)},
+  jump:()=>{tone(180,.15,'square',0,.05,520);noise(.12,800,2400,.03,0,'bandpass',.8)},
+  chomp:(k=1)=>{noise(.05,2600*k,900,.11,0);noise(.05,2200*k,700,.09,.09);tone(150*k,.08,'sine',0,.09,60);tone(130*k,.07,'sine',.09,.07,55)},   // хрум-хрум
+  tick:n=>{tone(520+n*70,.09,'sine',0,.07);tone((520+n*70)*2,.05,'sine',0,.02)},
+  yuck:()=>{tone(170,.35,'sawtooth',0,.05,70);tone(176,.35,'sawtooth',0,.04,74);noise(.25,600,200,.04,0,'lowpass',.7)},
   laugh:()=>[0,.14,.28,.42].forEach((d,i)=>tone(700-i*60,.09,'triangle',d,.07,500-i*60)),
-  snore:()=>tone(90,.4,'sine',0,.08,60),
-  fanfare:()=>{[523,659,784,1047].forEach((f,i)=>tone(f,.18,'triangle',i*.1,.09));tone(1319,.5,'sine',.42,.06);tone(1568,.6,'sine',.55,.05)},
-  whoosh:()=>tone(900,.3,'sine',0,.04,200),
-  click:()=>tone(600,.05,'square',0,.05,300),
-  flush:()=>{tone(700,1.1,'sine',0,.06,90);tone(400,1,'triangle',.1,.04,120)},
-  water:()=>{for(let i=0;i<10;i++)tone(rand(900,1800),.05,'sine',i*.09,.025)},
+  snore:()=>{tone(90,.4,'sine',0,.08,60);noise(.4,300,150,.03,0,'lowpass',.7)},
+  fanfare:()=>{[523,659,784,1047].forEach((f,i)=>{tone(f,.22,'triangle',i*.1,.08);tone(f*2,.12,'sine',i*.1,.02)});
+    [1047,1319,1568].forEach(f=>tone(f,.7,'sine',.44,.035));noise(.6,6000,9000,.02,.44,'highpass',.5)},
+  whoosh:()=>noise(.32,500,3200,.07,0,'bandpass',1.4),
+  click:()=>{tone(1200,.025,'square',0,.025,700);noise(.02,4000,2000,.03)},
+  flush:()=>{noise(1.2,1800,250,.09,0,'lowpass',1);tone(400,1,'sine',.1,.03,120)},
+  water:()=>{noise(.35,1600,500,.07,0,'lowpass',.8);for(let i=0;i<7;i++)tone(rand(700,1500),.06,'sine',.05+i*.07,.025,rand(1600,2400))},
   boing:()=>{tone(140,.25,'sine',0,.1,620);tone(620,.3,'sine',.25,.07,300)},
-  magic:()=>[660,880,990,1320,1760].forEach((f,i)=>tone(f,.2,'sine',i*.07,.05)),
-  page:()=>tone(1500,.12,'triangle',0,.03,500),
-  door:()=>tone(220,.3,'sawtooth',0,.03,160),
+  magic:()=>[660,880,990,1320,1760].forEach((f,i)=>{tone(f,.22,'sine',i*.07,.045);tone(f*1.5,.12,'sine',i*.07+.02,.012)}),
+  page:()=>{noise(.18,1500,4000,.05,0,'bandpass',.7);tone(1500,.1,'triangle',0,.015,500)},
+  door:()=>{tone(220,.3,'sawtooth',0,.025,160);noise(.25,400,200,.04,0,'lowpass',1)},
   love:()=>[523,659,784].forEach((f,i)=>tone(f,.4,'sine',i*.12,.05)),
   lullaby:()=>[659,587,523,587,659,659,659].forEach((f,i)=>tone(f,.45,'sine',i*.42,.05)),
-  poison:()=>{tone(1200,.25,'sawtooth',0,.03,300);[0,.18,.36].forEach((d,i)=>tone(260-i*40,.2,'sine',.25+d,.08,200-i*40))}
+  poison:()=>{noise(.35,3000,600,.08,0,'bandpass',1);[0,.18,.36].forEach((d,i)=>tone(260-i*40,.2,'sine',.25+d,.08,200-i*40))},
+  pop:()=>{tone(rand(500,700),.06,'sine',0,.09,rand(1400,1900));noise(.03,5000,3000,.05,0,'highpass',.7)},   // пузырь: «чпок»
+  splash:()=>{noise(.45,2500,400,.12,0,'lowpass',.9);tone(300,.15,'sine',0,.05,90)},
+  thud:()=>{tone(110,.15,'sine',0,.12,45);noise(.1,700,200,.07,0,'lowpass',1)}
 };
+// вибрация к звукам: Android — настоящая, iPhone — лёгкий «тик» через системный переключатель (работает не на всех версиях)
+const HAPT={jump:'tap',click:'tap',boing:'tap',pop:'tap',tick:'tap',chomp:'good',magic:'good',yuck:'bad',poison:'bad',thud:'bad',splash:'tap',fanfare:'win'};
+const hapEl=(()=>{try{const l=document.createElement('label'); l.setAttribute('aria-hidden','true'); l.style.cssText='position:fixed;left:-200px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+  const i=document.createElement('input'); i.type='checkbox'; i.setAttribute('switch',''); i.tabIndex=-1; l.appendChild(i); document.body.appendChild(l); return l}catch(e){return null}})();
+let lastBuzz=0;
+function buzz(k){
+  const now=performance.now(); if(now-lastBuzz<45) return; lastBuzz=now;
+  if(navigator.vibrate){ try{navigator.vibrate(k==='win'?[25,50,25,50,70]:k==='bad'?[45,40,45]:k==='good'?22:10)}catch(e){} return }
+  if(!hapEl) return; const tick=()=>{try{hapEl.click()}catch(e){}};
+  tick(); if(k==='bad'||k==='win') setTimeout(tick,110); if(k==='win') setTimeout(tick,240);
+}
+for(const k in HAPT){ const f=sfx[k]; sfx[k]=(...a)=>{ buzz(HAPT[k]); return f(...a) } }
+
 $('sound').addEventListener('click',()=>{
   soundOn=!soundOn; $('sound').setAttribute('aria-pressed',soundOn);
-  $('sound').textContent=soundOn?'🔊 Звук':'🔇 Без звука';
-  if(!soundOn) stopSpeech();
+  $('sound').textContent=soundOn?'🔊 Звук':'🔇 Звук';
+  if(!soundOn){ stopSpeech(); stopMusic() } else playMusic(episode);
 });
+
+/* ================= фоновая музыка =================
+   Короткие мелодии-петли, сыгранные синтезатором (без файлов). Восьмые ноты, MIDI-номера, 0 — пауза */
+const MUSIC={
+  1:{bpm:120,wave:'triangle',vol:.032,
+     mel:[72,0,76,0,79,0,76,0, 74,0,77,0,81,0,77,0, 76,0,79,0,84,0,79,0, 77,76,74,0,72,0,0,0],
+     bass:[48,0,0,0,55,0,0,0, 50,0,0,0,57,0,0,0, 52,0,0,0,55,0,0,0, 53,0,0,0,48,0,0,0]},
+  2:{bpm:84,wave:'sine',vol:.03,
+     mel:[76,0,79,0,76,0, 74,0,72,0,74,0, 76,0,74,0,72,0, 67,0,0,0,0,0],
+     bass:[48,0,55,0,52,0, 43,0,50,0,55,0, 45,0,52,0,57,0, 48,0,55,0,52,0]},
+  3:{bpm:96,wave:'sine',vol:.026,
+     mel:[69,72,76,72,69,72,76,72, 65,69,72,69,65,69,72,69, 67,72,76,72,67,72,76,72, 67,71,74,71,67,71,74,71],
+     bass:[45,0,0,0,0,0,0,0, 41,0,0,0,0,0,0,0, 48,0,0,0,0,0,0,0, 43,0,0,0,0,0,0,0]},
+  4:{bpm:70,wave:'sine',vol:.022,
+     mel:[84,0,0,88,0,0,91,0,0,88,0,0, 86,0,0,89,0,0,93,0,0,89,0,0, 84,0,0,88,0,0,91,0,0,96,0,0, 91,0,0,88,0,0,86,0,0,84,0,0],
+     bass:[60,0,0,0,0,0,0,0,0,0,0,0, 62,0,0,0,0,0,0,0,0,0,0,0, 64,0,0,0,0,0,0,0,0,0,0,0, 55,0,0,0,0,0,0,0,0,0,0,0]},
+  5:{bpm:104,wave:'triangle',vol:.026,
+     mel:[81,0,79,0,76,0,79,0, 81,0,84,0,81,0,0,0, 79,0,76,0,74,0,76,0, 79,0,76,0,74,0,72,0],
+     bass:[57,0,0,0,0,0,0,0, 53,0,0,0,0,0,0,0, 55,0,0,0,0,0,0,0, 48,0,0,0,0,0,0,0]},
+  6:{bpm:126,wave:'triangle',vol:.028,
+     mel:[77,0,81,77,0,81,84,0, 82,0,79,0,76,0,0,0, 74,0,77,74,0,77,81,0, 79,0,76,0,77,0,0,0],
+     bass:[41,0,53,0,41,0,53,0, 43,0,55,0,48,0,55,0, 46,0,58,0,46,0,58,0, 48,0,55,0,41,0,0,0]},
+  7:{bpm:140,wave:'triangle',vol:.03,
+     mel:[67,0,71,74,79,0,74,0, 76,0,72,0,76,79,84,0, 83,0,79,0,76,0,74,0, 71,74,79,0,79,0,0,0],
+     bass:[43,43,0,43,50,0,50,0, 48,48,0,48,52,0,52,0, 47,47,0,47,50,0,50,0, 43,0,50,0,43,0,0,0]}
+};
+let musicOn=(()=>{try{return localStorage.getItem('spider-music')!=='off'}catch(e){return true}})();
+let musBus=null, musTimer=0, musTrack=null, musStep=0, musNext=0;
+const midi=m=>440*Math.pow(2,(m-69)/12);
+function musNote(f,t,dur,type,vol){
+  const o=ac.createOscillator(), g=ac.createGain(); o.type=type; o.frequency.value=f;
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.015); g.gain.exponentialRampToValueAtTime(.0005,t+dur);
+  o.connect(g).connect(musBus); o.start(t); o.stop(t+dur+.05);
+}
+function musicTick(){
+  if(!musTrack||!ac) return; const T=musTrack, step=60/T.bpm/2;
+  if(musNext<ac.currentTime-.5) musNext=ac.currentTime+.05;   // вкладку прятали — не догоняем пропущенное
+  while(musNext<ac.currentTime+.3){
+    const i=musStep%T.mel.length, m=T.mel[i], b=T.bass[i%T.bass.length];
+    if(m) musNote(midi(m),musNext,step*1.7,T.wave,T.vol);
+    if(b) musNote(midi(b),musNext,step*1.9,'sine',T.vol*1.25);
+    musNext+=step; musStep++;
+  }
+}
+function playMusic(ep){
+  stopMusic(); if(!musicOn||!soundOn||!MUSIC[ep]) return;
+  try{ bus(); if(!musBus){ musBus=ac.createGain(); musBus.gain.value=1; musBus.connect(sfxBus.comp) } }catch(e){return}
+  musTrack=MUSIC[ep]; musStep=0; musNext=ac.currentTime+.15; musTimer=setInterval(musicTick,90);
+}
+function stopMusic(){ clearInterval(musTimer); musTrack=null }
+function musicBtn(){ const b=$('music'); b.textContent=musicOn?'🎵':'🎵̸'; b.setAttribute('aria-pressed',musicOn); b.classList.toggle('off',!musicOn) }
+$('music').addEventListener('click',()=>{ musicOn=!musicOn; try{localStorage.setItem('spider-music',musicOn?'on':'off')}catch(e){} musicBtn(); musicOn?playMusic(episode):stopMusic() });
+musicBtn();
 
 /* ================= конфетти ================= */
 const fx=$('fx'), ctx=fx.getContext('2d'); let parts=[];
 const CONF=['#d8432f','#7a3cc9','#e8a816','#4fae5a','#3d8fe0','#ff7ab0'];
-function burst(x,y,n=60,power=9){
+function burst(x,y,n=60,power=9,cols){
   for(let i=0;i<n;i++){const a=rand(0,TAU),p=rand(power*.3,power);
-    parts.push({x,y,vx:Math.cos(a)*p,vy:Math.sin(a)*p-power*.5,r:rand(0,TAU),vr:rand(-.3,.3),w:rand(6,11),h:rand(4,7),c:pick(CONF),life:rand(60,110)})}
+    parts.push({x,y,vx:Math.cos(a)*p,vy:Math.sin(a)*p-power*.5,r:rand(0,TAU),vr:rand(-.3,.3),w:rand(6,11)*(cols?.6:1),h:rand(4,7)*(cols?.6:1),c:pick(cols||CONF),life:cols?rand(25,45):rand(60,110)})}
+  fxDirty=true;
 }
+// кольцо-«вспышка» на месте поимки и лёгкая тряска сцены при ударе
+function ringFx(x,y,col){ const d=document.createElement('div'); d.className='ringfx'; d.style.left=x+'px'; d.style.top=y+'px'; if(col) d.style.borderColor=col; document.body.appendChild(d); setTimeout(()=>d.remove(),500) }
+function jolt(el){ el=el||document.querySelector('.stage:not([hidden])')||document.body; restart(el,'jolt') }
+const CRUMBS={fly:['#3d4048','#9fb8cc'],ladybug:['#e23b2e','#141412'],mosquito:['#7a5a3c','#cfd8e0'],butterfly:['#f39a2e','#e85d9a','#ffd23a'],bluebug:['#2f6fe0','#8fb3ff'],wasp:['#ffd23a','#141412'],stinkbug:['#8fc45a','#5f8f2e']};
 let fxDirty=true;
 function drawFx(){
   if(!parts.length&&!fxDirty) return; fxDirty=parts.length>0;
@@ -1050,7 +1159,7 @@ function puff(x,y){
   setTimeout(()=>c.remove(),1500);
 }
 function explode(b){
-  puff(b.x,b.y); removeBug(b);
+  puff(b.x,b.y); removeBug(b); jolt(); streak=0;
   setTimeout(()=>puff(B.x,B.y+H()*.3),250);
   poisonSpider();
 }
@@ -1085,6 +1194,7 @@ function clearBugs(){for(const b of [...bugs]){b.dead=true;b.el.remove()} bugs.l
 const huntQueue=[];
 function hunt(b){
   if(b.dead||b.caught||level===0||B.poisoned||B.scared||B.tickled||!['home','return','eating','hunt'].includes(B.state)) return;
+  buzz('tap');   // отклик прямо под пальцем (на iPhone вибрация работает только в момент нажатия)
   b.caught=true; b.el.classList.add('caught');
   if(B.state==='hunt'||B.state==='eating') huntQueue.push(b);
   else {B.target=b; B.state='hunt'}
@@ -1093,18 +1203,24 @@ function nextHunt(){
   while(huntQueue.length){const b=huntQueue.shift(); if(!b.dead){B.target=b;B.state='hunt';return true}}
   return false;
 }
+let streak=0, streakT=0;
 function blackCatch(b){
   B.target=null; B.state='eating'; removeBug(b);
+  { const r=rect(), x=r.left+b.x, y=r.top+b.y; burst(x,y,b.K.bad?8:14,4,CRUMBS[b.k]); ringFx(x,y,b.K.bad?'#9be06a':null) }
   if(R&&R.target===b){
     R.target=null; R.state='return'; restart(R.btn,'sad');
     setTimeout(()=>{if(R)talk(R,pick(R.cfg.sad))},700);
   }
   if(b.K.bad){
     restart(B.btn,'shake'); restart(B.wrap,'yuck'); setTimeout(()=>B.wrap.classList.remove('yuck'),1300);
-    talk(B,pick(b.K.yuck),.6); sfx.yuck();
+    talk(B,pick(b.K.yuck),.6); sfx.yuck(); jolt(); streak=0;
     if(['yuck','poison'].includes(LEVELS[level]?.key)) addProg(-1);
   }else{
-    restart(B.btn,'chomp'); sfx.chomp();
+    restart(B.btn,'chomp'); sfx.chomp({fly:1,ladybug:.85,mosquito:1.25,butterfly:1.1,bluebug:.75}[b.k]||1);
+    // серия: быстрые поимки подряд — тон выше и похвала
+    const now=performance.now(); streak=now-streakT<2600?streak+1:1; streakT=now;
+    if(streak>=2) tone(660*Math.pow(1.122,Math.min(streak,10)),.12,'sine',.12,.05);
+    if([3,5,8,12].includes(streak)) setTimeout(()=>say(B,`<b>Ого!</b> ${streak} подряд!`,1100),250);
     const lk=LEVELS[level]?.key, eating=['eat','purple','red','yuck','poison','blue','green'];
     const finishing=eating.includes(lk)&&!busy&&prog+1>=LEVELS[level].goal;
     if(!finishing) talk(B,pick(b.K.says),.5); // на последней букашке говорит фразу победы
@@ -1456,6 +1572,7 @@ let episode=0;
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catch(e){return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function showScreen(ep){
+  if(ep!==episode) ep?playMusic(ep):stopMusic();
   episode=ep;
   $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep<2;
 }
@@ -1837,8 +1954,27 @@ const SCENES={
       b.style.left=p.x+'px'; b.style.top=p.y+'px'; room.appendChild(b);
       tone(rand(900,1500),.04,'sine',0,.03); add2(1,false);
       if(p2===8) talk2(S2,'Хи-хи! Пена!');
-      if(p2>=EPX[l2].goal){step=2;setHint('Смой пену — нажми на кран');tapme(valve,true);talk2(S2,'Сколько пены! Смывай!')}
+      if(p2>=EPX[l2].goal) bubbles();
     }};
+    // из пены вылетают мыльные пузыри — их можно лопать пальцем: «чпок!»
+    function bubbles(){
+      step=1.5; setHint('Мыльные пузыри! Лопай их пальцем'); talk2(S2,'Ой, сколько пузырей! Лопай!');
+      let popped=0, made=0; const need=10;
+      const spawn=()=>{
+        if(!alive()||step!==1.5) return;
+        const b=document.createElement('button'), sz=rand(38,70), sp=S2.wrap.getBoundingClientRect(), st=rr();
+        b.className='bub'; b.setAttribute('aria-label','Пузырь'); b.style.setProperty('--s',sz+'px'); b.style.setProperty('--dx',rand(-60,60)+'px'); b.style.setProperty('--t',rand(3.8,5.5)+'s');
+        b.style.left=(sp.left-st.left+sp.width*rand(.2,.8))+'px'; b.style.top=(sp.top-st.top+sp.height*rand(.3,.7))+'px';
+        b.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(b.dataset.p) return; b.dataset.p=1; b.style.transform=getComputedStyle(b).transform; b.classList.add('pop'); sfx.pop();   // лопается там, где летел
+          const r=b.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,10,4,['#ffffff','#bfe6ff','#ffc8f0','#c8ffe8']);
+          setTimeout(()=>b.remove(),260); popped++; if(popped===5) talk2(S2,'Чпок-чпок! Ещё!');
+          if(popped>=need){ step=2; room.querySelectorAll('.bub').forEach(x=>x.remove()); setHint('Смой пену — нажми на кран'); tapme(valve,true); talk2(S2,'Сколько пены! Смывай!') } };
+        b.addEventListener('animationend',e=>{ if(e.animationName==='bubrise') b.remove() });
+        room.appendChild(b); made++;
+        setTimeout(spawn,made<3?250:rand(380,700));
+      };
+      spawn();
+    }
   },
 
   /* 4. Двери */
@@ -2149,12 +2285,12 @@ function stonesScene(alive,ops,opt={}){
       if(p2>0){p2--;render2()}   // за ошибку паук отлетает на камень назад
       put(S2,onStone($('r-st'+p2))); talk2(S2,pick(['Тьфу! Не та муха! Назад…','Бе! Не тот ответ!','Ой! Отлетел назад. Посчитай ещё раз.']));
       await wait(480); if(!alive())return;
-      restart(S2.btn,'shake'); sfx.yuck(); dur(''); lock=false;
+      restart(S2.btn,'shake'); sfx.yuck(); jolt(); dur(''); lock=false;
     } else {
       const c=anchor(cur,.5,.5), dy=rr().height*.1;
       put(S2,{x:c.x+w*.5,y:c.y+dy}); S2.wrap.classList.add('vanish');
       await wait(450); if(!alive())return;
-      splash2({x:c.x+w*.5,y:c.y+dy}); sfx.water(); sfx.yuck(); clearFlies();
+      splash2({x:c.x+w*.5,y:c.y+dy}); sfx.splash(); jolt(); clearFlies();
       adjustSkill(ex.op,-.7); speedK=Math.max(.45,speedK*.8); if(FISH) talk2(FISH,pick(['Ха-ха! Теперь я быстрее!','Буль! Плыву быстрее!']));
       await wait(1300); if(!alive())return;
       p2=0; render2();
@@ -2860,7 +2996,7 @@ function arcade(alive,cfg){
   const sr=()=>st.sw*.3; // радиус паука для столкновений
   function hitRect(cx,cy,r,x,y,w,h){const nx=Math.max(x,Math.min(cx,x+w)),ny=Math.max(y,Math.min(cy,y+h));return (cx-nx)**2+(cy-ny)**2<r*r}
   function ouch(){
-    st.inv=1.3; st.slow=.7; st.hits++; st.lives--; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.yuck();
+    st.inv=1.3; st.slow=.7; st.hits++; st.lives--; S2.wrap.classList.add('blink'); restart(S2.btn,'shake'); sfx.thud(); jolt();
     if(st.lives<=0){ S2.wrap.classList.remove('blink'); failStage(st,stars0); return }
     hitSay(S2,st.lives);   // только облачко, без голоса: запуск речи на телефоне подтормаживает игру
   }
@@ -3352,11 +3488,11 @@ function race7(alive,key){
   function hit(kind,o){
     const X0=()=>{const r=rr();return {x:r.left+(o.x-st.cam+.14)*st.W,y:r.top+laneY(me)}};
     if(o&&own.includes('helmet')&&['hurdle','stone','root','stump'].includes(kind)){   // каска: препятствие разлетается
-      o.broken=true; const p=X0(); burst(p.x,p.y,22,6); tone(160,.15,'square',0,.07,60); tone(90,.2,'sawtooth',.05,.05,50);
+      o.broken=true; const p=X0(); burst(p.x,p.y,22,6,['#c9a06a','#8d9199','#fff','#e8483c']); ringFx(p.x,p.y,'#ffd23a'); sfx.thud(); noise(.2,1200,300,.08); jolt();
       st.pv*=.9; float('Бах!','#ffd23a'); restart(S2.btn,'jump'); return }
     if(own.includes('boots')&&(kind==='puddle'||kind==='banana')){                       // сапожки: не скользко
       if(o) o.broken=kind==='banana'; float(kind==='puddle'?'Шлёп!':'Не скользко!','#bfe6ff'); if(kind==='puddle') sfx.water(); return }
-    st.pv*=kind==='banana'?.08:.15; st.stun=.55; sfx.yuck(); restart(S2.btn,kind==='banana'?'laugh':'shake');
+    st.pv*=kind==='banana'?.08:.15; st.stun=.55; kind==='puddle'?sfx.splash():sfx.thud(); jolt(); restart(S2.btn,kind==='banana'?'laugh':'shake');
     if(kind==='banana'){ S2.btn.style.rotate='0deg'; S2.btn.animate([{rotate:'0deg'},{rotate:'360deg'}],{duration:600}); sfx.whoosh() }
     bubble(S2,bold(OBS7[kind]),1000,true);
   }
