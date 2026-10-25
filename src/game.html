@@ -1025,7 +1025,7 @@ function spiderCenter(s){const r=s.btn.getBoundingClientRect();return{x:r.left+r
 
 /* ---- соперники ---- */
 const RIVALS={
-  purple:{cls:'purple',label:'Фиолетовый паук',speed:2.3,dmin:1800,dmax:3600,pitch:1.7,color:'var(--violet)',
+  purple:{cls:'purple',label:'Фиолетовый паук',speed:3,dmin:1400,dmax:2800,pitch:1.7,color:'var(--violet)',
     hi:'Это моя еда!',bye:'Пока-пока!',laugh:['Ха-ха-ха! Не успел!','Хи-хи! Моя!','Ха-ха! Я быстрее!'],
     sad:['Эх! Не успел','Ну вот…','Ах ты!'],poke:['Не догонишь!','Хи-хи!','Я фиолетовый!']},
   red:{cls:'red',label:'Красный паук',name:'Красный',speed:3.4,dmin:900,dmax:1900,pitch:1.05,color:'var(--red)',
@@ -1046,8 +1046,10 @@ function summonRival(key){
   s.onArrive=()=>{talk(s,cfg.hi); planRival();
     if(cfg.cls==='purple'){ s.lastShow=performance.now()-2500;   // первый трюк — через пару секунд после прихода, дальше каждые 5–7 секунд
       s.showT=setInterval(()=>{ if(R!==s){clearInterval(s.showT);return}
-        if(s.showing||s.feast||!['home','return','hunt'].includes(s.state)||performance.now()-s.lastShow<rand(4000,6000)) return;
-        if(s.target){s.target.el.classList.remove('hunted');s.target=null}
+        // хвастается не посреди охоты, а когда уже что-то поймал (или давно не хвастался)
+        if(s.showing||s.feast||!['home','return'].includes(s.state)||performance.now()-s.lastShow<rand(4000,6000)) return;
+        if(!(s.sinceShow>=1||performance.now()-s.lastShow>11000)) return;
+        s.sinceShow=0;
         clearTimeout(s.timer); s.state='show'; showOff(s) },700) } };
   s.btn.addEventListener('click',()=>{
     if(cfg.cls==='blue'){brysh(s);return}
@@ -1349,7 +1351,7 @@ function rivalCatch(s,b){
     return;
   }
   if(b.K.bad){rivalYuck(s,b);return}
-  s.target=null; s.state='eating'; removeBug(b); restart(s.btn,'chomp'); sfx.chomp();
+  s.target=null; s.state='eating'; removeBug(b); restart(s.btn,'chomp'); sfx.chomp(); s.sinceShow=(s.sinceShow||0)+1;
   let won=false;
   if(LEVELS[level]?.race&&!busy){rprog++;render();won=rprog>=LEVELS[level].goal}
   setTimeout(()=>{
