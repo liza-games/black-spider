@@ -2493,7 +2493,7 @@ function stonesScene(alive,ops,opt={}){
   }
   // в начале этапа рыба выпрыгивает, представляется, а паук ей отвечает — и только потом первый пример
   async function meetFish(){
-    const F=FISHES[fishK]; fishEl.classList.add('k-'+fishK);
+    const F=FISHES[fishK]; fishEl.classList.add('k-'+(F.cls||fishK));
     await wait(300); if(!alive())return; restart(fishEl,'hop'); splash2({x:fishX(rr().width),y:rr().height*FISH_Y}); sfx.splash();
     await wait(350); if(!alive())return; talk2(FISH,F.hi,2600);
     await wait(2700); if(!alive())return; talk2(S2,F.reply,2400);
@@ -2551,11 +2551,12 @@ SCENES.stones1=alive=>stonesScene(alive,['add']);
 const FISHES={
   slow:{base:13000,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
   gold:{base:9500,hi:'А я рыбка Золотинка! Я считаю быстрее карпа!',reply:'Ещё одна рыба! Золотая! Ну держись!'},
-  fast:{base:6000,hi:'Я щука Молния! Я самая быстрая в море!',reply:'Ой-ой, щука! Надо считать очень быстро!'}};
+  fast:{base:6000,hi:'Я щука Молния! Я самая быстрая в море!',reply:'Ой-ой, щука! Надо считать очень быстро!'},
+  fast2:{base:6000,cls:'fast',hi:'Снова я, щука Молния! А теперь ошибаться нельзя!',reply:'Опять щука! Ну, держись, я уже умею быстро!'}};
 SCENES.stones2=alive=>stonesScene(alive,['sub'],{fish:'slow'});
 SCENES.stones3=alive=>stonesScene(alive,['mul'],{fish:'gold'});
 SCENES.stones5=alive=>stonesScene(alive,['add','sub'],{fish:'fast'});
-SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:'gold',strict:true,last:true});
+SCENES.stones4=alive=>stonesScene(alive,['add','sub','mul'],{fish:'fast2',strict:true,last:true});   // в конце снова щука — самое трудное
 
 /* 5. Берег */
 SCENES.shore=function(alive){
