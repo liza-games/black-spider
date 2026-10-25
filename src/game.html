@@ -797,7 +797,7 @@ function stopSpeech(){sq.length=0;spId++;speaking=false;clearTimeout(spTimer);if
 let unlocked=false;
 function unlockAudio(){
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume()}catch(e){}
-  if(!musTrack&&episode===0&&!unlocked) setTimeout(()=>{ if(!musTrack&&episode===0) playMusic(0) },0);   // музыка меню — с первого касания (раньше браузер не даёт звук)
+  const wk=document.getElementById('wake'); if(!musTrack&&episode===0&&!unlocked&&(!wk||wk.hidden)) setTimeout(()=>{ if(!musTrack&&episode===0) playMusic(0) },0);   // если экрана с глазом нет (после смены языка)   // музыка меню — с первого касания (раньше браузер не даёт звук)
   if(unlocked||!('speechSynthesis' in window)) return;
   unlocked=true;
   const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang=LANG==='en'?'en-GB':'ru-RU';
@@ -3796,7 +3796,7 @@ else{
   let awake=false; try{awake=sessionStorage.getItem('spider-awake')==='1'}catch(e){}
   if(!awake){
     const w=$('wake'); w.hidden=false; document.body.classList.add('sleepy');
-    const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); document.body.classList.remove('sleepy'); wakeSound(); setTimeout(()=>playMusic(0),900);
+    const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); document.body.classList.remove('sleepy'); wakeSound(); setTimeout(()=>{ if(episode===0&&!musTrack) playMusic(0) },2900);   // мелодия меню — когда аккорд пробуждения отзвучал
       try{sessionStorage.setItem('spider-awake','1')}catch(e){} setTimeout(()=>w.remove(),2000) };
     w.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); w.addEventListener('pointerdown',e=>e.preventDefault()); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
   }
