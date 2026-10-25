@@ -2340,7 +2340,19 @@ SCENES.boat=function(alive){
     await wait(1250); if(!alive())return;
     splash2(anchor($('r-st0'),.5,.5)); sfx.water(); restart(S2.btn,'shake');
     talk2(S2,'Бултых! Ой, я не умею плавать!',2400); add2(1,false);
-    await wait(2700); if(!alive())return;
+    await wait(2500); if(!alive())return;
+    // к камню подплывает бабушка Черепаха, коротко объясняет про волшебные камни и уплывает
+    const s=rr(), st=anchor($('r-st0'),.5,.5), tu=document.createElement('div'); tu.className='turtle'; tu.innerHTML=`<div class="bubble"></div>${SVG.turtle}`;
+    tu.style.left=(-s.width*.25)+'px'; tu.style.top=(st.y+s.width*.06)+'px'; room.appendChild(tu);
+    const TU=talkerFor(tu,{pitch:1.05,rate:.85,who:'turtle',voice:1});
+    await wait(60); tu.style.left=(st.x+s.width*.2)+'px'; sfx.water();
+    await wait(1300); if(!alive())return;
+    talk2(TU,'Не бойся! Камни волшебные: прыгай с мухой, у которой правильный ответ!',3600);
+    await wait(3700); if(!alive())return;
+    restart(S2.btn,'jump'); talk2(S2,'Я умею считать!',1600);
+    await wait(1200); if(!alive())return;
+    tu.style.transition='left 1.6s ease-in'; tu.style.left=(-s.width*.3)+'px'; sfx.water();
+    await wait(1500); if(!alive())return;
     enter2(l2+1);
   };
 };
@@ -2479,35 +2491,6 @@ function stonesScene(alive,ops,opt={}){
       await wait(1200); if(!alive())return; ask();
     }
   }
-  // Бабушка Черепаха спасает барахтающегося паука, сажает на первый камень и объясняет про волшебные камни
-  async function turtleIntro(){
-    const s=rr(), st0=onStone($('r-st0')), tu=document.createElement('div'); tu.className='turtle'; tu.innerHTML=`<div class="bubble"></div>${SVG.turtle}`;
-    room.appendChild(tu); const TU=talkerFor(tu,{pitch:1.05,rate:.85,who:'turtle',voice:1}); const hint0=hint2; setHint('Паук упал в воду! Кто же его спасёт?');
-    const water={x:s.width*.3,y:s.height*.74};
-    S2.wrap.classList.add('noanim'); put(S2,water); S2.wrap.classList.add('tickled'); setTimeout(()=>S2.wrap.classList.remove('noanim'),50);
-    tu.style.left=(-s.width*.2)+'px'; tu.style.top=(water.y+s.width*.05)+'px';
-    talk2(S2,'Буль-буль! Помогите!',1800); splash2(water); sfx.splash();
-    await wait(900); if(!alive())return;
-    tu.style.left=water.x+'px'; sfx.water();                                              // черепаха подплывает
-    await wait(1400); if(!alive())return;
-    talk2(TU,'Ой, кто это барахтается? Держись за мой панцирь, малыш!',3000);
-    await wait(3100); if(!alive())return;
-    S2.wrap.classList.remove('tickled'); dur('1.4s'); tu.style.transition='left 1.4s ease-in-out,top 1.4s ease-in-out';
-    tu.style.left=st0.x+'px'; tu.style.top=(st0.y+s.width*.11)+'px'; put(S2,st0); S2.btn.classList.add('crawl');   // везёт к первому камню
-    await wait(1500); if(!alive())return; S2.btn.classList.remove('crawl'); dur(''); restart(S2.btn,'jump'); sfx.jump();
-    talk2(S2,'Спасибо, бабушка Черепаха!',2000);
-    await wait(2100); if(!alive())return;
-    talk2(TU,'Не бойся! До берега можно допрыгать по камням.',2800);
-    await wait(2900); if(!alive())return;
-    talk2(TU,'Но камни волшебные: прыгнуть можно только с мухой, у которой правильный ответ!',4000);
-    await wait(4100); if(!alive())return;
-    restart(S2.btn,'jump'); talk2(S2,'Я умею считать! Попробую!',2200);
-    await wait(2300); if(!alive())return;
-    talk2(TU,'Молодец! А я поплыву рядом.',1800);
-    await wait(1200); if(!alive())return;
-    tu.style.left=(s.width*.12)+'px'; tu.style.top=(s.height*.82)+'px';                       // отплывает в уголок и смотрит
-    await wait(900); if(!alive())return; setHint(hint0); ask();
-  }
   // в начале этапа рыба выпрыгивает, представляется, а паук ей отвечает — и только потом первый пример
   async function meetFish(){
     const F=FISHES[fishK]; fishEl.classList.add('k-'+fishK);
@@ -2562,9 +2545,9 @@ function stonesScene(alive,ops,opt={}){
     leaving=leaving.filter(f=>!f.gone);
     requestAnimationFrame(tick);
   })();
-  if(opt.turtle) turtleIntro(); else if(fishEl){ fishK=opt.fish; meetFish() } else setTimeout(()=>alive()&&ask(),500);
+  if(fishEl){ fishK=opt.fish; meetFish() } else setTimeout(()=>alive()&&ask(),500);
 }
-SCENES.stones1=alive=>stonesScene(alive,['add'],{turtle:true});
+SCENES.stones1=alive=>stonesScene(alive,['add']);
 const FISHES={
   slow:{base:13000,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
   gold:{base:9500,hi:'А я рыбка Золотинка! Я считаю быстрее карпа!',reply:'Ещё одна рыба! Золотая! Ну держись!'},
