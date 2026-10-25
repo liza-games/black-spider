@@ -1706,8 +1706,18 @@ function epicSting(){
   tone(130.8,.9,'sine',t,.14,65); noise(.5,300,120,.09,t,'lowpass',.8);          // «бум» литавры
   noise(1.4,5000,9000,.03,t,'highpass',.6); stardust(1.6,.025);                   // блеск сверху
 }
+// «Та-дааа!»: короткое «та» и долгий яркий мажорный аккорд с тарелкой и звёздной пылью
+function taDa(){
+  if(!soundOn) return;
+  [392,523.25].forEach(f=>{ tone(f,.13,'square',0,.035); tone(f,.13,'triangle',0,.05) });            // «та»
+  const t=.2;
+  [[523.25,.05],[659.25,.045],[783.99,.045],[1046.5,.04]].forEach(([f,v])=>{                          // «дааа»
+    tone(f,1.8,'triangle',t,v); tone(f*1.004,1.8,'square',t,v*.25); tone(f*2,1.2,'sine',t,v*.3) });
+  tone(130.8,1,'sine',t,.12,98); noise(1.6,6000,10000,.05,t,'highpass',.4);                           // бас и тарелка
+  setTimeout(()=>stardust(1.6,.022),700);
+}
 function reallyShowEndStar(){
-  stopMusic(); stardust(1.8,.028); setTimeout(()=>tone(1046.5,1.2,'sine',0,.03),200);
+  stopMusic(); taDa();
   const o=document.createElement('div'); o.className='endfx'; o.innerHTML=`<div class="erays"></div><div class="eglow"></div>
     ${Array.from({length:14},()=>`<i class="espark" style="left:${rand(6,94)}%;top:${rand(8,92)}%;animation-delay:${rand(0,2).toFixed(2)}s;--sz:${rand(10,22).toFixed(0)}px"></i>`).join('')}
     <button class="estar" aria-label="Забрать звезду и вернуться в меню">${CUTE_STAR}</button><div class="ecap">Забери звезду!</div>`;
