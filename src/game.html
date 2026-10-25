@@ -768,6 +768,7 @@ function stopSpeech(){sq.length=0;spId++;speaking=false;clearTimeout(spTimer);if
 let unlocked=false;
 function unlockAudio(){
   try{ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state!=='running') ac.resume()}catch(e){}
+  if(!musTrack&&episode===0&&!unlocked) setTimeout(()=>{ if(!musTrack&&episode===0) playMusic(0) },0);   // музыка меню — с первого касания (раньше браузер не даёт звук)
   if(unlocked||!('speechSynthesis' in window)) return;
   unlocked=true;
   const u=new SpeechSynthesisUtterance(' '); u.volume=0; u.lang=LANG==='en'?'en-GB':'ru-RU';
@@ -852,6 +853,10 @@ $('sound').addEventListener('click',()=>{
 /* ================= фоновая музыка =================
    Короткие мелодии-петли, сыгранные синтезатором (без файлов). Восьмые ноты, MIDI-номера, 0 — пауза */
 const MUSIC={
+  0:{bpm:108,wave:'triangle',vol:.03,   // главное меню: тема чёрного паука, вприпрыжку
+     mel:[67,0,72,0,76,74,72,0, 69,0,72,0,77,76,74,0, 71,0,74,0,79,77,76,74, 72,0,76,0,72,0,0,0,
+          67,0,72,0,76,74,72,0, 69,0,72,0,77,76,74,0, 79,0,77,76,74,0,71,0, 72,0,0,0,0,0,0,0],
+     bass:[48,0,55,0,52,0,55,0, 53,0,57,0,53,0,57,0, 55,0,59,0,55,0,59,0, 48,0,55,0,48,0,0,0]},
   1:{bpm:120,wave:'triangle',vol:.032,
      mel:[72,0,76,0,79,0,76,0, 74,0,77,0,81,0,77,0, 76,0,79,0,84,0,79,0, 77,76,74,0,72,0,0,0],
      bass:[48,0,0,0,55,0,0,0, 50,0,0,0,57,0,0,0, 52,0,0,0,55,0,0,0, 53,0,0,0,48,0,0,0]},
@@ -1576,7 +1581,7 @@ let episode=0;
 const lsGet=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:+v}catch(e){return d}};
 const lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function showScreen(ep){
-  if(ep!==episode) ep?playMusic(ep):stopMusic();
+  if(ep!==episode) playMusic(ep);   // у меню тоже своя мелодия
   episode=ep;
   $('menu').hidden=ep!==0; $('stage').hidden=ep!==1; $('stage2').hidden=ep<2;
 }
