@@ -468,6 +468,22 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sdone{position:absolute;right:5%;bottom:5%;z-index:5;border:0;border-radius:999px;background:var(--accent);color:#fff;font:900 18px Nunito,sans-serif;padding:10px 20px;box-shadow:0 4px 0 #8a2a1c}
 
 /* ================= главное меню ================= */
+.wake{position:fixed;inset:0;z-index:60;cursor:pointer;background:radial-gradient(ellipse 60% 6% at 50% 50%,rgb(255 245 220/.5),transparent 70%)}
+.wake .lid{position:absolute;left:0;width:100%;height:50%;display:block;transition:transform .55s cubic-bezier(.6,0,.3,1)}
+.wake .lid.top{top:0;transform:translateY(-3px);animation:lidT 3.2s ease-in-out infinite}
+.wake .lid.bot{bottom:0;transform:translateY(3px);animation:lidB 3.2s ease-in-out infinite}
+@keyframes lidT{0%,78%,100%{transform:translateY(-3px)}86%{transform:translateY(-14px)}92%{transform:translateY(2px)}}
+@keyframes lidB{0%,78%,100%{transform:translateY(3px)}86%{transform:translateY(14px)}92%{transform:translateY(-2px)}}
+.wake .wtext{position:absolute;left:0;right:0;top:calc(50% + 40px);display:flex;flex-direction:column;align-items:center;gap:6px;color:#cfcabd;font:700 16px var(--body);text-align:center;pointer-events:none;transition:opacity .3s}
+.wake .wtext .wen,html[lang=en] .wake .wtext .wru{order:2;font-weight:600;font-size:14px;color:#8d887c}
+html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cfcabd}   /* сначала язык игры, ниже второй */
+.wfinger{font-size:30px;animation:wfinger 1.2s ease-in-out infinite}
+@keyframes wfinger{50%{translate:0 -8px}}
+.wake.open .lid{animation:none}
+.wake.open .lid.top{transform:translateY(-102%)}
+.wake.open .lid.bot{transform:translateY(102%)}
+.wake.open .wtext{opacity:0}
+.wake.open{background:none;pointer-events:none}
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:72px 16px 24px}   /* сверху место под кнопки приложения, чтобы до всего можно было дотянуться */
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
 .mtools{display:flex;gap:8px;align-items:center;justify-content:center}
@@ -531,6 +547,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
   <button id="restart">↺ Сначала</button>
 </footer>
 
+<div class="wake" id="wake" hidden role="button" tabindex="0" aria-label="Открыть глаза / Open your eyes">
+  <svg class="lid top" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0 H100 V103 Q50 95 0 103 Z" fill="#0b0b0d"/></svg><svg class="lid bot" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 100 H100 V-3 Q50 5 0 -3 Z" fill="#0b0b0d"/></svg>
+  <div class="wtext"><span class="wfinger">👆</span><b class="wru">Нажми, чтобы открыть глаза</b><b class="wen">Tap to open your eyes</b></div>
+</div>
 <div class="menu" id="menu">
   <div class="sub">Игра про паука</div>
   <h2>Чёрный паук</h2>
@@ -3749,5 +3769,16 @@ SCENES.cup7=function(alive){
 const hot=window.claude?.hot?.data;
 if(hot?.episode===1) startEp1();
 else if(STORIES[hot?.episode]) startStory(hot.episode,hot.l2|0);
-else showMenu();
+else{
+  showMenu();
+  // при запуске меню «спит»: чёрный экран со щёлочкой глаза. Нажатие открывает глаза и включает музыку.
+  // При перезагрузке после смены языка — сразу открыто
+  let awake=false; try{awake=sessionStorage.getItem('spider-awake')==='1'}catch(e){}
+  if(!awake){
+    const w=$('wake'); w.hidden=false;
+    const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); sfx.magic(); playMusic(0);
+      try{sessionStorage.setItem('spider-awake','1')}catch(e){} setTimeout(()=>w.remove(),700) };
+    w.addEventListener('pointerdown',e=>{e.preventDefault();open()}); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
+  }
+}
 </script>
