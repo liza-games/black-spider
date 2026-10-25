@@ -483,7 +483,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
 .wake.open .lid.top{transform:translateY(-102%)}
 .wake.open .lid.bot{transform:translateY(102%)}
 .wake.open .wtext{opacity:0}
-.wake.open{background:none;pointer-events:none}
+.wake.open{background:none}   /* пока веки разъезжаются, экран ещё ловит нажатия — иначе тап «проваливается» в карточку эпизода */
 .menu{position:fixed;inset:0;z-index:30;background:var(--bg);overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:16px;padding:72px 16px 24px}   /* сверху место под кнопки приложения, чтобы до всего можно было дотянуться */
 .menu h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,9vw,52px);margin:0;text-align:center;line-height:1.05}
 .mtools{display:flex;gap:8px;align-items:center;justify-content:center}
@@ -3778,7 +3778,7 @@ else{
     const w=$('wake'); w.hidden=false;
     const open=()=>{ if(w.classList.contains('open')) return; unlockAudio(); w.classList.add('open'); sfx.magic(); playMusic(0);
       try{sessionStorage.setItem('spider-awake','1')}catch(e){} setTimeout(()=>w.remove(),700) };
-    w.addEventListener('pointerdown',e=>{e.preventDefault();open()}); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
+    w.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); w.addEventListener('pointerdown',e=>e.preventDefault()); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
   }
 }
 </script>
