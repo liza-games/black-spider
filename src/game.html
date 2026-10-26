@@ -243,6 +243,20 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .room.bedroom .wall{background-color:var(--wallbed);background-image:radial-gradient(var(--dot) 2.5px,transparent 3px);background-size:28px 28px}
 .room.hall .wall{background:linear-gradient(transparent 68%,var(--wood2) 68% 70.5%,transparent 70.5%),var(--wall)}
 .room svg{display:block;width:100%;height:auto;overflow:visible}
+.paper{position:absolute;left:8%;top:34%;width:46px;z-index:2}
+.paper .roll{width:46px;height:30px;border-radius:12px;background:#fff;border:2px solid #cfd6de;box-shadow:inset 0 0 0 9px #f4f4f2,inset 0 0 0 12px #ddd}
+.paper .strip{position:absolute;left:7px;top:22px;width:30px;height:14px;background:repeating-linear-gradient(#fff 0 18px,#eee 18px 19px);border:1.5px solid #dcdcdc;border-top:0;
+  -webkit-mask:linear-gradient(#000 calc(100% - 4px),transparent 0),radial-gradient(4px at 50% 100%,#000 98%,transparent) 0 100%/8px 8px repeat-x;transition:height .05s}
+.paper .strip.tear{animation:tear 1.2s ease-in forwards}
+@keyframes tear{30%{translate:0 10px}100%{translate:10px 260px;rotate:25deg;opacity:0}}
+.sw.wrapped .sp{filter:drop-shadow(0 0 0 #fff)}
+.sw.wrapped::after{content:"";position:absolute;inset:30% 15% 25%;border-radius:40%;background:repeating-linear-gradient(35deg,rgb(255 255 255/.95) 0 10px,rgb(235 235 235/.95) 10px 12px);pointer-events:none}
+.soapbar{position:absolute;left:0;top:0;width:40px;height:24px;margin:-12px -20px;padding:0;border:0;border-radius:11px;cursor:pointer;z-index:6;
+  background:radial-gradient(circle at 35% 30%,#fff 0 12%,#ffc0dc 13%,#f39ac0);box-shadow:0 3px 0 #d4789e;transition:left .3s ease-out,top .3s ease-out}
+.soapbar.hopsoap{animation:hopsoap .3s ease-out}
+@keyframes hopsoap{40%{translate:0 -16px;rotate:-15deg}}
+.soapbar.got{animation:soapgot .7s forwards}
+@keyframes soapgot{40%{scale:1.4}100%{scale:0;opacity:0}}
 .obj{position:absolute;bottom:19%;translate:-50% 0;padding:0;border:0;background:none;cursor:pointer}
 .toilet{width:min(30vw,140px)} .sink{width:min(26vw,120px)}
 .toilet .lid-open{display:none} .toilet.open .lid-open{display:inline} .toilet.open .lid-closed{display:none}
@@ -270,6 +284,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .mirror{position:absolute;left:50%;top:5%;translate:-50% 0;width:min(70vw,300px);height:60%;border-radius:999px 999px 24px 24px;
   background:linear-gradient(160deg,rgb(255 255 255/.6),rgb(200 225 240/.3));border:8px solid var(--wood)}
 .brush{position:absolute;left:0;top:0;width:min(32vw,140px);pointer-events:none;z-index:6;transform-origin:84% 52%}
+.spots circle{transition:opacity .35s,r .35s}.spots circle.clean{opacity:0}
+.spitfoam{position:absolute;left:0;top:0;width:26px;height:20px;margin:-10px -13px;border-radius:50%;background:#fff;box-shadow:6px 4px 0 -2px #fff,-6px 5px 0 -3px #eef;z-index:7;animation:spit .7s ease-in forwards}
+@keyframes spit{30%{transform:translate(10px,-20px)}100%{transform:translate(30px,220px) scale(.7)}}
 .foam{position:absolute;left:0;top:0;width:14px;height:14px;margin:-7px;border-radius:50%;background:#fff;border:1.5px solid #cfe3f0;
   pointer-events:none;z-index:7;animation:foam 1.1s forwards}
 @keyframes foam{to{opacity:0;translate:0 -18px;scale:1.5 1.5}}
@@ -291,6 +308,21 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .door{position:absolute;bottom:22%;translate:-50% 0;width:min(22vw,100px);aspect-ratio:.52;padding:0;border:6px solid var(--wood);border-bottom:0;
   border-radius:10px 10px 0 0;background:none;cursor:pointer;perspective:500px}
 .door .inside{position:absolute;inset:0;background:var(--in)}
+.door.knock{animation:knock .4s}
+.door:has(.peek){z-index:9}
+@keyframes knock{20%,60%{translate:-50% 0;rotate:-1.5deg}40%,80%{rotate:1.5deg}}
+.door .peek{position:absolute;left:50%;bottom:8%;translate:-50% 0;font-size:clamp(34px,11vw,48px);z-index:6;animation:peek .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes peek{from{transform:translateY(40px) scale(.4);opacity:0}}
+.fence{position:absolute;left:50%;bottom:50%;width:min(22vw,96px);height:min(12vw,52px);translate:-50% 0;z-index:4;pointer-events:none;
+  background:linear-gradient(transparent 22%,#8a6040 22% 34%,transparent 34% 62%,#8a6040 62% 74%,transparent 74%),repeating-linear-gradient(90deg,#a8774f 0 10px,transparent 10px 30px)}
+.sheep{position:absolute;left:14%;bottom:49%;width:min(22vw,96px);padding:0;border:0;background:none;cursor:pointer;z-index:5;translate:-50% 0;animation:sheepin .9s ease-out}
+.sheep svg{width:100%;display:block;filter:drop-shadow(0 2px 6px rgb(255 255 255/.4))}
+@keyframes sheepin{from{left:-15%}}
+.sheep.jumpover{animation:sheepjump 1.3s ease-in-out forwards}
+@keyframes sheepjump{0%{left:14%;bottom:49%}50%{left:50%;bottom:66%;rotate:-8deg}100%{left:115%;bottom:49%;rotate:0deg}}
+.sw.yawn .sp{animation:yawn 1.6s ease-in-out}
+@keyframes yawn{40%{scale:1.05 1.12}}
+.door .pkb{position:absolute;left:50%;bottom:105%;translate:var(--pkx,-50%) 0;white-space:nowrap;padding:6px 10px;border-radius:12px;background:var(--bubble);color:var(--fg);font:800 13px var(--body);z-index:6;box-shadow:0 3px 10px rgb(0 0 0/.15)}
 .door[data-k="kitchen"]{--in:#f3c27a} .door[data-k="bath"]{--in:#9fd3ef} .door[data-k="bed"]{--in:#24305e}
 .door .panel{position:absolute;inset:0;background:var(--wood2);transform-origin:left center;transition:transform .5s}
 .door.open .panel{transform:rotateY(-80deg)}
@@ -1800,8 +1832,8 @@ $('menuBtn').addEventListener('click',showMenu);
    ===================================================================== */
 const room=$('room');
 const EP2=[
-  {key:'toilet', title:'Сходи в туалет',        goal:3, unit:'',        done:'Чистые лапки!'},
-  {key:'teeth',  title:'Почисти зубы',          goal:10,unit:'',        done:'Зубки блестят!'},
+  {key:'toilet', title:'Сходи в туалет',        goal:6, unit:'',        done:'Чистые лапки!'},
+  {key:'teeth',  title:'Почисти зубы',          goal:6, unit:'пятнышек', done:'Зубки блестят!'},
   {key:'shower', title:'Помойся в душе',        goal:15,unit:'пузырей', done:'Брр! Чистый-пречистый!'},
   {key:'doors',  title:'Найди спальню',         goal:1, unit:'',        done:'Вот моя спальня!'},
   {key:'blanket',title:'Говорящее одеяло',      goal:3, unit:'прыжка',  done:'Какое весёлое одеяло!'},
@@ -1987,6 +2019,9 @@ const SVG={
     <circle cx="126" cy="36" r="6" fill="none" stroke="#a07a3a" stroke-width="1.8"/><path d="M120 34 h-3" stroke="#a07a3a" stroke-width="1.8"/>
     <path d="M128 45 q4 3 8 0" stroke="#2a4a22" stroke-width="2" fill="none" stroke-linecap="round"/>
     <path d="M112 30 Q118 22 126 26" stroke="#e85d9a" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="114" cy="28" r="4" fill="#ff86b0"/></svg>`,
+  sheep:`<svg viewBox="0 0 100 80" aria-hidden="true"><g fill="#fff"><circle cx="36" cy="38" r="15"/><circle cx="52" cy="32" r="16"/><circle cx="66" cy="40" r="14"/><circle cx="46" cy="48" r="14"/><circle cx="60" cy="50" r="12"/></g>
+    <g stroke="#2a2a2a" stroke-width="4" stroke-linecap="round"><path d="M40 58 v14 M50 60 v14 M60 60 v14 M68 56 v14"/></g>
+    <ellipse cx="80" cy="36" rx="11" ry="9" fill="#2a2a2a"/><circle cx="83" cy="34" r="2.2" fill="#fff"/><path d="M73 30 q-4 -6 2 -6" stroke="#2a2a2a" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
   shower:`<svg viewBox="0 0 120 64"><path d="M112 0 V18 Q112 28 102 28 H66" fill="none" stroke="#9aa7b2" stroke-width="8" stroke-linecap="round"/>
     <path d="M36 24 H84 L94 40 H26Z" fill="#b9c4cc"/><g fill="#7f8c96"><circle cx="40" cy="36" r="1.6"/><circle cx="52" cy="36" r="1.6"/><circle cx="64" cy="36" r="1.6"/><circle cx="76" cy="36" r="1.6"/></g></svg>`,
   valve:`<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="#c9d3da" stroke="var(--line)" stroke-width="2"/>
@@ -2045,8 +2080,9 @@ const SCENES={
     room.className='room bath';
     room.innerHTML=`<div class="wall"></div><div class="floor"></div>
       <button class="obj toilet" id="r-toilet" style="left:28%" aria-label="Унитаз">${SVG.toilet}</button>
-      <button class="obj sink" id="r-sink" style="left:76%" aria-label="Раковина">${SVG.sink}</button>`;
-    const toilet=$('r-toilet'), sink=$('r-sink');
+      <button class="obj sink" id="r-sink" style="left:76%" aria-label="Раковина">${SVG.sink}</button>
+      <div class="paper" id="r-paper"><div class="roll"></div><div class="strip" id="r-strip"></div></div>`;
+    const toilet=$('r-toilet'), sink=$('r-sink'), paper=$('r-paper'), strip=$('r-strip');
     S2=makeMain(); put(S2,standPos(.53,S2));
     let step=0; setHint('Нажми на унитаз'); tapme(toilet,true);
     setTimeout(()=>alive()&&talk2(S2,'Ой, мне срочно надо!'),300);
@@ -2057,7 +2093,7 @@ const SCENES={
         S2.wrap.classList.add('sitting'); talk2(S2,'Так… Пш-ш-ш…');
         await wait(1900); if(!alive())return;
         talk2(S2,'Фух! Готово!'); add2(1);
-        step=1; setHint('Смой воду — нажми на унитаз ещё раз'); tapme(toilet,true);
+        paperPull();
       } else if(step===1){
         step=-1; tapme(toilet,false); S2.wrap.classList.remove('sitting');
         await walk(S2,standPos(.52,S2),700); if(!alive())return;
@@ -2067,12 +2103,49 @@ const SCENES={
         step=2; setHint('Помой лапки — нажми на раковину'); tapme(sink,true);
       }
     };
+    // бумажка: тянуть пальцем вниз; если тянуть слишком долго — паук запутывается
+    // паук сидит/стоит поверх унитаза или раковины — тап по нему считается тапом по предмету под ним
+    const under=(el,p)=>{ const r=el.getBoundingClientRect(), st=rr(), x=p.x+st.left, y=p.y+st.top; return x>r.left&&x<r.right&&y>r.top&&y<r.bottom };
+    const tapThrough=()=>({move(){}, down(e,p){ if(step===1&&under(toilet,p)) toilet.onclick(); else if(step===4&&under(sink,p)) sink.onclick() }});
+    function paperPull(){
+      step=1.5; setHint('Оторви бумажку — потяни её пальцем вниз'); tapme(paper,true);
+      let len=14, lastY=null, tangled=false; strip.style.height=len+'px';
+      handlers2={
+        down(e,p){ lastY=p.y },
+        move(e,p){ if(step!==1.5||lastY===null||!(e.buttons&1)) return; const dy=p.y-lastY; lastY=p.y; if(dy<=0) return;
+          len+=dy; strip.style.height=Math.min(len,rr().height*.55)+'px'; if(Math.random()<.35) noise(.06,3000,1800,.03,0,'bandpass',.8);
+          if(len>260&&!tangled){ tangled=true; restart(S2.btn,'laugh'); S2.wrap.classList.add('wrapped'); sfx.laugh(); talk2(S2,'Ой, я запутался! Хи-хи!',1800) } },
+        up(){ lastY=null; if(step!==1.5||len<110) return;
+          step=-1; tapme(paper,false); handlers2=tapThrough(); noise(.08,4000,2500,.07); strip.classList.add('tear');
+          talk2(S2,tangled?'Хи-хи! Вот это бумажка!':'Чик! Готово!',1500); add2(1,false);
+          setTimeout(()=>{ if(!alive())return; S2.wrap.classList.remove('wrapped'); strip.classList.remove('tear'); strip.style.height='14px';
+            step=1; setHint('Смой воду — нажми на унитаз ещё раз'); tapme(toilet,true) },1300) }
+      };
+    }
+    // мыло прыгает по раковине — первый раз выскальзывает, со второго ловится; потом намылить лапки и смыть
+    let soap=null, soapT=0, slips=0, rubs=0, lastRub=null;
     sink.onclick=async()=>{
+      if(step===4){ step=-1; tapme(sink,false); sink.classList.add('on'); sfx.water(); room.querySelectorAll('.soap').forEach(b=>b.classList.add('rinse'));
+        talk2(S2,'Мою лапки! Все восемь!'); await wait(1800); if(!alive())return; sink.classList.remove('on'); add2(1); return }
       if(step!==2) return; step=-1; tapme(sink,false);
       await walk(S2,anchor(sink,.5,.12)); if(!alive())return;
-      sink.classList.add('on'); sfx.water(); talk2(S2,'Мою лапки! Все восемь!');
-      await wait(2000); if(!alive())return;
-      sink.classList.remove('on'); add2(1);
+      step=2.5; setHint('Поймай мыло — нажми на него'); talk2(S2,'Где же мыло?',1500);
+      soap=document.createElement('button'); soap.className='soapbar'; soap.setAttribute('aria-label','Мыло'); room.appendChild(soap);
+      const hop=()=>{ if(!alive()||step!==2.5) return; const r=sink.getBoundingClientRect(), st=rr();
+        soap.style.left=(r.left-st.left+r.width*rand(.15,.85))+'px'; soap.style.top=(r.top-st.top+r.height*rand(.0,.18))+'px'; restart(soap,'hopsoap'); tone(rand(500,700),.06,'sine',0,.03,900);
+        soapT=setTimeout(hop,rand(700,1100)) };
+      hop();
+      soap.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(step!==2.5) return;
+        if(slips<1){ slips++; sfx.boing(); talk2(S2,'Ой, скользкое!',1100); clearTimeout(soapT); soapT=setTimeout(hop,80); return }
+        clearTimeout(soapT); step=3; soap.classList.add('got'); sfx.pop(); talk2(S2,'Поймал!',1200); add2(1,false);
+        setTimeout(()=>{ if(!alive())return; soap.remove(); setHint('Намыль лапки — води пальцем по пауку');
+          handlers2={move(e,p){ if(step!==3||!(e.buttons&1)) return; const r=S2.wrap.getBoundingClientRect(), st=rr(), L=r.left-st.left, T=r.top-st.top;
+            if(p.x<L||p.x>L+r.width||p.y<T||p.y>T+r.height) return; if(lastRub&&Math.hypot(p.x-lastRub.x,p.y-lastRub.y)<18) return; lastRub=p;
+            const b=document.createElement('div'); b.className='soap'; b.style.setProperty('--s',rand(14,26)+'px'); b.style.left=p.x+'px'; b.style.top=p.y+'px'; room.appendChild(b);
+            tone(rand(900,1500),.04,'sine',0,.03);
+            if(++rubs>=9){ step=4; handlers2=tapThrough(); add2(1,false); talk2(S2,'Сколько пены! Теперь смыть!',1600); setHint('Смой пену — нажми на раковину'); tapme(sink,true) } }};
+        },700);
+      };
     };
   },
 
@@ -2081,7 +2154,11 @@ const SCENES={
     room.className='room bath';
     room.innerHTML=`<div class="wall"></div><div class="floor"></div><div class="mirror"></div><div class="brush" id="r-brush">${SVG.brush}</div>`;
     const s=rr(); S2=makeMain('big grin'); put(S2,{x:s.width*.5,y:s.height*.42});
-    S2.wrap.style.setProperty('--teeth','#d9c060');
+    S2.wrap.style.setProperty('--teeth','#e9dca0');
+    // на зубах жёлтые пятнышки — каждый мазок щёткой стирает одно
+    const SPOTS=[[91,98],[97,100],[103,98.5],[109,98],[95,103],[104,104]];
+    const sg=document.createElementNS('http://www.w3.org/2000/svg','g'); sg.setAttribute('class','spots');
+    sg.innerHTML=SPOTS.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="2.6" fill="#b88f1a"/>`).join(''); S2.btn.querySelector('.teeth').appendChild(sg);
     const brush=$('r-brush'), rest={x:s.width*.8,y:s.height*.74};
     // палец держит щётку за ручку (правый конец), щетина — левее пальца и не закрыта им
     const bw=()=>brush.offsetWidth;
@@ -2109,11 +2186,22 @@ const SCENES={
       up(){lastX=null;dir=0;if(!done)moveBrush(rest)}
     };
     function stroke(p){
-      foam(p);foam(p); tone(800+p2*50,.05,'sine',0,.04); add2(1,false);
-      S2.wrap.style.setProperty('--teeth',mix('#d9c060','#ffffff',p2/EPX[l2].goal));
-      if(p2===4) talk2(S2,'Щекотно!'); if(p2===7) talk2(S2,'Ещё чуть-чуть!');
+      foam(p);foam(p); add2(1,false);
+      const sp=[...sg.children].find(c=>!c.classList.contains('clean')); if(sp){ sp.classList.add('clean'); tone(1400+p2*90,.08,'sine',0,.05); tone(2100+p2*90,.06,'sine',.05,.03) }   // «дзынь» — пятнышко исчезло
+      S2.wrap.style.setProperty('--teeth',mix('#e9dca0','#ffffff',p2/EPX[l2].goal));
+      if(p2===3) talk2(S2,'Щекотно!'); if(p2===5) talk2(S2,'Ещё одно пятнышко!');
       if(p2>=EPX[l2].goal){done=true;moveBrush(rest);
-        const r=S2.wrap.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height*.6,24,5); celebrate2()}
+        const r=S2.wrap.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height*.6,24,5,['#ffffff','#e6f6ff','#bfe6ff']);
+        talk2(S2,'Ммм, сколько пены! Надо сплюнуть!',2000); setHint('Нажми на паука — пусть сплюнет пену');
+        handlers2={down(){ spit() },move(){}} }
+    }
+    let spat=false;
+    function spit(){
+      if(spat) return; spat=true; handlers2={};
+      const r=S2.wrap.getBoundingClientRect(), st=rr(), x=r.left-st.left+r.width*.5, y=r.top-st.top+r.height*.62;
+      const b=document.createElement('div'); b.className='spitfoam'; b.style.left=x+'px'; b.style.top=y+'px'; room.appendChild(b);
+      restart(S2.btn,'jump'); tone(300,.12,'sawtooth',0,.04,120); noise(.18,2500,800,.08); talk2(S2,'Тьфу-тьфу! Плюх!',1400);
+      setTimeout(()=>{ if(!alive())return; sfx.splash(); const q=b.getBoundingClientRect(); burst(q.left+q.width/2,q.top+q.height/2,14,5,['#ffffff','#e6f6ff']); b.remove(); celebrate2() },700);
     }
   },
 
@@ -2171,7 +2259,8 @@ const SCENES={
   /* 4. Двери */
   doors(alive){
     room.className='room hall';
-    const kinds=[{k:'kitchen',say:'Это кухня! Тут вкусно, но спать нельзя.'},{k:'bath',say:'Это ванная! Я уже помылся.'},{k:'bed'}].sort(()=>Math.random()-.5);
+    const kinds=[{k:'kitchen',say:'Это кухня! Тут вкусно, но спать нельзя.',who:'🐱',line:'Мяу! Тут только для котов!',snd:'meow'},
+                 {k:'bath',say:'Это ванная! Я уже помылся.',who:'🦆',line:'Кря-кря! Тут купаются!',snd:'quack'},{k:'bed'}].sort(()=>Math.random()-.5);
     room.innerHTML=`<div class="wall"></div><div class="floor"></div>`+kinds.map((d,i)=>
       `<button class="door" data-k="${d.k}" style="left:${20+i*30}%" aria-label="Дверь"><span class="inside"></span><span class="panel"><i class="knob"></i></span><span class="sign">${SVG['sign_'+d.k]}</span></button>`).join('');
     S2=makeMain(); put(S2,standPos(.5,S2));
@@ -2180,9 +2269,20 @@ const SCENES={
     let lock=false;
     room.querySelectorAll('.door').forEach(door=>door.onclick=async()=>{
       if(lock) return; lock=true; const d=kinds.find(x=>x.k===door.dataset.k);
-      door.classList.add('open'); sfx.door();
       await walk(S2,{x:anchor(door,.5,0).x,y:standPos(0,S2).y},800); if(!alive())return;
-      if(d.k!=='bed'){talk2(S2,d.say);await wait(1800);if(!alive())return;door.classList.remove('open');lock=false;return}
+      // тук-тук — и дверь открывается
+      say(S2,'<b>Тук-тук!</b>',900); sfx.thud(); setTimeout(()=>sfx.thud(),220); restart(door,'knock');
+      await wait(800); if(!alive())return;
+      door.classList.add('open'); sfx.door();
+      if(d.k!=='bed'){
+        // за неправильной дверью смешной жилец
+        const pk=document.createElement('div'); pk.className='peek'; pk.innerHTML=`<span>${d.who}</span><div class="pkb">${d.line}</div>`; door.appendChild(pk); S2.wrap.style.zIndex=10;   // дверь с жильцом поверх табличек, паук поверх двери
+        { const r=door.getBoundingClientRect(), st=rr(), c=(r.left+r.width/2-st.left)/st.width; pk.style.setProperty('--pkx',c<.3?'-20%':c>.7?'-80%':'-50%') }
+        if(d.snd==='meow'){ tone(750,.35,'sawtooth',0,.035,520); tone(520,.3,'sawtooth',.33,.03,650); [0,.15,.3].forEach(t=>tone(rand(1800,2600),.08,'square',.6+t,.02)) }   // мяу и кастрюли
+        else { [0,.22].forEach(t=>{tone(1100,.12,'square',t,.03,800)}) }                                                             // кря-кря
+        speak(d.line,1.6,1.1,'peek',1);
+        await wait(1900); if(!alive())return; talk2(S2,d.say); await wait(1900); if(!alive())return;
+        pk.remove(); S2.wrap.style.zIndex=''; door.classList.remove('open'); sfx.door(); lock=false; return }
       talk2(S2,'Ура, нашёл!'); S2.wrap.classList.add('vanish');
       await wait(700); if(!alive())return; add2(1);
     });
@@ -2288,10 +2388,27 @@ const SCENES={
     setHint('Выключи свет — нажми на лампу'); tapme(lamp,true);
     setTimeout(()=>alive()&&talk2(S2,'Как хорошо в кроватке…'),300);
     let off=false;
+    // не спится — считаем овечек: нажатие, и овечка прыгает через заборчик
+    function countSheep(){ return new Promise(res=>{
+      restart(S2.btn,'shake'); talk2(S2,'Ой… Не спится… Давай посчитаем овечек!',2600);
+      const fence=document.createElement('div'); fence.className='fence'; room.appendChild(fence);
+      const NUM=['Одна овечка…','Две овечки…','Три овечки…','Четыре овечки…','Пять овечек…'];
+      let n=0;
+      const next=()=>{ if(!alive()) return;
+        const sh=document.createElement('button'); sh.className='sheep'; sh.setAttribute('aria-label','Овечка'); sh.innerHTML=SVG.sheep; room.appendChild(sh); tapme(sh,true);
+        setHint(`Нажми на овечку — пусть прыгнет через заборчик (${n} из 5)`);
+        sh.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(sh.dataset.j) return; sh.dataset.j=1; tapme(sh,false); sh.classList.add('jumpover');
+          tone(420,.25,'triangle',0,.05,380); tone(400,.25,'triangle',.18,.04,360);   // «бе-е»
+          setTimeout(()=>{ talk2(S2,NUM[n],1500); n++; sfx.pop() },500);
+          setTimeout(()=>{ sh.remove(); if(n<5) next(); else { fence.remove(); setHint(''); S2.wrap.classList.add('yawn'); talk2(S2,'Ааа… Глазки слипаются…',2000); setTimeout(res,2100) } },1300) };
+      };
+      setTimeout(next,1800);
+    }) }
     lamp.onclick=async()=>{
       if(off) return; off=true; tapme(lamp,false); lamp.classList.add('off'); room.classList.add('dark'); sfx.click();
       add2(1,false);
       await wait(700); if(!alive())return;
+      if(EPS.n===2){ await countSheep(); if(!alive())return }
       talk2(S2,'Спокойной ночи…',2000);
       await wait(2100); if(!alive())return;
       S2.wrap.classList.add('asleep'); sfx.lullaby();
