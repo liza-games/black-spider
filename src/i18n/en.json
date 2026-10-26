@@ -322,7 +322,6 @@
 "'Сколько пены! Смывай!'": "'So many bubbles! Rinse them off!'",
 "'Это кухня! Тут вкусно, но спать нельзя.'": "'This is the kitchen! It\\'s yummy here, but you can\\'t sleep here.'",
 "'Это ванная! Я уже помылся.'": "'This is the bathroom! I\\'ve already washed.'",
-"`<button class=\"door\" data-k=\"${d.k}\" style=\"left:${20+i*30}%\" aria-label=\"Дверь\"><span class=\"inside\"></span><span class=\"panel\"><i class=\"knob\"></i></span><span class=\"sign\">${SVG['sign_'+d.k]}</span></button>`": "`<button class=\"door\" data-k=\"${d.k}\" style=\"left:${20+i*30}%\" aria-label=\"Door\"><span class=\"inside\"></span><span class=\"panel\"><i class=\"knob\"></i></span><span class=\"sign\">${SVG['sign_'+d.k]}</span></button>`",
 "'Найди дверь, где нарисована луна'": "'Find the door with the moon on it'",
 "'Где же моя спальня?'": "'Where is my bedroom?'",
 "'Ура, нашёл!'": "'Hooray, found it!'",
@@ -900,6 +899,21 @@
 "'Пять овечек…'": "'Five sheep…'",
 "'Овечка'": "'Sheep'",
 "`Нажми на овечку — пусть прыгнет через заборчик (${n} из 5)`": "`Tap the sheep to make it jump the fence (${n} of 5)`",
-"'Ааа… Глазки слипаются…'": "'Yaaawn… My eyes are closing…'"
+"'Ааа… Глазки слипаются…'": "'Yaaawn… My eyes are closing…'",
+"`<button class=\"door\" data-k=\"${d.k}\" style=\"left:${20+i*30}%\" aria-label=\"Дверь\"><span class=\"inside\"></span><span class=\"panel\"><i class=\"knob\"></i></span><span class=\"sign broken\">?</span></button>`": "`<button class=\"door\" data-k=\"${d.k}\" style=\"left:${20+i*30}%\" aria-label=\"Door\"><span class=\"inside\"></span><span class=\"panel\"><i class=\"knob\"></i></span><span class=\"sign broken\">?</span></button>`",
+"'Потяни бумажку пальцем вниз — как будто отматываешь'": "'Pull the paper down with your finger, like unrolling it'",
+"'Ой, а бумажка где? Потяни её вниз!'": "'Where is the paper? Pull it down!'",
+"'Не нажимай — тяни вниз, пальчиком!'": "\"Don't tap — pull it down with your finger!\"",
+"'Дзынь! Бряк!'": "'Clink! Clang!'",
+"'Там гремят кастрюли…'": "'Pots are clanging in there…'",
+"'Буль-буль!'": "'Splish-splash!'",
+"'Там плещется вода…'": "'Water is splashing in there…'",
+"'Ля-ля… Хррр…'": "'La-la… Zzz…'",
+"'Там тихая колыбельная…'": "'A quiet lullaby in there…'",
+"'Нажми на дверь — послушай, что за ней'": "\"Tap a door to listen to what's behind it\"",
+"'Ой, таблички упали! Где же моя спальня? Давай послушаем!'": "\"Oh no, the signs fell off! Where's my bedroom? Let's listen!\"",
+"'<b>Тсс…</b> 👂'": "'<b>Shh…</b> 👂'",
+"'Там спальня? Нажми на эту дверь ещё раз. Или послушай другую'": "'Is it the bedroom? Tap this door again. Or listen to another one'",
+"'Послушай другую дверь'": "'Listen to another door'"
 }
 }
