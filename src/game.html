@@ -1278,7 +1278,8 @@ function poisonSpider(){
   poisonT=setTimeout(()=>{B.poisoned=false;B.wrap.classList.remove('poisoned');talk(B,'Фух, полегчало!')},3200);
 }
 function cureSpider(){clearTimeout(poisonT);B.poisoned=false;B.wrap.classList.remove('poisoned')}
-setInterval(()=>{if(spawnOn&&bugs.length<maxBugs) spawnBug()},800);
+let spawnPause=0;   // пока Синий съедает всё — новые не прилетают
+setInterval(()=>{if(spawnOn&&bugs.length<maxBugs&&performance.now()>spawnPause) spawnBug()},800);
 // новый вид букашек: старые улетают, а новые сразу прилетают втроём, чтобы их было видно
 function introBugs(kind,n=3){
   const w=rect().width; for(const b of bugs) if(!b.caught){ b.leaving=true; b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<w/2?(b.a<0?-Math.PI:Math.PI):0 }
@@ -1366,6 +1367,8 @@ function brysh(s){
   B.state='flee';
   setTimeout(()=>talk(B,pick(['Ой-ой! Убегаю!','Ай! Страшно!'])),500);
   s.feastList=bugs.filter(b=>!b.dead&&!b.K.bad&&!b.K.poison);
+  spawnPause=Infinity;   // новые букашки подождут, пока Синий ест; невкусные улетают
+  { const w=rect().width; for(const b of bugs) if(!s.feastList.includes(b)&&!b.caught){ b.leaving=true; b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<w/2?(b.a<0?-Math.PI:Math.PI):0 } }
   clearTimeout(s.feastT); s.feastT=setTimeout(()=>endFeast(s),9000);
   setTimeout(()=>feastNext(s),700);
 }
@@ -1378,6 +1381,9 @@ function feastNext(s){
 function endFeast(s){
   if(!s.feast) return;
   s.feast=false; clearTimeout(s.feastT);
+  // пустой экран немного постоит, потом прилетят новые — сразу стайкой из трёх
+  spawnPause=performance.now()+2600;
+  [2700,3100,3500].forEach(d=>setTimeout(()=>{ if(spawnOn&&episode===1&&bugs.length<maxBugs) spawnBug() },d));
   if(s.target){s.target.el.classList.remove('hunted');s.target=null}
   if(spiders.includes(s)){
     s.state='return'; restart(s.btn,'laugh'); sfx.laugh();
