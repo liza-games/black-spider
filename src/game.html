@@ -3865,7 +3865,7 @@ function race7(alive,key){
   handlers2={
     down(e){ if(st.phase!=='go'||busy2) return; p0={x:e.clientX,y:e.clientY,used:false};
       if(RH){ // ближайший кружок у колечка: точно — большой шаг, примерно — поменьше, мимо — почти ничего
-        const nt=st.notes.find(n=>!n.j&&Math.abs(n.t-st.t)<.22);
+        const nt=st.notes.filter(n=>!n.j&&Math.abs(n.t-st.t)<.2).sort((a,b)=>Math.abs(a.t-st.t)-Math.abs(b.t-st.t))[0];
         if(!nt){ st.combo=0; st.pv*=.7; tone(220,.05,'triangle',0,.03); if(now0()-st.bub>2500) bubble(S2,'<b>Подожди</b> кружочек!',1000); return }
         const off=Math.abs(nt.t-st.t); nt.j=off<.11?'great':'good'; nt.jt=st.t;
         if(nt.j==='great'){ st.combo=Math.min(5,(st.combo||0)+1); step(.1*(1+.06*st.combo)); tone(1200,.06,'square',0,.03); noise(.05,4000,2500,.05); float(st.combo>=3?`Отлично! ×${st.combo}`:'Отлично!','#ffe27a') }
@@ -3918,9 +3918,14 @@ function race7(alive,key){
     const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
     const W=st.W,H=st.H,off=.14,LH=lh();
     if(RH&&st.phase==='go'){
-      while(st.notes.length===0||st.notes[st.notes.length-1].t<st.t+TRV+.1) st.notes.push({t:(st.notes.length?st.notes[st.notes.length-1].t:st.t0+TRV)+BEAT});
+      // неровный ритм: группы по одному, два и три кружка подряд и паузы; первые четыре — по одному, чтобы привыкнуть
+      if(st.nextG===undefined){ st.nextG=st.t0+TRV+BEAT; st.groups=0 }
+      while(st.nextG<st.t+TRV+.1){ const u=BEAT/2, g0=st.nextG, r=Math.random();
+        const kind=st.groups++<4?1:r<.38?1:r<.68?2:r<.83?3:0;   // 0 — пауза
+        for(let i=0;i<kind;i++) st.notes.push({t:g0+i*u,grp:kind});
+        st.nextG=g0+(kind===0?2:kind+1)*u }
       for(const n of st.notes){ if(!n.boom&&st.t>=n.t){ n.boom=true; tone(90,.12,'sine',0,.12,55); noise(.04,1800,900,.03) }   // барабан, когда кружок в колечке
-        if(!n.j&&st.t>n.t+.22){ n.j='miss'; n.jt=st.t; st.combo=0 } }
+        if(!n.j&&st.t>n.t+.2){ n.j='miss'; n.jt=st.t; st.combo=0 } }
       st.notes=st.notes.filter(n=>st.t-n.t<1) }
     if(st.phase!=='count'){
       // игрок
@@ -3988,6 +3993,9 @@ function race7(alive,key){
     if(RH&&st.phase==='go'){ const ty=H*.16, tx=W*.16, r0=Math.min(W,H)*.045;
       g.fillStyle='rgb(0 0 0/.22)'; g.beginPath(); g.roundRect(tx-r0*1.6,ty-r0*1.5,W-tx+r0*1.6,r0*3,r0*1.5); g.fill();
       g.strokeStyle='#ffe27a'; g.lineWidth=4; g.beginPath(); g.arc(tx,ty,r0*1.25,0,7); g.stroke();
+      g.strokeStyle='rgb(255 255 255/.7)'; g.lineWidth=r0*.5; g.lineCap='round';
+      for(let i=1;i<st.notes.length;i++){ const a=st.notes[i-1], b=st.notes[i]; if(a.j||b.j||b.t-a.t>BEAT/2+.01) continue;
+        g.beginPath(); g.moveTo(tx+(a.t-st.t)/TRV*(W-tx),ty); g.lineTo(tx+(b.t-st.t)/TRV*(W-tx),ty); g.stroke() }
       for(const n of st.notes){ const x=tx+(n.t-st.t)/TRV*(W-tx); if(x>W+r0) continue;
         if(n.j==='great'||n.j==='good'){ const k=(st.t-n.jt)/.35; if(k>1) continue; g.globalAlpha=1-k; g.strokeStyle=n.j==='great'?'#ffe27a':'#fff'; g.lineWidth=4; g.beginPath(); g.arc(tx,ty,r0*(1.2+k*1.5),0,7); g.stroke(); g.globalAlpha=1; continue }
         g.globalAlpha=n.j==='miss'?Math.max(0,.6-(st.t-n.jt)):1; g.fillStyle=n.j==='miss'?'#999':'#fff'; g.beginPath(); g.arc(x,ty+(n.j==='miss'?(st.t-n.jt)*60:0),r0,0,7); g.fill();
