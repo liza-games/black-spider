@@ -538,6 +538,20 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .walker.free{transition:none!important;left:0!important;top:0!important;translate:none!important;will-change:transform}
 .walker.blink{animation:blink .45s ease-in-out infinite alternate}
 @keyframes blink{to{opacity:.55}}
+.beat7{position:absolute;left:50%;top:3%;translate:-50% 0;width:64px;height:64px;display:grid;place-items:center;z-index:6;pointer-events:none}
+.beat7 span{font-size:36px;line-height:1;transition:scale .1s}
+.beat7 i{position:absolute;inset:0;border:5px solid #ffe27a;border-radius:50%;opacity:0}
+.beat7.tick i{animation:beatring .5s linear}
+@keyframes beatring{0%{scale:2.3;opacity:.2}85%{opacity:1}100%{scale:1;opacity:1}}
+.beat7.tick span{animation:beatdrum .5s}
+@keyframes beatdrum{0%{scale:1.25}25%{scale:1}}
+.beat7.hit::after{content:"";position:absolute;inset:-8px;border-radius:50%;background:radial-gradient(#fff8,transparent 70%);animation:fadeout .4s forwards}
+@keyframes fadeout{to{opacity:0}}
+.paw7{position:absolute;bottom:3%;width:min(30vw,120px);height:min(24vw,96px);border-radius:24px;border:0;z-index:6;font-size:40px;color:#fff;background:rgb(0 0 0/.25);cursor:pointer;touch-action:none;transition:background .15s,scale .1s}
+.paw7.L{left:4%}.paw7.R{right:4%}.paw7.R{transform:scaleX(-1)}
+.paw7.next{background:#f5c03a;box-shadow:0 0 0 4px #fff8,0 0 24px #ffe27a}
+.paw7.press{animation:pawpress .18s}
+@keyframes pawpress{50%{scale:.88}}
 .tapzone{position:absolute;left:50%;bottom:5%;translate:-50% 0;width:max-content;max-width:88%;text-align:center;z-index:6;pointer-events:none;font-weight:800;font-size:14px;color:#fff;background:rgb(0 0 0/.35);padding:6px 12px;border-radius:999px;transition:opacity .5s}
 .podium{position:absolute;left:50%;bottom:20%;translate:-50% 0;width:min(70%,280px);display:flex;align-items:flex-end;gap:4px}
 .podium div{flex:1;background:#d0b48a;border-radius:6px 6px 0 0;display:grid;place-items:start center;padding-top:6px;font-family:var(--display);color:#fff;font-size:22px}
@@ -757,7 +771,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
         <circle cx="150" cy="16" r="13" fill="#f5c03a" stroke="#c98f12" stroke-width="3"/><text x="150" y="22" text-anchor="middle" fill="#8a5a12" font-family="Rubik Mono One, Arial Black, sans-serif" font-size="15">£</text>
         <path d="M128 66 h-12 M132 72 h-10" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
       </svg>
-      <span class="ep">Эпизод 7 · бег</span><span class="nm">Большой забег</span><span class="st" id="m7s"></span>
+      <span class="ep">Эпизод 7 · спорт</span><span class="nm">Паучья олимпиада</span><span class="st" id="m7s"></span>
     </button>
   </div>
 </div>
@@ -1815,7 +1829,7 @@ function showMenu(){
   const f6=lsGet('spider-ep6',0), st6=lsGet('spider-ep6-stars',-1);
   $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
   const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
-  $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||`Забег ${Math.floor(f7/2)+1} из 3`):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
+  $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал',spr7:'Спринт',swing7:'Паутинка',climb7:'Лазание'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||''):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -1885,17 +1899,17 @@ const EP6=[
   {key:'medal',  title:'Награждение',           goal:1,  unit:'',       done:''}
 ];
 const EP7=[
-  {key:'run7a',  title:'Стадион: три соперника',      goal:30, unit:'м', done:''},
+  {key:'spr7',   title:'Спринт: бег в ритм',          goal:30, unit:'м', done:''},
   {key:'shop7a', title:'Магазин',                     goal:1,  unit:'',  done:''},
-  {key:'run7b',  title:'Лесной забег: пять соперников',goal:40, unit:'м', done:''},
+  {key:'swing7', title:'Полёт на паутинке',           goal:40, unit:'м', done:''},
   {key:'shop7b', title:'Магазин',                     goal:1,  unit:'',  done:''},
-  {key:'run7c',  title:'Ночной забег: семь соперников',goal:50, unit:'м', done:''},
+  {key:'climb7', title:'Лазание по дереву',           goal:25, unit:'м', done:''},
   {key:'shop7c', title:'Магазин',                     goal:1,  unit:'',  done:''},
-  {key:'run7d',  title:'Финал: один на один с Серебристым',goal:60, unit:'м', done:''},
+  {key:'run7d',  title:'Финал: барьерный бег с Серебристым',goal:60, unit:'м', done:''},
   {key:'cup7',   title:'Кубок чемпиона',              goal:1,  unit:'',  done:''}
 ];
 const STORIES={
-  7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион забега!','']},
+  7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион олимпиады!','']},
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
   6:{n:6,levels:EP6,store:'spider-ep6',fin:['Паук научился плавать!','']},
   5:{n:5,levels:EP5,store:'spider-ep5',fin:['Квиз пройден!','']},
@@ -3788,21 +3802,22 @@ SCENES.medal=function(alive){
    ===================================================================== */
 const COL7={silver:['Серебристый','#9fb3c8'],purple:['Фиолетовый'],green:['Зелёный'],blue:['Синий'],red:['Красный'],orange:['Оранжевый','#f08a1e'],pink:['Розовый','#e85d9a'],yellow:['Жёлтый','#d9b31a']};
 const RACE7={
+  spr7:{len:3.2,riv:['purple','green','blue'],base:[.11,.12,.13],rhythm:true},
   run7a:{len:3.2,riv:['purple','green','blue'],base:[.125,.14,.15]},
   run7b:{len:4,  riv:['purple','green','orange','blue','red'],base:[.13,.145,.155,.165,.175]},
   run7c:{len:4.8,riv:['purple','green','orange','blue','pink','yellow','red'],base:[.13,.14,.15,.16,.17,.18,.19]},
   run7d:{len:5.4,riv:['silver'],base:[.25]}
 };
-const ease7={run7a:1,run7b:1,run7c:1,run7d:1};
+const ease7={spr7:1,run7a:1,run7b:1,run7c:1,run7d:1};
 const ORD7=['первый','второй','третий','четвёртый','пятый','шестой','седьмой','восьмой'];
 const TAUNT7={pass:['Ой! Обгоняет!','Эй, куда?!','Быстрый какой!'],lead:['Догоняй!','Не догонишь!','Хи-хи!']};
-const TRACK7={run7d:{kind:'stadium',obs:['hurdle','puddle','stone']},run7a:{kind:'stadium',obs:['hurdle','puddle']},run7b:{kind:'forest',obs:['root','puddle','stump']},run7c:{kind:'night',obs:['hurdle','stone','puddle']}};
+const TRACK7={spr7:{kind:'stadium',obs:[]},run7d:{kind:'stadium',obs:['hurdle','puddle','stone']},run7a:{kind:'stadium',obs:['hurdle','puddle']},run7b:{kind:'forest',obs:['root','puddle','stump']},run7c:{kind:'night',obs:['hurdle','stone','puddle']}};
 const OBS7={hurdle:'Ой! Барьер!',puddle:'Буль! Лужа!',stone:'Ай! Камешек!',root:'Ой! Корень!',stump:'Ай! Пенёк!',banana:'Уи-и-и! Банан!',trip:'Ой! Подножка!'};
 const SHOP7=[
   {k:'shoes',d:'бег быстрее',  n:'Кроссовки',        e:'👟',p:150,say:'Кроссовки! Теперь я бегаю быстрее!'},
-  {k:'socks',d:'прыжок дальше',  n:'Прыгучие носочки', e:'🧦',p:120,say:'Прыгучие носочки! Теперь я прыгаю дальше!'},
-  {k:'helmet',d:'ломает преграды', n:'Каска-таран',      e:'⛑️',p:180,say:'Каска-таран! Теперь барьеры и камни разлетаются!'},
-  {k:'boots',d:'не скользко',  n:'Резиновые сапожки',e:'🥾',p:100,say:'Резиновые сапожки! Лужи и бананы мне не страшны!'},
+  {k:'socks',d:'прыжки и полёты дальше',  n:'Прыгучие носочки', e:'🧦',p:120,say:'Прыгучие носочки! Теперь я прыгаю и летаю дальше!'},
+  {k:'helmet',d:'жёлуди и барьеры не страшны', n:'Каска-таран',      e:'⛑️',p:180,say:'Каска-таран! Жёлуди отскакивают, а барьеры разлетаются!'},
+  {k:'boots',d:'не скользко, лапки не путаются',  n:'Резиновые сапожки',e:'🥾',p:100,say:'Резиновые сапожки! Лужи и бананы мне не страшны!'},
   {k:'cap',d:'для красоты',    n:'Шапочка',          e:'🧢',p:50, say:'Шапочка! Красота!'},
   {k:'goggles',d:'для красоты',n:'Очки',             e:'🥽',p:80, say:'Очки! Я как настоящий спортсмен!'},
   {k:'medal',d:'для красоты',  n:'Золотая медаль',   e:'🏅',p:200,say:'Золотая медаль! Я чемпион!'}
@@ -3812,8 +3827,10 @@ const LOOK7=['cap','goggles','medal','helmet','shoes','socks','boots'];   // в�
 function race7(alive,key){
   const R=RACE7[key], TR=TRACK7[key], N=R.riv.length, n=N+1, me=Math.floor(n/2), own=items7();
   const stepK=own.includes('shoes')?1.1:1, JD=own.includes('socks')?.75:.55;
+  const RH=!!R.rhythm, BEAT=.5;   // спринт: нажимать в такт барабану
   room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div>
-    <div class="tapzone" id="r-tz">Жми или смахни → бег · ↑ прыжок</div>`;
+    ${RH?'<div class="beat7" id="r-beat"><i></i><span>🥁</span></div>':''}
+    <div class="tapzone" id="r-tz">${RH?'Нажимай, когда колечко у барабана':'Жми или смахни → бег · ↑ прыжок'}</div>`;
   const tz=$('r-tz'); tz.style.bottom='3%';
   const cv=$('r-cv'), g=cv.getContext('2d');
   S2=makeMain('small free'); wearAll(S2,own.filter(k=>LOOK7.includes(k)));
@@ -3821,7 +3838,8 @@ function race7(alive,key){
     const w=makeWalker((col?'':c)+' small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:name+' паук'});
     if(col) w.wrap.style.setProperty('--spider',col);
     return {w,c,name,lane:i<me?i:i+1,base:R.base[i],sty:['steady','sprint','finish'][i%3],x:0,v:0,fin:false,ph:Math.random()*6,stun:0,jt:-1} });
-  setHint('Жми или смахивай вправо — бежать, смахни вверх — прыжок. Обгони всех — 100 £!');
+  setHint(RH?'Нажимай в такт: когда колечко сжимается к барабану — жми! Медаль — первым трём':key==='run7d'?'Жми или смахивай вправо — бежать, смахни вверх — прыжок. Обгони Серебристого!':'Жми или смахивай вправо — бежать, смахни вверх — прыжок');
+  if(RH) $('r-tz').style.bottom='2%';
   // всё в долях ширины экрана: x=1 — одна ширина
   const st={earned:0,W:0,H:0,sw:0,px:0,pv:0,jt:-1,jd:JD,stun:0,turbo:0,tick:0,t:0,last:performance.now(),phase:'count',cam:0,taunt:0,bub:0,place:n,pfin:false,fx:[],dashUsed:false,trip:null,tickled:false,blueFell:false};
   window._r7={st,riv,me};   // для проверок
@@ -3834,10 +3852,10 @@ function race7(alive,key){
   let bank=lsGet('spider-ep7-bank',0);
   // препятствия на всех дорожках и бонусы на дорожке игрока
   const obs=[];
-  for(let i=0;i<n;i++){ const mine=i===me; let x=(mine?.85:1)+Math.random()*.3;
+  for(let i=0;i<n&&TR.obs.length;i++){ const mine=i===me; let x=(mine?.85:1)+Math.random()*.3;
     while(x<L-.35){ obs.push({x,lane:i,t:pick(TR.obs)}); x+=mine?rand(.6,.9):rand(.9,1.4) } }
   for(let x=.6;x<L-.4;x+=rand(.32,.55)){ if(obs.some(o=>o.lane===me&&Math.abs(o.x-x)<.16)) continue;
-    const r=Math.random(); obs.push({x,lane:me,t:r<.45?'coin':r<.66?'fly':r<.83?'banana':'spring',bonus:true}) }
+    const r=Math.random(); obs.push({x,lane:me,t:RH?(r<.75?'coin':'fly'):r<.45?'coin':r<.66?'fly':r<.83?'banana':'spring',bonus:true}) }
   window._r7.obs=obs;
   const air=(jt,jd)=>jt>=0&&jt/jd>.08&&jt/jd<.92;
   const jumpH=(jt,jd)=>jt<0?0:Math.sin(Math.PI*Math.min(1,jt/jd))*lh()*1.2;
@@ -3857,9 +3875,21 @@ function race7(alive,key){
   }
   // нажатие — шаг; смахнуть вправо — рывок вперёд; вверх или по диагонали вверх — прыжок
   let p0=null;
+  const now0=()=>performance.now();
   const step=k=>{ const t=st.tick>0?.5:1; st.pv=Math.min(.4,st.pv+k*stepK*t*(st.stun>0?.4:1)) };
   handlers2={
-    down(e){ if(st.phase!=='go'||busy2) return; p0={x:e.clientX,y:e.clientY,used:false}; step(.05); tone(rand(300,420),.04,'triangle',0,.035) },
+    down(e){ if(st.phase!=='go'||busy2) return; p0={x:e.clientX,y:e.clientY,used:false};
+      if(RH){ // в такт — большой шаг; слишком часто — ничего
+        const ph=((st.t-st.t0)%BEAT)/BEAT, off=Math.min(ph,1-ph)*BEAT;
+        const nb=Math.round((st.t-st.t0)/BEAT);   // один засчитанный шаг на удар барабана
+        if(nb===st.lastBeat){ st.combo=0; if(now0()-st.bub>2500) bubble(S2,'<b>Не торопись!</b> В такт!',1100); return }
+        st.lastBeat=nb;
+        if(off<.12){ st.combo=Math.min(5,(st.combo||0)+1); step(.09*(1+.06*st.combo)); tone(1200,.06,'square',0,.03); noise(.05,4000,2500,.05);
+          float(st.combo>=3?`Отлично! ×${st.combo}`:'Отлично!','#ffe27a'); restart($('r-beat'),'hit') }
+        else if(off<.2){ st.combo=0; step(.05); tone(700,.05,'triangle',0,.03); float('Хорошо','#fff') }
+        else { st.combo=0; step(.012); tone(250,.06,'triangle',0,.03) }
+        return }
+      step(.05); tone(rand(300,420),.04,'triangle',0,.035) },
     move(e){ if(!p0||p0.used||!(e.buttons&1)||st.phase!=='go') return;
       const dx=e.clientX-p0.x, dy=e.clientY-p0.y; if(Math.hypot(dx,dy)<28) return; p0.used=true;
       if(dy<-20&&-dy>Math.abs(dx)*.45){ const fwd=dx>15&&dx>-dy*.35; jump(false,fwd); if(fwd) step(.08) }   // вверх или вверх-вправо
@@ -3868,40 +3898,31 @@ function race7(alive,key){
   };
   (async()=>{
     await wait(400); if(!alive())return;
-    const intro={run7a:'Стадион! Через барьеры и лужи надо прыгать! Если обгоню всех, мне дадут сто фунтов!',
+    const intro={spr7:'Спринт! Барабан стучит: бум, бум, бум! Нажимай в такт — и я помчусь!',run7a:'Стадион! Через барьеры и лужи надо прыгать! Если обгоню всех, мне дадут сто фунтов!',
                  run7b:'Забег по лесу! Тут корни, пеньки и лужи!',run7c:'Ночной забег! Семь соперников! Ничего не вижу… ой, фонарики!',
                  run7d:'Финал! Серебристый паук — самый быстрый на свете! Кто победит, получит кубок!'}[key];
     talk2(S2,intro,3400);
     await wait(3600); if(!alive())return;
     for(const w of ['На старт!','Внимание!']){ const go=$('r-go'); go.textContent=w; restart(go,'pop'); tone(520,.15,'sine',0,.07); speak(w,1.2,1.05,'ann',1); await wait(1000); if(!alive())return }
-    const go=$('r-go'); go.textContent='Марш!'; restart(go,'pop'); tone(880,.3,'triangle',0,.08); speak('Марш!',1.2,1.1,'ann',1); st.phase='go'; st.t0=st.t;
+    const go=$('r-go'); go.textContent='Марш!'; restart(go,'pop'); tone(880,.3,'triangle',0,.08); speak('Марш!',1.2,1.1,'ann',1); st.phase='go'; st.t0=st.t; st.beatN=-1;
     setTimeout(()=>{if(alive()){go.textContent='';tz.style.opacity=.9}},700);
   })();
   async function finish(place){
-    st.phase='end'; tz.style.opacity=0;
-    if(place===1){
-      ease7[key]=1; bank=lsGet('spider-ep7-bank',0)+100+st.earned; st.earned=0; lsSet('spider-ep7-bank',bank);   // монетки с дорожки — тоже только за победу
-      restart(S2.btn,'jump'); sfx.fanfare(); banner('+100 £');
-      for(let k=0;k<3;k++) setTimeout(()=>burst(rand(.2,.8)*innerWidth,rand(.25,.45)*innerHeight,40,8),k*260);
-      [0,.12,.24,.36,.48].forEach(d=>tone(rand(1500,2100),.08,'sine',d,.05));
-      talk2(S2,key==='run7d'?'Я обогнал Серебристого! Я чемпион!':'Я обогнал всех! Мне дали сто фунтов! Пойду в магазин!',3000);
-      await wait(3000); if(alive()) celebrate2();
-    } else {
-      ease7[key]=Math.max(.7,ease7[key]*.9);
-      const w1=riv.find(r=>r.order===1); if(w1){restart(w1.w.btn,'laugh'); sfx.laugh(); say(w1.w,'<b>Ха-ха! Я первый!</b>',1800)}
-      await wait(1600); if(!alive())return;
-      restart(S2.btn,'sad'); talk2(S2,`Я пришёл ${ORD7[place-1]}… Надо обогнать всех! Ещё раз!`,2600);
-      setHint(`Ты ${place}-й. Чтобы получить 100 фунтов, нужно обогнать всех. Нажми, чтобы побежать ещё раз`);
-      st.phase='retry'; tz.textContent='Нажми — ещё раз!'; tz.style.left='50%'; tz.style.opacity=1;
-      handlers2={move(){},down(){ if(st.phase==='retry'){st.phase='x'; enter2(l2)} }};
-    }
+    st.phase='end'; tz.style.opacity=0; const bt=$('r-beat'); if(bt) bt.hidden=true;
+    const need=key==='run7d'?1:3;
+    if(place<=need){ ease7[key]=1;
+      if(key==='run7d'){ const bank=lsGet('spider-ep7-bank',0)+100+st.earned; lsSet('spider-ep7-bank',bank); restart(S2.btn,'jump'); sfx.fanfare(); banner('🏆 +100 £');
+        for(let k=0;k<3;k++) setTimeout(()=>burst(rand(.2,.8)*innerWidth,rand(.25,.45)*innerHeight,40,8),k*260);
+        talk2(S2,'Я обогнал Серебристого! Я чемпион!',3000); await wait(3000); if(alive()) celebrate2() }
+      else award7(alive,key,place,st.earned);
+    } else { ease7[key]=Math.max(.7,ease7[key]*.9); retry7(alive,key,place,riv.find(r=>r.order===1)?.w,need) }
   }
   // хитрости соперников
   function specials(dt){
     const P=riv.find(r=>r.c==='purple'), G=riv.find(r=>r.c==='green'), Bl=riv.find(r=>r.c==='blue'), Sv=riv.find(r=>r.c==='silver');
     const rt=st.t-st.t0, away=st.px>.7;   // хитрости — только когда забег уже идёт, а не на старте, где все стоят рядом
     if(Sv&&rt>3&&(st.svNext=st.svNext||st.t+rand(5,8))&&st.t>=st.svNext&&Sv.stun<=0){ st.svNext=st.t+rand(6,9); Sv.v=Math.max(Sv.v,.36); bubble(Sv.w,'<b>Вжух!</b> Я быстрее молнии!',1300,true); sfx.whoosh() }
-    if(P&&!st.trip&&rt>4&&away&&Math.abs(P.x-st.px)<.08&&P.stun<=0){ st.trip={at:st.t+1.5}; say(P.w,'<b>Хи-хи!</b> Сейчас подножку поставлю!',1500); float('Прыгай! ↑','#ffe27a') }
+    if(P&&!RH&&!st.trip&&rt>4&&away&&Math.abs(P.x-st.px)<.08&&P.stun<=0){ st.trip={at:st.t+1.5}; say(P.w,'<b>Хи-хи!</b> Сейчас подножку поставлю!',1500); float('Прыгай! ↑','#ffe27a') }
     if(st.trip&&!st.trip.done&&st.t>=st.trip.at){ st.trip.done=true;
       if(air(st.jt,st.jd)){ P.stun=.8; say(P.w,'<b>Мимо!</b> Ой-ой!',1200); bubble(S2,'<b>Перепрыгнул!</b>',1000,true); sfx.boing() }
       else { hit('trip'); restart(P.w.btn,'laugh'); sfx.laugh() } }
@@ -3914,6 +3935,7 @@ function race7(alive,key){
     if(!alive()){ro.disconnect();return}
     const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
     const W=st.W,H=st.H,off=.14,LH=lh();
+    if(RH&&st.phase==='go'){ const bn=Math.floor((st.t-st.t0+.0001)/BEAT); if(bn!==st.beatN){ st.beatN=bn; restart($('r-beat'),'tick'); tone(90,.12,'sine',0,.12,55); noise(.04,1800,900,.03) } }
     if(st.phase!=='count'){
       // игрок
       st.stun=Math.max(0,st.stun-dt); st.tick=Math.max(0,st.tick-dt); st.turbo=Math.max(0,st.turbo-dt);
@@ -4025,6 +4047,300 @@ function drawObs7(g,t,x,y,s,tt){
   g.restore();
 }
 SCENES.run7a=alive=>race7(alive,'run7a');
+/* ---- Олимпиада: награды и повтор, общие для всех видов ---- */
+const MED7=['🥇','🥈','🥉'], PRIZE7=[100,50,25], MEDN7=['золото','серебро','бронзу'];
+const medals7=()=>{try{return JSON.parse(localStorage.getItem('spider-ep7-medals'))||{}}catch(e){return {}}};
+async function award7(alive,key,place,extra){
+  const prize=PRIZE7[place-1]+extra, bank=lsGet('spider-ep7-bank',0)+prize; lsSet('spider-ep7-bank',bank);
+  const md=medals7(); if(!md[key]||md[key]>place){ md[key]=place; lsSet('spider-ep7-medals',JSON.stringify(md)) }
+  restart(S2.btn,'jump'); sfx.fanfare(); banner(`${MED7[place-1]} +${prize} £`);
+  for(let k=0;k<(place===1?3:1);k++) setTimeout(()=>burst(rand(.2,.8)*innerWidth,rand(.25,.45)*innerHeight,place===1?40:24,8),k*260);
+  [0,.12,.24,.36,.48].forEach(d=>tone(rand(1500,2100),.08,'sine',d,.05));
+  talk2(S2,place===1?'Я первый! Золотая медаль!':`Я ${ORD7[place-1]}! У меня ${MEDN7[place-1]}!`,2800);
+  await wait(3000); if(alive()) celebrate2();
+}
+async function retry7(alive,key,place,winner,need){
+  if(winner){ restart(winner.btn,'laugh'); sfx.laugh(); say(winner,'<b>Ха-ха! Я первый!</b>',1800) }
+  await wait(1600); if(!alive())return;
+  restart(S2.btn,'sad');
+  talk2(S2,need===1?`Я пришёл ${ORD7[place-1]}… Надо обогнать всех! Ещё раз!`:`Я пришёл ${ORD7[place-1]}… Хочу на пьедестал! Ещё раз!`,2600);
+  setHint(need===1?`Ты ${place}-й. Чтобы получить кубок, нужно прийти первым. Нажми, чтобы попробовать ещё раз`:`Ты ${place}-й. Медаль дают первым трём. Нажми, чтобы попробовать ещё раз`);
+  const tz=$('r-tz'); if(tz){ tz.textContent='Нажми — ещё раз!'; tz.style.opacity=1 }
+  let gone=false; handlers2={move(){},down(){ if(!gone){gone=true; enter2(l2)} }};
+}
+async function countdown7(alive,intro,onGo){
+  await wait(400); if(!alive())return;
+  talk2(S2,intro,3400); await wait(3600); if(!alive())return;
+  for(const w of ['На старт!','Внимание!']){ const go=$('r-go'); go.textContent=w; restart(go,'pop'); tone(520,.15,'sine',0,.07); speak(w,1.2,1.05,'ann',1); await wait(1000); if(!alive())return }
+  const go=$('r-go'); go.textContent='Марш!'; restart(go,'pop'); tone(880,.3,'triangle',0,.08); speak('Марш!',1.2,1.1,'ann',1); onGo();
+  setTimeout(()=>{ if(alive()) go.textContent='' },700);
+}
+function rivals7(list){
+  return list.map(c=>{ const [name,col]=COL7[c];
+    const w=makeWalker((col?'':c)+' small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:name+' паук'});
+    if(col) w.wrap.style.setProperty('--spider',col); return {w,c,name} });
+}
+
+/* =====================================================================
+   ПОЛЁТ НА ПАУТИНКЕ: держишь палец — паук цепляется паутинкой за ветку и качается,
+   отпускаешь — летит. Упал в листья — бежит по земле, пока снова не зацепится.
+   Всё в долях высоты экрана (1 = высота сцены).
+   ===================================================================== */
+const SWING7={len:13,riv:['purple','green'],base:[.75,.82]};
+function swing7(alive){
+  const key='swing7', own=items7(), goal=EPX[l2].goal, L=SWING7.len, G=3, GY=.86, KICK=own.includes('socks')?1.28:1.12;
+  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div>
+    <div class="tapzone" id="r-tz">Держи палец — качайся · отпусти — лети!</div>`;
+  const tz=$('r-tz'), cv=$('r-cv'), g=cv.getContext('2d');
+  S2=makeMain('small free'); wearAll(S2,own.filter(k=>LOOK7.includes(k)));
+  const riv=rivals7(SWING7.riv).map((r,i)=>({...r,base:SWING7.base[i],x:.25,y:GY,stun:0,fin:false,ph:i*1.3,dy:.05+i*.05,gag:false}));
+  setHint('Держи палец — паук качается на паутинке. Отпусти — летит! Потом снова нажми');
+  // ветки (точки крепления), мушки и монетки в воздухе
+  const A=[]; for(let x=.75;x<L+.6;x+=rand(.62,.82)) A.push({x,y:rand(.1,.2)});
+  const bon=[]; for(let i=0;i<A.length-1;i++){ if(Math.random()<.75){ const a=A[i],b=A[i+1]; bon.push({x:(a.x+b.x)/2+rand(-.08,.08),y:rand(.4,.62),t:Math.random()<.7?'coin':'fly'}) } }
+  const st={W:0,H:0,sw:0,x:.25,y:GY,vx:0,vy:0,att:null,rope:0,hold:false,ground:true,phase:'count',t:0,t0:0,last:performance.now(),cam:0,fx:[],earned:0,place:3,turbo:0,stuck:0,bub:0,leaves:[]};
+  window._s7={st,riv,A,bon};
+  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;
+    const w=Math.min(st.H*.16,st.W*.2); [S2,...riv.map(r=>r.w)].forEach((t,i)=>t.wrap.style.width=(i?w*.82:w)+'px'); st.sw=w;
+    cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
+  size(); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
+  const float=(text,col,x=st.x,y=st.y-.12)=>st.fx.push({x,y,text,col:col||'#fff',k:0});
+  const bubble=(t,html,ms,force)=>{const now=performance.now(); if(!force&&now-st.bub<900) return; st.bub=now; say(t,html,ms)};
+  // за какую ветку зацепится паук: впереди, в пределах досягаемости, ближе всего к «чуть-чуть впереди»
+  function target(){ let best=null,bd=9; for(const a of A){ if(a.x<st.x-.15||a.x>st.x+1) continue; const d=Math.hypot(a.x-st.x,a.y-st.y); if(d>.92) continue;
+      const s=Math.abs(a.x-(st.x+.32)); if(s<bd){bd=s;best=a} } return best }
+  function attach(){ const a=target(); if(!a) return false; st.att=a; st.rope=Math.hypot(a.x-st.x,a.y-st.y);
+    if(st.ground){ st.rope*=.9; st.vx=Math.max(st.vx,.7); st.vy=-.6; st.ground=false }   // с земли — рывок вверх
+    tone(1400,.08,'sine',0,.04,2400); noise(.08,5000,3000,.03); return true }
+  function release(){ if(!st.att) return; st.att=null;
+    if(st.vx>0&&st.vy<.2){ st.vx*=KICK; st.vy=Math.min(st.vy,0)*KICK-.15; sfx.whoosh() } }
+  handlers2={
+    down(){ if(st.phase!=='go') return; st.hold=true; if(!attach()&&!st.ground) float('Далеко!','#ffe27a') },
+    move(){},
+    up(){ if(st.phase!=='go') return; st.hold=false; release() }
+  };
+  countdown7(alive,'Полёт на паутинке! Держи палец — я качаюсь. Отпусти — я лечу!',()=>{ st.phase='go'; st.t0=st.t; tz.style.opacity=.9 });
+  let fins=0;
+  function finish(place){
+    st.phase='end'; tz.style.opacity=0; st.hold=false; release();
+    if(place<=3) award7(alive,key,place,st.earned); else retry7(alive,key,place,riv.find(r=>r.order===1)?.w,3);
+  }
+  function specials(){
+    const rt=st.t-st.t0, P=riv.find(r=>r.c==='purple'), Gr=riv.find(r=>r.c==='green');
+    if(P&&!P.gag&&rt>5&&P.x>L*.35){ P.gag=true; P.stun=1.4; say(P.w,'<b>Смотрите!</b> Сальто!',1500); P.w.btn.animate([{rotate:'0deg'},{rotate:'-360deg'}],{duration:900}); sfx.whoosh() }
+    if(Gr&&!Gr.gag&&rt>5&&Gr.x>L*.55){ Gr.gag=true; Gr.stun=2; Gr.fall=true; say(Gr.w,'<b>Ой!</b> Паутинка порвалась!',1600); sfx.boing() }
+  }
+  (function frame(){
+    if(!alive()){ro.disconnect();return}
+    const now=performance.now(), dt=Math.min(.04,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
+    const W=st.W,H=st.H, VW=W/H;
+    if(st.phase==='go'||st.phase==='end'){
+      if(st.hold&&!st.att&&st.phase==='go') attach();   // держит палец в полёте — цепляется, как только ветка рядом
+      st.turbo=Math.max(0,st.turbo-dt);
+      for(let k=0;k<4;k++){ const h=dt/4;
+        if(st.ground){ st.vx+=(.28-st.vx)*Math.min(1,h*3); st.x+=st.vx*h; continue }
+        st.vy+=G*h; if(st.turbo>0) st.vx=Math.max(st.vx,.9);
+        st.x+=st.vx*h; st.y+=st.vy*h;
+        if(st.att){ const a=st.att, dx=st.x-a.x, dy=st.y-a.y, d=Math.hypot(dx,dy);
+          if(d>st.rope){ st.x=a.x+dx/d*st.rope; st.y=a.y+dy/d*st.rope; const vr=(st.vx*dx+st.vy*dy)/d; if(vr>0){st.vx-=vr*dx/d; st.vy-=vr*dy/d} }
+          if(st.vx>0&&Math.hypot(st.vx,st.vy)<1.6){ st.vx*=1+.12*h; st.vy*=1+.12*h }   // чуть помогаем раскачаться
+          st.rope=Math.max(.3,st.rope-.06*h) }
+        { const sp=Math.hypot(st.vx,st.vy), mx=st.turbo>0?2.4:2; if(sp>mx){ st.vx*=mx/sp; st.vy*=mx/sp } }
+        if(st.y<.04){ st.y=.04; st.vy=Math.max(0,st.vy) }
+        if(st.y>=GY){ st.y=GY; if(!st.att){ st.ground=true; if(st.vy>.6&&st.phase==='go'){ sfx.thud(); restart(S2.btn,'shake'); bubble(S2,'<b>Ой!</b> Упал в листья!',1100,true);
+              for(let i=0;i<8;i++) st.leaves.push({x:st.x,y:GY,vx:rand(-.4,.4),vy:rand(-.9,-.4),k:0,c:pick(['#e9a23b','#d9663f','#8fbf4a'])}) }
+            st.vy=0; st.vx*=.5 } else st.vy=Math.min(0,st.vy) }
+      }
+      if(st.att&&Math.hypot(st.vx,st.vy)<.25&&st.x>st.att.x){ st.stuck+=dt; if(st.stuck>1.6){ st.stuck=-3; float('Отпусти!','#ffe27a') } } else if(st.stuck>0) st.stuck=0;
+      if(st.phase==='go'){
+        for(const b of bon){ if(b.done||Math.hypot(b.x-st.x,b.y-st.y)>.09) continue; b.done=true;
+          if(b.t==='coin'){ st.earned+=10; tone(1800,.07,'sine',0,.05); tone(2400,.09,'sine',.06,.04); float('+10 £','#ffe27a',b.x,b.y) }
+          else { st.turbo=1; sfx.chomp(); bubble(S2,'<b>Ням!</b> Турбо-муха!',900,true); float('ТУРБО!','#9cf',b.x,b.y) } }
+        specials();
+      }
+      // соперники летят сами, по тем же веткам
+      riv.forEach(r=>{ r.stun=Math.max(0,r.stun-dt);
+        if(st.phase==='go'){ const rub=Math.max(-.25,Math.min(.25,(st.x-r.x)/2)); r.v=r.stun>0?0:r.base*ease7s[key]*(1+rub)*(1+.08*Math.sin(st.t*1.3+r.ph)) }
+        else if(!r.fin) r.v=Math.max(r.v||0,.4);
+        if(r.x>L+.4) r.v*=Math.exp(-3*dt);
+        r.x+=r.v*dt; if(!r.fin&&r.x>=L){r.fin=true;r.order=++fins}
+        if(r.stun<=0) r.fall=false });
+      if(st.phase==='go') st.place=1+riv.filter(r=>r.x>st.x).length;
+      if(st.phase==='go'){ const m=Math.floor(Math.min(1,st.x/L)*goal); if(m>p2){p2=m;render2()}
+        if(st.x>=L){ p2=goal; render2(); st.place=1+riv.filter(r=>r.fin).length; finish(st.place) } }
+    }
+    st.cam+=(Math.max(0,st.x-VW*.35)-st.cam)*Math.min(1,dt*4);
+    const X=x=>(x-st.cam)*H, Y=y=>y*H;
+    // фон: небо, дальний лес, земля с листьями
+    const sky=g.createLinearGradient(0,0,0,H); sky.addColorStop(0,'#bfe3f2'); sky.addColorStop(1,'#e6f3d8'); g.fillStyle=sky; g.fillRect(0,0,W,H);
+    for(let i=Math.floor(st.cam*H*.4/70)-1;i<Math.floor(st.cam*H*.4/70)+W/70+2;i++){ const x=i*70-st.cam*H*.4; g.fillStyle='#a9cf9a'; g.beginPath(); g.arc(x+35,H*(.62+.06*((i*7919)%3)),46,0,7); g.fill() }
+    g.fillStyle='#8a5a32'; g.fillRect(0,0,W,H*.035);   // большая ветка-«потолок»
+    g.fillStyle='#6fa055'; g.fillRect(0,Y(GY)+st.sw*.3,W,H); g.fillStyle='#e0a040';
+    for(let i=Math.floor(st.cam*H/22);i<Math.floor(st.cam*H/22)+W/22+2;i++){ const x=i*22-st.cam*H; g.fillStyle=['#e9a23b','#d9663f','#c9b13a'][((i*31)%3+3)%3]; g.beginPath(); g.ellipse(x,Y(GY)+st.sw*.33+((i*13)%5),9,4,(i%4)*.6,0,7); g.fill() }
+    // ветки и подсказка, за какую зацепится
+    const tg=st.phase==='go'&&!st.att?target():null;
+    for(const a of A){ const x=X(a.x); if(x<-60||x>W+60) continue;
+      g.strokeStyle='#7a5230'; g.lineWidth=H*.022; g.lineCap='round'; g.beginPath(); g.moveTo(x-H*.08,Y(a.y)-H*.03); g.quadraticCurveTo(x,Y(a.y)+H*.01,x+H*.08,Y(a.y)-H*.05); g.stroke();
+      g.strokeStyle='#7a5230'; g.lineWidth=H*.012; g.beginPath(); g.moveTo(x,Y(a.y)); g.lineTo(x,0); g.stroke();
+      g.fillStyle='#4f9a45'; [[-.07,-.05],[.07,-.07],[0,-.08]].forEach(([dx,dy])=>{g.beginPath(); g.ellipse(x+dx*H,Y(a.y)+dy*H,H*.035,H*.018,dx*8,0,7); g.fill()});
+      if(a===tg){ g.strokeStyle='rgb(255 240 120/.9)'; g.lineWidth=3; g.beginPath(); g.arc(x,Y(a.y),H*(.035+.01*Math.sin(st.t*8)),0,7); g.stroke() } }
+    if(tg){ g.setLineDash([4,6]); g.strokeStyle='rgb(255 255 255/.55)'; g.lineWidth=1.5; g.beginPath(); g.moveTo(X(st.x),Y(st.y)-st.sw*.15); g.lineTo(X(tg.x),Y(tg.y)); g.stroke(); g.setLineDash([]) }
+    // финиш
+    const fx=X(L); if(fx>-20&&fx<W+20){ for(let y=0,k=0;y<H;y+=14,k++) for(let j=0;j<2;j++){g.fillStyle=(k+j)%2?'#141412':'#fff';g.fillRect(fx+j*14,y,14,14)} }
+    for(let m=10;m<goal;m+=10){const x=X(m/goal*L); if(x>-30&&x<W+30){g.fillStyle='rgb(255 255 255/.85)'; g.font=`800 ${Math.round(W*.035)}px Nunito,sans-serif`; g.textAlign='center'; g.fillText(m+' м',x,Y(GY)+st.sw*.75)}}
+    // бонусы
+    for(const b of bon){ if(b.done) continue; const x=X(b.x); if(x<-30||x>W+30) continue; drawObs7(g,b.t,x,Y(b.y)+H*.045,H*.1,st.t) }
+    // паутинки соперников и игрока
+    const rivPos=r=>{ if(r.fall||r.x<A[0].x) return {x:r.x,y:GY+r.dy*.2,a:null};
+      let i=0; while(i<A.length-1&&A[i+1].x<=r.x) i++; const a=A[i], b=A[Math.min(i+1,A.length-1)], f=b===a?0:(r.x-a.x)/(b.x-a.x);
+      return {x:r.x,y:Math.min(GY,a.y+(b.y-a.y)*f+.38+r.dy-.3*Math.abs(Math.cos(Math.PI*f))),a:f<.7?a:null} };
+    g.strokeStyle='rgb(255 255 255/.75)'; g.lineWidth=1.5;
+    riv.forEach(r=>{ const p=rivPos(r); r.p=p; if(p.a){ g.beginPath(); g.moveTo(X(p.a.x),Y(p.a.y)); g.lineTo(X(p.x),Y(p.y)-st.sw*.3); g.stroke() } });
+    if(st.att){ g.strokeStyle='#fff'; g.lineWidth=2.5; g.beginPath(); g.moveTo(X(st.att.x),Y(st.att.y)); g.lineTo(X(st.x),Y(st.y)-st.sw*.3); g.stroke() }
+    // листья, надписи, табло
+    st.leaves.forEach(l=>{l.k+=dt;l.vy+=1.5*dt;l.x+=l.vx*dt;l.y+=l.vy*dt; g.globalAlpha=Math.max(0,1-l.k); g.fillStyle=l.c; g.beginPath(); g.ellipse(X(l.x),Y(l.y),6,3,l.k*6,0,7); g.fill()}); g.globalAlpha=1; st.leaves=st.leaves.filter(l=>l.k<1);
+    g.textAlign='center'; g.font=`900 ${Math.round(W*.045)}px Nunito,sans-serif`;
+    for(const f of st.fx){ f.k+=dt; g.globalAlpha=Math.max(0,1-f.k/1.1); g.fillStyle=f.col; g.strokeStyle='rgb(0 0 0/.4)'; g.lineWidth=3;
+      g.strokeText(f.text,X(f.x),Y(f.y)-f.k*40); g.fillText(f.text,X(f.x),Y(f.y)-f.k*40) } g.globalAlpha=1; st.fx=st.fx.filter(f=>f.k<1.1);
+    g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.lineWidth=3; g.strokeStyle='rgb(0 0 0/.35)'; g.fillStyle='#fff';
+    g.textAlign='left'; const pl=`Место: ${st.place} из ${riv.length+1}`; g.strokeText(pl,10,H*.09); g.fillText(pl,10,H*.09);
+    g.textAlign='right'; const bk=`🐷 ${lsGet('spider-ep7-bank',0)+st.earned} £`; g.strokeText(bk,W-10,H*.09); g.fillText(bk,W-10,H*.09);
+    // пауки
+    const ang=st.att?Math.atan2(st.x-st.att.x,st.att.y-st.y)*-57:st.ground?0:Math.max(-30,Math.min(30,st.vx*10));
+    S2.btn.style.rotate=ang.toFixed(1)+'deg';
+    const run=st.ground&&st.phase==='go'; if(run!==S2.btn.classList.contains('crawl')) S2.btn.classList.toggle('crawl',run);
+    S2.wrap.style.transform=`translate(${X(st.x)-st.sw/2}px,${Y(st.y)-st.sw*.5}px)`;
+    riv.forEach(r=>{ const p=r.p, w=r.w.wrap.offsetWidth; const cr=p.y>=GY-.01&&r.v>.05; if(cr!==r.w.btn.classList.contains('crawl')) r.w.btn.classList.toggle('crawl',cr);
+      r.w.wrap.style.transform=`translate(${X(p.x)-w/2}px,${Y(p.y)-w*.5}px)` });
+    requestAnimationFrame(frame);
+  })();
+}
+const ease7s={swing7:1,climb7:1};
+
+/* =====================================================================
+   ЛАЗАНИЕ ПО ДЕРЕВУ: нажимать по очереди слева и справа — лапка за лапкой.
+   Сверху падают жёлуди — их можно сбить пальцем (каска защищает сама).
+   ===================================================================== */
+const CLIMB7={riv:['purple','blue'],base:[1.05,1.15]};
+function climb7(alive){
+  const key='climb7', own=items7(), goal=EPX[l2].goal;
+  room.className='room'; room.innerHTML=`<canvas class="cv" id="r-cv"></canvas><div class="race-go" id="r-go"></div>
+    <button class="paw7 L" id="r-pl" aria-label="Левая лапка">🐾</button><button class="paw7 R" id="r-pr" aria-label="Правая лапка">🐾</button>
+    <div class="tapzone" id="r-tz">Слева, справа, слева, справа!</div>`;
+  const tz=$('r-tz'), cv=$('r-cv'), g=cv.getContext('2d'), PL=$('r-pl'), PR=$('r-pr');
+  tz.style.bottom='17%';
+  S2=makeMain('small free'); wearAll(S2,own.filter(k=>LOOK7.includes(k)));
+  const riv=rivals7(CLIMB7.riv).map((r,i)=>({...r,base:CLIMB7.base[i],h:0,v:0,stun:0,fin:false,ph:i*2,gag:false,side:i?.84:.16}));
+  setHint('Нажимай по очереди: левая лапка, правая лапка. Падают жёлуди — сбей их пальцем!');
+  const st={W:0,H:0,sw:0,h:0,v:0,next:'L',stun:0,phase:'count',t:0,t0:0,last:performance.now(),cam:0,fx:[],earned:0,place:3,sway:0,acorns:[],nextAcorn:0,bub:0,coins:[]};
+  for(let h=3;h<goal-1;h+=rand(2.5,4)) st.coins.push({h,side:pick([-1,1])});
+  window._c7={st,riv};
+  const PPM=()=>st.H/10;   // пикселей на метр
+  function size(){const r=rr(),dpr=Math.min(2,devicePixelRatio||1);st.W=r.width;st.H=r.height;
+    const w=Math.min(st.H*.17,st.W*.24); S2.wrap.style.width=w+'px'; riv.forEach(r=>r.w.wrap.style.width=w*.72+'px'); st.sw=w;
+    cv.width=Math.round(st.W*dpr);cv.height=Math.round(st.H*dpr);g.setTransform(dpr,0,0,dpr,0,0)}
+  size(); let resized=false; const ro=new ResizeObserver(()=>{resized=true}); ro.observe(room);
+  const SY=()=>st.H*.6, Yof=h=>SY()-(h-st.cam)*PPM();
+  const float=(text,col,x=st.W/2,y=SY()-st.sw*.5)=>st.fx.push({x,y,text,col:col||'#fff',k:0});
+  const bubble=(t,html,ms,force)=>{const now=performance.now(); if(!force&&now-st.bub<900) return; st.bub=now; say(t,html,ms)};
+  const glow=()=>{ PL.classList.toggle('next',st.next==='L'&&st.phase==='go'); PR.classList.toggle('next',st.next==='R'&&st.phase==='go') }; glow();
+  function paw(side){
+    if(st.phase!=='go') return;
+    const btn=side==='L'?PL:PR; restart(btn,'press');
+    if(side!==st.next){
+      if(own.includes('boots')){ float('Не скользко!','#bfe6ff'); return }
+      st.h=Math.max(0,st.h-.3); st.v=0; restart(S2.btn,'shake'); tone(300,.15,'sawtooth',0,.03,180); bubble(S2,'<b>Ой!</b> Другой лапкой!',1000); return }
+    st.next=side==='L'?'R':'L'; glow();
+    st.v=Math.min(3.2,st.v+(st.stun>0?.5:1.6)); st.sway=side==='L'?-1:1; tone(side==='L'?520:620,.05,'triangle',0,.04);
+  }
+  function hitAcorn(p){
+    for(const a of st.acorns){ if(a.out) continue; const ax=a.x*st.W, ay=Yof(a.h); if(Math.hypot(p.x-ax,p.y-ay)<Math.max(36,st.W*.09)){
+      a.out=true; a.vx=(ax<st.W/2?-1:1)*rand(300,450); a.vy=-260; sfx.pop(); noise(.08,2000,800,.06); float('Бац!','#ffe27a',ax,ay); return true } }
+    return false }
+  handlers2={
+    down(e,p){ if(st.phase!=='go') return; if(hitAcorn(p)) return; paw(p.x<st.W/2?'L':'R') },
+    move(){}, up(){}
+  };
+  [PL,PR].forEach(b=>b.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); paw(b===PL?'L':'R') }));
+  countdown7(alive,'Лазаем по дереву! Нажимай слева, справа — лапка за лапкой! Кто первый долезет до флажка?',()=>{ st.phase='go'; st.t0=st.t; st.nextAcorn=st.t+3; tz.style.opacity=.9; glow() });
+  let fins=0;
+  function finish(place){
+    st.phase='end'; tz.style.opacity=0; glow(); PL.hidden=PR.hidden=true;
+    if(place<=3) award7(alive,key,place,st.earned); else retry7(alive,key,place,riv.find(r=>r.order===1)?.w,3);
+  }
+  function specials(){
+    const rt=st.t-st.t0, P=riv.find(r=>r.c==='purple'), B=riv.find(r=>r.c==='blue');
+    if(P&&!P.gag&&rt>6&&P.h>goal*.35){ P.gag=true; P.stun=1.8; P.flip=true; say(P.w,'<b>Смотрите!</b> Я вниз головой!',1700); setTimeout(()=>{P.flip=false},1800) }
+    if(B&&!B.gag&&rt>6&&B.h>goal*.55){ B.gag=true; B.stun=1.5; B.h=Math.max(0,B.h-1.5); say(B.w,'<b>Ай!</b> Сова! Уху!',1600); tone(420,.3,'sine',0,.05,380); tone(330,.4,'sine',.35,.05,300) }
+  }
+  (function frame(){
+    if(!alive()){ro.disconnect();return}
+    const now=performance.now(), dt=Math.min(.05,(now-st.last)/1000); st.last=now; st.t+=dt; if(resized){resized=false;size()}
+    const W=st.W,H=st.H,ppm=PPM();
+    if(st.phase!=='count'){
+      st.stun=Math.max(0,st.stun-dt);
+      st.v*=Math.exp(-2.2*dt); st.h=Math.min(goal+.6,st.h+st.v*dt); st.sway*=Math.exp(-6*dt);
+      if(st.phase==='go'){
+        // жёлуди: появляются над пауком, падают; можно сбить пальцем
+        if(st.t>=st.nextAcorn){ st.nextAcorn=st.t+rand(3.5,6); st.acorns.push({x:.5+rand(-.04,.04),h:st.cam+10*(1-.6)+1.2,vh:0,warn:1,out:false}); tone(900,.1,'sine',0,.04,1200) }
+        for(const a of st.acorns){
+          if(a.out){ a.x+=a.vx*dt/W; a.vy+=900*dt; a.h-=a.vy*dt/ppm; continue }
+          if(a.warn>0){ a.warn-=dt; continue }
+          a.vh+=6*dt; a.h-=a.vh*dt;
+          if(a.h<=st.h+.6){ a.out=true;
+            if(own.includes('helmet')){ a.vx=rand(-1,1)*350; a.vy=-300; sfx.boing(); float('Дзынь! Каска!','#ffd23a'); restart(S2.btn,'jump') }
+            else { a.vx=rand(-1,1)*200; a.vy=-150; st.h=Math.max(0,st.h-1.2); st.v=0; st.stun=.8; sfx.thud(); jolt(); restart(S2.btn,'shake'); bubble(S2,'<b>Ай!</b> Жёлудь!',1100,true) } } }
+        st.acorns=st.acorns.filter(a=>Yof(a.h)<H+60&&a.x>-.2&&a.x<1.2);
+        for(const c of st.coins){ if(!c.done&&st.h>=c.h){ c.done=true; st.earned+=10; tone(1800,.07,'sine',0,.05); tone(2400,.09,'sine',.06,.04); float('+10 £','#ffe27a',W/2+c.side*st.sw*.5,Yof(c.h)) } }
+        specials();
+      }
+      riv.forEach(r=>{ r.stun=Math.max(0,r.stun-dt);
+        if(st.phase==='go'){ const rub=Math.max(-.15,Math.min(.15,(st.h-r.h)/6)); r.v=r.stun>0?0:r.base*ease7s[key]*(1+rub)*(1+.1*Math.sin(st.t*1.5+r.ph)) }
+        else if(!r.fin) r.v=Math.max(r.v,.9); else r.v=0;
+        r.h=Math.min(goal+.4,r.h+r.v*dt); if(!r.fin&&r.h>=goal){r.fin=true;r.order=++fins} });
+      if(st.phase==='go') st.place=1+riv.filter(r=>r.h>st.h).length;
+      if(st.phase==='go'){ const m=Math.floor(Math.min(goal,st.h)); if(m>p2){p2=m;render2()}
+        if(st.h>=goal){ p2=goal; render2(); restart(S2.btn,'jump'); st.place=1+riv.filter(r=>r.fin).length; finish(st.place) } }
+    }
+    st.cam+=(Math.max(0,st.h)-st.cam)*Math.min(1,dt*5);
+    // небо светлеет и появляются облака по мере подъёма
+    const k=Math.min(1,st.cam/goal), sky=g.createLinearGradient(0,0,0,H); sky.addColorStop(0,mix('#9fd3ef','#5fb0e8',k)); sky.addColorStop(1,mix('#d8efd0','#bfe3f5',k)); g.fillStyle=sky; g.fillRect(0,0,W,H);
+    g.fillStyle='rgb(255 255 255/.85)'; for(let i=0;i<6;i++){ const cy=((i*173+st.cam*ppm*.35)%(H+120))-60, cx=((i*97)%100)/100*W; g.beginPath(); g.ellipse(cx,cy,40,14,0,0,7); g.ellipse(cx+22,cy-8,26,12,0,0,7); g.fill() }
+    // три ствола: соперники по бокам, игрок в середине
+    const trunk=(cx,w,top)=>{ g.fillStyle='#8a5a32'; g.fillRect(cx-w/2,Math.max(-10,top),w,H+20); g.strokeStyle='#6b4325'; g.lineWidth=2;
+      for(let y=((st.cam*ppm)%34)-34;y<H;y+=34){ g.beginPath(); g.moveTo(cx-w*.3,y); g.quadraticCurveTo(cx,y+8,cx+w*.25,y+2); g.stroke() }
+      if(top>-80){ g.fillStyle='#3f8f45'; g.beginPath(); g.arc(cx,top,w*1.4,Math.PI,0); g.fill(); g.beginPath(); g.arc(cx-w*.9,top+w*.2,w*.8,0,7); g.arc(cx+w*.9,top+w*.2,w*.8,0,7); g.fill() } };
+    const topY=Yof(goal+.9);
+    riv.forEach(r=>trunk(r.side*W,W*.12,topY));
+    trunk(W/2,W*.2,topY);
+    g.fillStyle='#5f9a4e'; const gy=Yof(-.6); if(gy<H) g.fillRect(0,gy,W,H-gy);
+    // флажок на вершине и отметки метров
+    const fy=Yof(goal); if(fy>-40){ g.fillStyle='#fff'; g.fillRect(W/2+W*.1,fy-H*.12,3,H*.12); g.fillStyle='#e8483c'; g.beginPath(); g.moveTo(W/2+W*.1+3,fy-H*.12); g.lineTo(W/2+W*.1+30,fy-H*.1); g.lineTo(W/2+W*.1+3,fy-H*.08); g.fill() }
+    g.fillStyle='rgb(255 255 255/.9)'; g.font=`800 ${Math.round(W*.035)}px Nunito,sans-serif`; g.textAlign='right';
+    for(let m=5;m<goal;m+=5){ const y=Yof(m); if(y>-20&&y<H+20) g.fillText(m+' м',W/2-W*.11,y) }
+    for(const c of st.coins){ if(c.done) continue; const y=Yof(c.h); if(y>-30&&y<H+30) drawObs7(g,'coin',W/2+c.side*st.sw*.5,y+H*.04,H*.09,st.t) }
+    // жёлуди с предупреждением
+    for(const a of st.acorns){ const x=a.x*W, y=Yof(a.h);
+      if(a.warn>0&&!a.out){ g.fillStyle=`rgb(255 220 80/${.5+.5*Math.sin(st.t*20)})`; g.font=`900 ${Math.round(W*.08)}px Nunito,sans-serif`; g.textAlign='center'; g.fillText('⚠',x,H*.16); continue }
+      g.save(); g.translate(x,y); g.rotate(a.out?st.t*10:0); g.fillStyle='#b5772c'; g.beginPath(); g.ellipse(0,4,13,16,0,0,7); g.fill(); g.fillStyle='#7a5230'; g.beginPath(); g.ellipse(0,-8,15,8,0,0,7); g.fill(); g.fillRect(-2,-20,4,8); g.restore() }
+    // надписи и табло
+    g.textAlign='center'; g.font=`900 ${Math.round(W*.045)}px Nunito,sans-serif`;
+    for(const f of st.fx){ f.k+=dt; g.globalAlpha=Math.max(0,1-f.k/1.1); g.fillStyle=f.col; g.strokeStyle='rgb(0 0 0/.4)'; g.lineWidth=3; g.strokeText(f.text,f.x,f.y-f.k*40); g.fillText(f.text,f.x,f.y-f.k*40) } g.globalAlpha=1; st.fx=st.fx.filter(f=>f.k<1.1);
+    g.font=`800 ${Math.round(W*.045)}px Nunito,system-ui,sans-serif`; g.lineWidth=3; g.strokeStyle='rgb(0 0 0/.35)'; g.fillStyle='#fff';
+    g.textAlign='left'; const pl=`Место: ${st.place} из ${riv.length+1}`; g.strokeText(pl,10,H*.07); g.fillText(pl,10,H*.07);
+    g.textAlign='right'; const bk=`🐷 ${lsGet('spider-ep7-bank',0)+st.earned} £`; g.strokeText(bk,W-10,H*.07); g.fillText(bk,W-10,H*.07);
+    // пауки на стволах
+    S2.btn.style.rotate=(st.sway*10).toFixed(1)+'deg';
+    S2.wrap.style.transform=`translate(${W/2-st.sw/2}px,${Yof(st.h)-st.sw*.5}px)`;
+    riv.forEach(r=>{ const w=r.w.wrap.offsetWidth; r.w.btn.style.rotate=r.flip?'180deg':(Math.sin(st.t*9+r.ph)*(r.v>.2?8:0)).toFixed(1)+'deg';
+      r.w.wrap.style.transform=`translate(${r.side*W-w/2}px,${Yof(r.h)-w*.5}px)` });
+    requestAnimationFrame(frame);
+  })();
+}
+SCENES.swing7=swing7;
+SCENES.climb7=climb7;
+SCENES.spr7=alive=>race7(alive,'spr7');
+
 SCENES.run7b=alive=>race7(alive,'run7b');
 SCENES.run7c=alive=>race7(alive,'run7c');
 
@@ -4036,23 +4352,24 @@ function shop7(alive,last){
     <div class="shop7">${SHOP7.map(it=>`<button class="sitem${own.includes(it.k)?' own':''}" data-k="${it.k}"><span class="se">${it.e}</span><span class="sn">${it.n}</span><span class="sd">${it.d}</span><span class="spr">${own.includes(it.k)?'✓ есть':it.p+' £'}</span></button>`).join('')}</div>
     <button class="sdone" id="r-sdone">Готово ›</button>`;
   const s=rr(); S2=makeMain(); wearAll(S2,own.filter(k=>LOOK7.includes(k))); put(S2,{x:s.width*.22,y:s.height*.82});
-  const upd=()=>{$('r-sbank').textContent=`🐷 ${bank} £`}; upd();
+  const md=medals7(), mt=['spr7','swing7','climb7'].map(k=>md[k]?MED7[md[k]-1]:'').join('');
+  const upd=()=>{$('r-sbank').textContent=`🐷 ${bank} £`+(mt?'  '+mt:'')}; upd();
   setHint('Нажми на вещь, чтобы купить её за деньги из копилки');
   setTimeout(()=>alive()&&talk2(S2,'Магазин! Что бы мне купить?',2200),400);
   room.querySelectorAll('.sitem').forEach(b=>b.onclick=()=>{
     if(busy2) return; const it=SHOP7.find(x=>x.k===b.dataset.k);
     if(own.includes(it.k)){ talk2(S2,'Это у меня уже есть!',1400); return }
     if(bank<it.p){ restart(b,'shake'); sfx.yuck(); const need=it.p-bank;
-      talk2(S2,`Не хватает ${need} ${need%10===1&&need%100!==11?'фунта':'фунтов'}! Надо ещё побегать!`,2400); return }
+      talk2(S2,`Не хватает ${need} ${need%10===1&&need%100!==11?'фунта':'фунтов'}! Надо ещё медалей!`,2400); return }
     bank-=it.p; lsSet('spider-ep7-bank',bank); own.push(it.k); lsSet('spider-ep7-items',JSON.stringify(own)); upd();
     b.classList.add('own'); b.querySelector('.spr').textContent='✓ есть'; sfx.magic(); restart(S2.btn,'jump');
     const r=b.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,18,5);
     if(LOOK7.includes(it.k)) S2.wrap.classList.add('w-'+it.k);
     talk2(S2,it.say,2400);
   });
-  $('r-sdone').textContent=last?'На финал ›':'На забег ›';
+  $('r-sdone').textContent=last?'На финал ›':'Дальше ›';
   $('r-sdone').onclick=async()=>{ if(busy2||$('r-sdone').disabled) return; $('r-sdone').disabled=true; sfx.click();
-    talk2(S2,last?'Теперь финал!':'Вперёд, на следующий забег!',1600); await wait(1500); if(alive()) enter2(l2+1) };
+    talk2(S2,last?'Теперь финал!':'Вперёд, к следующему виду спорта!',1600); await wait(1500); if(alive()) enter2(l2+1) };
 }
 SCENES.shop7a=alive=>shop7(alive,false);
 SCENES.shop7b=alive=>shop7(alive,false);
@@ -4086,7 +4403,7 @@ SCENES.cup7=function(alive){
     await wait(950); if(!alive())return;
     restart(S2.btn,'jump'); sfx.fanfare(); banner('Чемпион!'); add2(1,false);
     for(let k=0;k<5;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.2,.5)*innerHeight,55,10),k*300);
-    talk2(S2,'Ура! Кубок мой! Я самый быстрый паук на свете!',3200);
+    talk2(S2,'Ура! Кубок мой! Я чемпион паучьей олимпиады!',3200);
     setTimeout(()=>{ if(alive()){ restart(Sv.btn,'jump'); restart(R2.btn,'jump'); sfx.magic() } },3300);
     EPS.fin=['Чёрный паук — чемпион! 🏆',`В копилке ${bank} £. Можно бежать ещё, копить и покупать!`];
     l2=EPX.length; lsSet(EPS.store,l2); render2();
