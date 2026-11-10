@@ -373,11 +373,6 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .isle.noanim{transition:none}
 .isle.wave{animation:islewave 1.2s ease-in-out}
 @keyframes islewave{30%{scale:1.08}60%{scale:.98}}
-.seamap{position:absolute;left:28%;right:4%;top:3%;display:flex;align-items:center;gap:6px;z-index:2;pointer-events:none;font-size:18px}
-.sm-track{position:relative;flex:1;height:8px;border-radius:4px;background:rgb(255 255 255/.55)}
-.sm-track i{position:absolute;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgb(0 0 0/.15)}
-.sm-track u{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:#f5c03a;transition:width .8s ease-out}
-.sm-track b{position:absolute;top:50%;left:0;translate:-50% -55%;font-size:20px;transition:left .8s ease-out;filter:drop-shadow(0 1px 1px #fff)}
 .sun{position:absolute;left:12%;top:5%;width:min(13vw,56px);aspect-ratio:1;border-radius:50%;background:var(--sun);box-shadow:0 0 0 8px rgb(247 208 74/.25)}
 .boat{position:absolute;left:54%;top:9%;translate:-50% 0;width:min(84vw,330px);animation:bob 2.6s ease-in-out infinite;z-index:2}
 .boat.far{left:80%;top:22%;width:min(22vw,90px);z-index:1;animation:bob 2.6s ease-in-out infinite,sail 30s linear forwards}
@@ -422,11 +417,6 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .turtle svg{display:block;width:100%;height:auto;animation:tbob 1.6s ease-in-out infinite}
 @keyframes tbob{50%{translate:0 4px;rotate:2deg}}
 .turtle .bubble{bottom:88%}
-.ftrack{position:absolute;left:0;right:0;top:78%;height:0;z-index:2;pointer-events:none}
-.ftrack u{position:absolute;top:-3px;height:6px;border-radius:3px;opacity:.75;transition:background .3s}
-.ftrack b{position:absolute;top:0;translate:-50% -50%;font-size:22px;filter:drop-shadow(0 1px 1px #fff)}
-.ftrack b.warn{animation:fwarn .5s ease-in-out infinite}
-@keyframes fwarn{50%{scale:1.35}}
 .fish.near{filter:drop-shadow(0 0 8px #ff5a4a)}
 .fish.k-slow.near{filter:hue-rotate(290deg) saturate(.9) drop-shadow(0 0 8px #ff5a4a)}
 .fish.k-fast.near{filter:hue-rotate(75deg) saturate(1.2) drop-shadow(0 0 8px #ff5a4a)}
@@ -2476,12 +2466,10 @@ const ISLE=`<svg viewBox="0 0 200 90" aria-hidden="true"><ellipse cx="100" cy="8
   <rect x="128" y="40" width="22" height="18" fill="#f3e3c6"/><path d="M124 42 L139 28 L154 42 Z" fill="#d9663f"/><rect x="136" y="48" width="6" height="10" fill="#8a5a32"/>
   <path d="M70 52 Q66 30 72 12" stroke="#8a5a32" stroke-width="4" fill="none"/><g fill="#3f8f45"><path d="M72 12 Q56 6 46 18 Q60 12 72 14Z"/><path d="M72 12 Q90 2 100 16 Q86 10 72 14Z"/><path d="M72 12 Q70 -2 84 -4 Q74 4 72 14Z"/></g></svg>`;
 function seaMap(){
-  return `<div class="isle" id="r-isle">${ISLE}</div>
-    <div class="seamap" aria-hidden="true"><span>⛵</span><div class="sm-track">${SEA_STAGES.map((_,i)=>`<i style="left:${(i+1)/SEA_STAGES.length*100}%"></i>`).join('')}<u id="r-smfill"></u><b id="r-smme">🕷️</b></div><span>🏝️</span></div>`;
+  return `<div class="isle" id="r-isle">${ISLE}</div>`;
 }
 function seaMapUpd(){
-  const k=seaK(), me=$('r-smme'), fill=$('r-smfill'), isle=$('r-isle'); if(!me) return;
-  me.style.left=k*100+'%'; fill.style.width=k*100+'%'; isle.style.setProperty('--k',k);
+  const isle=$('r-isle'); if(isle) isle.style.setProperty('--k',seaK());
 }
 const SEA_BG=`<div class="surf"></div><div class="ripple" style="top:48%"></div><div class="ripple" style="top:62%;animation-duration:4s"></div><div class="sun"></div>`;
 const PEOPLE=`<rect x="88" y="92" width="44" height="40" rx="10" fill="#3d6fb5"/><circle cx="110" cy="72" r="20" fill="#f0c39a"/><path d="M90 70 a20 20 0 0 1 40 0 q-20 -12 -40 0Z" fill="#4a3424"/>
@@ -2606,7 +2594,7 @@ function stonesScene(alive,ops,opt={}){
   const N=EPX[l2].goal, xs=[9,24,39,54,69,85], ys=[47,57,47,57,47,55];
   room.innerHTML=SEA_BG+seaMap()+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
     `<div class="stone${i===N?(opt.last?' land':' flag'):''}" id="r-st${i}" style="left:${x}%;top:${ys[i]}%"></div>`).join('')+
-    (opt.fish?`<div class="ftrack" id="r-ftrack"><u id="r-ffill"></u><b id="r-fgoal">🪰</b></div><div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
+    (opt.fish?`<div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
     `<div class="quiz"><div class="lvl" id="r-lvl" aria-hidden="true"></div><div class="ex" id="r-ex" aria-live="polite"></div></div>`;
   S2=makeMain('small'); put(S2,onStone($('r-st0')));
   // карта пути и остров: сначала там, где закончился прошлый этап, потом плавно подтягиваются
@@ -2690,6 +2678,9 @@ function stonesScene(alive,ops,opt={}){
   // в начале этапа рыба выпрыгивает, представляется, а паук ей отвечает — и только потом первый пример
   async function meetFish(){
     const F=FISHES[fishK]; fishEl.classList.add('k-'+(F.cls||fishK));
+    // на последних этапах паук замечает, что остров уже близко
+    const isl={stones3:'Ой, вдали что-то виднеется… Это остров?',stones5:'Я уже вижу остров! Там домик и пальма!',stones4:'Остров совсем близко! Последний рывок!'}[EPX[l2].key];
+    if(isl){ await wait(700); if(!alive())return; restart(S2.btn,'jump'); talk2(S2,isl,2400); await wait(2600); if(!alive())return }
     await wait(300); if(!alive())return; restart(fishEl,'hop'); splash2({x:fishX(rr().width),y:rr().height*FISH_Y}); sfx.splash();
     await wait(350); if(!alive())return; talk2(FISH,F.hi,2600);
     await wait(2700); if(!alive())return; talk2(S2,F.reply,2400);
@@ -2729,11 +2720,8 @@ function stonesScene(alive,ops,opt={}){
       if(!lock&&!busy2&&flies.length) pos=Math.max(0,Math.min(1,pos+dir*rate*dt));
       fishEl.style.left=fishX(s.width)+'px'; fishEl.style.top=s.height*FISH_Y+Math.sin(now/260)*4+'px';
       const rem=dir>0?1-pos:pos;
-      // насколько рыба близко к ответу: дорожка до мухи краснеет, рыба виляет хвостом всё быстрее и пускает пузыри
-      { const near=lock?0:Math.max(0,Math.min(1,1-rem)), fx=fishX(s.width), gx=dir>0?s.width*.93:s.width*.07;
-        const tr=$('r-ftrack'), fill=$('r-ffill'), goal=$('r-fgoal');
-        tr.style.top=s.height*(FISH_Y+.1)+'px'; fill.style.left=Math.min(fx,gx)+'px'; fill.style.width=Math.abs(gx-fx)+'px';
-        fill.style.background=`hsl(${Math.round(120-120*near)} 75% 55%)`; goal.style.left=gx+'px'; goal.classList.toggle('warn',near>.7&&!lock);
+      // насколько рыба близко к ответу: виляет хвостом всё быстрее, пускает пузыри, у самого ответа светится
+      { const near=lock?0:Math.max(0,Math.min(1,1-rem)), fx=fishX(s.width);
         const sv=fishEl.querySelector('svg'); sv.style.rotate=(Math.sin(now/(230-150*near))*(3+9*near)).toFixed(1)+'deg';
         fishEl.classList.toggle('near',near>.7&&!lock);
         if(!lock&&Math.random()<dt/1000*(1+6*near)){ const b=document.createElement('i'); b.className='fbub'; b.style.left=fx+(dir>0?1:-1)*fishEl.offsetWidth*.4+'px'; b.style.top=s.height*FISH_Y+'px'; room.appendChild(b); setTimeout(()=>b.remove(),1400) } }
