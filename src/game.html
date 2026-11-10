@@ -368,6 +368,16 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sea .surf{position:absolute;left:0;right:0;top:calc(34% - 5px);height:10px;background:radial-gradient(circle at 10px -4px,var(--sky) 9px,transparent 10px) 0 0/20px 10px}
 .sea .ripple{position:absolute;left:0;right:0;height:8px;opacity:.3;background:radial-gradient(circle at 12px 12px,transparent 9px,#fff 10px,transparent 11px) 0 0/24px 8px;animation:ripple 3s linear infinite}
 @keyframes ripple{to{background-position:24px 0}}
+.isle{--k:0;position:absolute;left:40%;top:34%;width:calc(16% + 34% * var(--k));translate:-50% -78%;z-index:0;transition:width 1.2s ease-out;pointer-events:none;filter:saturate(calc(.55 + .45 * var(--k)))}
+.isle svg{display:block;width:100%}
+.isle.noanim{transition:none}
+.isle.wave{animation:islewave 1.2s ease-in-out}
+@keyframes islewave{30%{scale:1.08}60%{scale:.98}}
+.seamap{position:absolute;left:28%;right:4%;top:3%;display:flex;align-items:center;gap:6px;z-index:2;pointer-events:none;font-size:18px}
+.sm-track{position:relative;flex:1;height:8px;border-radius:4px;background:rgb(255 255 255/.55)}
+.sm-track i{position:absolute;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px rgb(0 0 0/.15)}
+.sm-track u{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:4px;background:#f5c03a;transition:width .8s ease-out}
+.sm-track b{position:absolute;top:50%;left:0;translate:-50% -55%;font-size:20px;transition:left .8s ease-out;filter:drop-shadow(0 1px 1px #fff)}
 .sun{position:absolute;left:12%;top:5%;width:min(13vw,56px);aspect-ratio:1;border-radius:50%;background:var(--sun);box-shadow:0 0 0 8px rgb(247 208 74/.25)}
 .boat{position:absolute;left:54%;top:9%;translate:-50% 0;width:min(84vw,330px);animation:bob 2.6s ease-in-out infinite;z-index:2}
 .boat.far{left:80%;top:22%;width:min(22vw,90px);z-index:1;animation:bob 2.6s ease-in-out infinite,sail 30s linear forwards}
@@ -1963,7 +1973,9 @@ function render2(){
   $('task').textContent=L.title; $('hint').textContent=hint2;
   $('barMe').style.width=Math.min(100,p2/L.goal*100)+'%';
   $('count').innerHTML=`<b>${Math.min(p2,L.goal)}</b> / ${L.goal}${L.unit?' '+L.unit:''}`;
+  if(onRender2) onRender2();
 }
+let onRender2=null;
 function setHint(t){hint2=t;render2()}
 function add2(n,auto=true){
   if(busy2) return; p2=Math.max(0,p2+n); render2(); if(n>0) sfx.tick(p2);
@@ -1981,7 +1993,7 @@ function leave2(){sceneId++;room.innerHTML='';talkers2=[];S2=null;handlers2={};b
 function enter2(i){
   l2=i; p2=0; busy2=false; lsSet(EPS.store,i);
   restart($('stage2'),'enter');
-  sceneId++; talkers2=[]; handlers2={}; room.innerHTML=''; room.className='room';
+  sceneId++; talkers2=[]; handlers2={}; onRender2=null; room.innerHTML=''; room.className='room';
   $('steps').innerHTML='';
   if(i>=EPX.length){render2();return}
   hint2=''; render2(); restart($('hud'),'pop');
@@ -2446,6 +2458,21 @@ const SCENES={
 };
 
 /* ---- эпизод 3: картинки ---- */
+// море: насколько мы уже близко к берегу (0 — лодка, 1 — берег) по всем этапам с камнями
+const SEA_STAGES=['stones1','stones2','stones3','stones5','stones4'];
+function seaK(){ const i=SEA_STAGES.indexOf(EPX[l2]&&EPX[l2].key); if(i<0) return EPX[l2]&&EPX[l2].key==='shore'?1:0;
+  return Math.min(1,(i+Math.min(p2,EPX[l2].goal)/EPX[l2].goal)/SEA_STAGES.length) }
+const ISLE=`<svg viewBox="0 0 200 90" aria-hidden="true"><ellipse cx="100" cy="88" rx="98" ry="22" fill="#e9d29a"/><path d="M20 80 Q70 30 120 52 Q160 40 185 80 Z" fill="#6fb05a"/>
+  <rect x="128" y="40" width="22" height="18" fill="#f3e3c6"/><path d="M124 42 L139 28 L154 42 Z" fill="#d9663f"/><rect x="136" y="48" width="6" height="10" fill="#8a5a32"/>
+  <path d="M70 52 Q66 30 72 12" stroke="#8a5a32" stroke-width="4" fill="none"/><g fill="#3f8f45"><path d="M72 12 Q56 6 46 18 Q60 12 72 14Z"/><path d="M72 12 Q90 2 100 16 Q86 10 72 14Z"/><path d="M72 12 Q70 -2 84 -4 Q74 4 72 14Z"/></g></svg>`;
+function seaMap(){
+  return `<div class="isle" id="r-isle">${ISLE}</div>
+    <div class="seamap" aria-hidden="true"><span>⛵</span><div class="sm-track">${SEA_STAGES.map((_,i)=>`<i style="left:${(i+1)/SEA_STAGES.length*100}%"></i>`).join('')}<u id="r-smfill"></u><b id="r-smme">🕷️</b></div><span>🏝️</span></div>`;
+}
+function seaMapUpd(){
+  const k=seaK(), me=$('r-smme'), fill=$('r-smfill'), isle=$('r-isle'); if(!me) return;
+  me.style.left=k*100+'%'; fill.style.width=k*100+'%'; isle.style.setProperty('--k',k);
+}
 const SEA_BG=`<div class="surf"></div><div class="ripple" style="top:48%"></div><div class="ripple" style="top:62%;animation-duration:4s"></div><div class="sun"></div>`;
 const PEOPLE=`<rect x="88" y="92" width="44" height="40" rx="10" fill="#3d6fb5"/><circle cx="110" cy="72" r="20" fill="#f0c39a"/><path d="M90 70 a20 20 0 0 1 40 0 q-20 -12 -40 0Z" fill="#4a3424"/>
   <circle cx="103" cy="74" r="2.4" fill="#222"/><circle cx="117" cy="74" r="2.4" fill="#222"/><path d="M103 83 q7 5 14 0" stroke="#222" stroke-width="2" fill="none" stroke-linecap="round"/>
@@ -2468,7 +2495,7 @@ function wetDrops(x,y,n=22){for(let i=0;i<n;i++){const a=rand(0,TAU),v=rand(3,8)
 /* 1. Лодка */
 SCENES.boat=function(alive){
   room.className='room sea';
-  room.innerHTML=SEA_BG+`<div class="boat" id="r-boat">${SVG.boat}<button class="basket" id="r-basket" aria-label="Корзинка">${SVG.basket}</button>
+  room.innerHTML=SEA_BG+seaMap()+`<div class="boat" id="r-boat">${SVG.boat}<button class="basket" id="r-basket" aria-label="Корзинка">${SVG.basket}</button>
     <div class="pa" id="pa-dad" style="left:36.7%;top:30%"><div class="bubble"></div></div>
     <div class="pa" id="pa-mom" style="left:58.3%;top:30%"><div class="bubble"></div></div>
     <div class="pa" id="pa-girl" style="left:78.6%;top:38%"><div class="bubble"></div></div></div>
@@ -2567,11 +2594,15 @@ SVG.fish=`<svg viewBox="0 0 90 56"><path d="M4 8 L26 28 L4 48Z" fill="#d9702a"/>
 function stonesScene(alive,ops,opt={}){
   room.className='room sea';
   const N=EPX[l2].goal, xs=[9,24,39,54,69,85], ys=[47,57,47,57,47,55];
-  room.innerHTML=SEA_BG+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
+  room.innerHTML=SEA_BG+seaMap()+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
     `<div class="stone${i===N?(opt.last?' land':' flag'):''}" id="r-st${i}" style="left:${x}%;top:${ys[i]}%"></div>`).join('')+
     (opt.fish?`<div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
     `<div class="quiz"><div class="lvl" id="r-lvl" aria-hidden="true"></div><div class="ex" id="r-ex" aria-live="polite"></div></div>`;
   S2=makeMain('small'); put(S2,onStone($('r-st0')));
+  // карта пути и остров: сначала там, где закончился прошлый этап, потом плавно подтягиваются
+  { const k0=seaK(); onRender2=seaMapUpd; seaMapUpd();
+    const isle=$('r-isle'); isle.classList.add('noanim'); requestAnimationFrame(()=>isle.classList.remove('noanim'));
+    if(SEA_STAGES.indexOf(EPX[l2].key)>0) setTimeout(()=>{ if(alive()){ restart(isle,'wave'); } },600) }
   setHint(opt.strict?'Не ошибись! Упадёшь в воду и начнёшь сначала, а рыба поплывёт быстрее'
          :opt.fish?'Успей съесть муху с ответом, пока рыба не доплыла. За ошибку на камень назад'
          :'Нажми на муху с правильным ответом. За ошибку паук отлетает на камень назад');
