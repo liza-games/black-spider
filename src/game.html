@@ -368,8 +368,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sea .surf{position:absolute;left:0;right:0;top:calc(34% - 5px);height:10px;background:radial-gradient(circle at 10px -4px,var(--sky) 9px,transparent 10px) 0 0/20px 10px}
 .sea .ripple{position:absolute;left:0;right:0;height:8px;opacity:.3;background:radial-gradient(circle at 12px 12px,transparent 9px,#fff 10px,transparent 11px) 0 0/24px 8px;animation:ripple 3s linear infinite}
 @keyframes ripple{to{background-position:24px 0}}
-.isle{--k:0;position:absolute;left:40%;top:34%;width:calc(16% + 34% * var(--k));translate:-50% -78%;z-index:0;transition:width 1.2s ease-out;pointer-events:none;filter:saturate(calc(.55 + .45 * var(--k)))}
-.isle svg{display:block;width:100%}
+.isle{--k:0;position:absolute;left:40%;top:34%;width:calc(16% + 34% * var(--k));translate:-50% -64%;z-index:0;transition:width 1.2s ease-out;pointer-events:none;transform-origin:50% 64%}
+.isle svg{display:block;width:100%;height:auto;overflow:visible}
 .isle.noanim{transition:none}
 .isle.wave{animation:islewave 1.2s ease-in-out}
 @keyframes islewave{30%{scale:1.08}60%{scale:.98}}
@@ -2462,7 +2462,7 @@ const SCENES={
 const SEA_STAGES=['stones1','stones2','stones3','stones5','stones4'];
 function seaK(){ const i=SEA_STAGES.indexOf(EPX[l2]&&EPX[l2].key); if(i<0) return EPX[l2]&&EPX[l2].key==='shore'?1:0;
   return Math.min(1,(i+Math.min(p2,EPX[l2].goal)/EPX[l2].goal)/SEA_STAGES.length) }
-const ISLE=`<svg viewBox="0 0 200 90" aria-hidden="true"><ellipse cx="100" cy="88" rx="98" ry="22" fill="#e9d29a"/><path d="M20 80 Q70 30 120 52 Q160 40 185 80 Z" fill="#6fb05a"/>
+const ISLE=`<svg viewBox="0 -6 200 118" overflow="visible" aria-hidden="true"><ellipse cx="100" cy="88" rx="98" ry="22" fill="#e9d29a"/><path d="M20 80 Q70 30 120 52 Q160 40 185 80 Z" fill="#6fb05a"/>
   <rect x="128" y="40" width="22" height="18" fill="#f3e3c6"/><path d="M124 42 L139 28 L154 42 Z" fill="#d9663f"/><rect x="136" y="48" width="6" height="10" fill="#8a5a32"/>
   <path d="M70 52 Q66 30 72 12" stroke="#8a5a32" stroke-width="4" fill="none"/><g fill="#3f8f45"><path d="M72 12 Q56 6 46 18 Q60 12 72 14Z"/><path d="M72 12 Q90 2 100 16 Q86 10 72 14Z"/><path d="M72 12 Q70 -2 84 -4 Q74 4 72 14Z"/></g></svg>`;
 function seaMap(){
