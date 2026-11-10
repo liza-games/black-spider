@@ -180,6 +180,7 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(18px,5.2vw,28px);l
 .purple .bubble b{color:var(--violet)} .red .bubble b{color:var(--red)} .blue .bubble b{color:var(--blue)}
 .purple .brow,.red .brow,.blue .brow{display:inline}
 
+.bug.scatter{pointer-events:none}
 .bug{position:absolute;left:0;top:0;width:58px;height:58px;margin:-29px 0 0 -29px;padding:0;border:0;background:none;
   cursor:pointer;z-index:2;will-change:transform}
 .bug:focus-visible{outline:2px dashed var(--accent);border-radius:50%}
@@ -1127,7 +1128,7 @@ function summonRival(key){
   if(episode!==1) return;
   const cfg=RIVALS[key], s=makeSpider(cfg.cls,.73,cfg.label);
   s.cfg=cfg; s.init=true; s.x=rect().width*.73; s.y=-H()*1.5; s.state='enter';
-  s.onArrive=()=>{talk(s,cfg.hi); planRival();
+  s.onArrive=()=>{talk(s,cfg.hi); planRival(); if(R===s) spawnPause=performance.now()+1400;
     if(cfg.cls==='purple'){ s.lastShow=performance.now()-2500;   // первый трюк — через пару секунд после прихода, дальше каждые 5–7 секунд
       s.showT=setInterval(()=>{ if(R!==s){clearInterval(s.showT);return}
         // хвастается не посреди охоты, а когда уже что-то поймал (или давно не хвастался)
@@ -1154,7 +1155,7 @@ function planRival(){
   const s=R; if(!s||s.feast||s.tickling||s.showing) return; clearTimeout(s.timer);
   s.timer=setTimeout(()=>{
     if(R!==s||s.state!=='home') return;
-        const w=rect().width, ok=b=>!b.caught&&!b.dead&&b.x>20&&b.x<w-20;   // синих вонючек соперник тоже ест (и обезвреживает)
+        const w=rect().width, ok=b=>!b.caught&&!b.dead&&!b.scatter&&b.x>20&&b.x<w-20;   // синих вонючек соперник тоже ест (и обезвреживает)
     const bad=bugs.filter(b=>ok(b)&&b.K.bad);
     let free=bugs.filter(b=>ok(b)&&!b.K.bad);
     if(bad.length&&(Math.random()<.35||!free.length)) free=bad;   // зазевался и погнался за осой или вонючкой
@@ -1321,12 +1322,18 @@ function removeBug(b){
   setTimeout(()=>b.el.remove(),250);
   const i=bugs.indexOf(b); if(i>=0) bugs.splice(i,1);
 }
+// между этапами все букашки разбегаются за край, новые ждут начала следующего этапа
+function scatterBugs(){
+  spawnPause=Infinity; const w=rect().width;
+  for(const b of bugs) if(!b.caught&&!b.dead){ b.leaving=true; b.scatter=true; b.el.classList.add('scatter'); b.fuse=Infinity; b.el.classList.remove('hurry');
+    b.a=Math.atan2(Math.sin(b.a),Math.cos(b.a)); b.exitDir=b.x<w/2?(b.a<0?-Math.PI:Math.PI):0 }
+}
 function clearBugs(){for(const b of [...bugs]){b.dead=true;b.el.remove()} bugs.length=0}
 
 /* Тапы не теряются: если паук занят, букашка встаёт в очередь и он ловит её следующей */
 const huntQueue=[];
 function hunt(b){
-  if(b.dead||b.caught||level===0||B.poisoned||B.scared||B.tickled||!['home','return','eating','hunt'].includes(B.state)) return;
+  if(b.dead||b.caught||b.scatter||level===0||B.poisoned||B.scared||B.tickled||!['home','return','eating','hunt'].includes(B.state)) return;
   buzz('tap');   // отклик прямо под пальцем (на iPhone вибрация работает только в момент нажатия)
   b.caught=true; b.el.classList.add('caught');
   if(B.state==='hunt'||B.state==='eating') huntQueue.push(b);
@@ -1513,6 +1520,7 @@ function complete(){
   setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,40,8);burst(innerWidth*.8,innerHeight*.35,40,8)},250);
   sfx.fanfare(); banner(pick(['Отлично!','Супер!','Молодец!','Класс!','Ура!']));
   B.wrap.classList.remove('eyes','asleep');
+  scatterBugs();
   restart(B.btn,'jump'); talk(B,L.done,.45,2200);
   setTimeout(()=>{busy=false;enterLevel(level+1)},2300);
 }
@@ -1524,6 +1532,9 @@ function enterLevel(i){
   B.wrap.classList.toggle('eyes',key==='eyes');
   render(); restart($('hud'),'pop');
   poisonChance=0;
+  // новые букашки — чуть погодя; на этапах с новым соперником — только когда он пришёл и поздоровался
+  const rivalComing=['purple','red','blue','green'].includes(key)&&(!R||R.cfg.cls!==(LEVELS[i].race||LEVELS[i].rival||key));
+  spawnPause=rivalComing?Infinity:performance.now()+900;
   switch(key){
     case 'poison': spawnOn=true; maxBugs=5; badChance=.1; poisonChance=.72; introBugs(()=>'bluebug',2);
       setTimeout(()=>talk(B,'Синие вонючки! Их надо съесть, пока не пшикнули!'),1200); break;
@@ -1660,7 +1671,7 @@ function frame(){
       const dx=b.x-s.x, dy=b.y-(s.y+h*.4), d=Math.hypot(dx,dy);
       if(d<h*.8&&!b.leaving) b.a+=(Math.atan2(dy,dx)-b.a)*.08;
     }
-    const sp=b.K.speed*(level>=LEVELS.findIndex(L=>L.key==='red')?1.2:1)*(nearEdge?1.7:1);   // от края — побыстрее   // с гонки с Красным букашки шустрее
+    const sp=b.K.speed*(level>=LEVELS.findIndex(L=>L.key==='red')?1.2:1)*(nearEdge?1.7:1)*(b.scatter?2.6:1);   // от края — побыстрее   // с гонки с Красным букашки шустрее
     b.x+=Math.cos(b.a)*sp; b.y+=Math.sin(b.a)*sp;
     b.x=Math.min(Math.max(b.x,-30),r.width+30); b.y=Math.min(Math.max(b.y,20),r.height-20);
     const turn=b.k==='ladybug'||b.k==='stinkbug';
