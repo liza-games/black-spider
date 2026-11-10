@@ -422,6 +422,16 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .turtle svg{display:block;width:100%;height:auto;animation:tbob 1.6s ease-in-out infinite}
 @keyframes tbob{50%{translate:0 4px;rotate:2deg}}
 .turtle .bubble{bottom:88%}
+.ftrack{position:absolute;left:0;right:0;top:78%;height:0;z-index:2;pointer-events:none}
+.ftrack u{position:absolute;top:-3px;height:6px;border-radius:3px;opacity:.75;transition:background .3s}
+.ftrack b{position:absolute;top:0;translate:-50% -50%;font-size:22px;filter:drop-shadow(0 1px 1px #fff)}
+.ftrack b.warn{animation:fwarn .5s ease-in-out infinite}
+@keyframes fwarn{50%{scale:1.35}}
+.fish.near{filter:drop-shadow(0 0 8px #ff5a4a)}
+.fish.k-slow.near{filter:hue-rotate(290deg) saturate(.9) drop-shadow(0 0 8px #ff5a4a)}
+.fish.k-fast.near{filter:hue-rotate(75deg) saturate(1.2) drop-shadow(0 0 8px #ff5a4a)}
+.fbub{position:absolute;width:9px;height:9px;margin:-4px;border-radius:50%;border:2px solid rgb(255 255 255/.85);z-index:3;pointer-events:none;animation:fbub 1.4s ease-out forwards}
+@keyframes fbub{to{translate:0 -60px;opacity:0;scale:1.4}}
 .fish{position:absolute;left:7%;top:68%;width:min(19vw,82px);translate:-50% -50%;z-index:3;pointer-events:none}
 .fish.leap{transition:left .45s ease-in-out,top .45s ease-in-out;z-index:5}
 .fish svg{transition:scale .3s}.fish.left svg{scale:-1 1}
@@ -2596,7 +2606,7 @@ function stonesScene(alive,ops,opt={}){
   const N=EPX[l2].goal, xs=[9,24,39,54,69,85], ys=[47,57,47,57,47,55];
   room.innerHTML=SEA_BG+seaMap()+`<div class="boat far">${SVG.boat}</div>`+xs.map((x,i)=>
     `<div class="stone${i===N?(opt.last?' land':' flag'):''}" id="r-st${i}" style="left:${x}%;top:${ys[i]}%"></div>`).join('')+
-    (opt.fish?`<div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
+    (opt.fish?`<div class="ftrack" id="r-ftrack"><u id="r-ffill"></u><b id="r-fgoal">🪰</b></div><div class="fish" id="r-fish"><div class="bubble"></div>${SVG.fish}</div>`:'')+
     `<div class="quiz"><div class="lvl" id="r-lvl" aria-hidden="true"></div><div class="ex" id="r-ex" aria-live="polite"></div></div>`;
   S2=makeMain('small'); put(S2,onStone($('r-st0')));
   // карта пути и остров: сначала там, где закончился прошлый этап, потом плавно подтягиваются
@@ -2719,6 +2729,14 @@ function stonesScene(alive,ops,opt={}){
       if(!lock&&!busy2&&flies.length) pos=Math.max(0,Math.min(1,pos+dir*rate*dt));
       fishEl.style.left=fishX(s.width)+'px'; fishEl.style.top=s.height*FISH_Y+Math.sin(now/260)*4+'px';
       const rem=dir>0?1-pos:pos;
+      // насколько рыба близко к ответу: дорожка до мухи краснеет, рыба виляет хвостом всё быстрее и пускает пузыри
+      { const near=lock?0:Math.max(0,Math.min(1,1-rem)), fx=fishX(s.width), gx=dir>0?s.width*.93:s.width*.07;
+        const tr=$('r-ftrack'), fill=$('r-ffill'), goal=$('r-fgoal');
+        tr.style.top=s.height*(FISH_Y+.1)+'px'; fill.style.left=Math.min(fx,gx)+'px'; fill.style.width=Math.abs(gx-fx)+'px';
+        fill.style.background=`hsl(${Math.round(120-120*near)} 75% 55%)`; goal.style.left=gx+'px'; goal.classList.toggle('warn',near>.7&&!lock);
+        const sv=fishEl.querySelector('svg'); sv.style.rotate=(Math.sin(now/(230-150*near))*(3+9*near)).toFixed(1)+'deg';
+        fishEl.classList.toggle('near',near>.7&&!lock);
+        if(!lock&&Math.random()<dt/1000*(1+6*near)){ const b=document.createElement('i'); b.className='fbub'; b.style.left=fx+(dir>0?1:-1)*fishEl.offsetWidth*.4+'px'; b.style.top=s.height*FISH_Y+'px'; room.appendChild(b); setTimeout(()=>b.remove(),1400) } }
       if(rem<.3&&rem>.05&&!taunted&&!lock){taunted=true;restart(fishEl,'hop');sfx.water();
         talk2(FISH,pick(['Думай быстрее!','Я уже близко!','Плыву-плыву!','Буль! Я почти посчитала!','Сейчас я съем ответ!']),1500)}
       if(rem<=0&&!lock) fishEats();
@@ -2735,7 +2753,7 @@ function stonesScene(alive,ops,opt={}){
 }
 SCENES.stones1=alive=>stonesScene(alive,['add']);
 const FISHES={
-  slow:{base:13000,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
+  slow:{base:10500,hi:'Привет! Я карп Толстячок. Я тоже люблю мух, но я не тороплюсь…',reply:'Ой, какая большая рыба! Посмотрим, кто быстрее!'},
   gold:{base:9500,hi:'А я рыбка Золотинка! Я считаю быстрее карпа!',reply:'Ещё одна рыба! Золотая! Ну держись!'},
   fast:{base:6000,hi:'Я щука Молния! Я самая быстрая в море!',reply:'Ой-ой, щука! Надо считать очень быстро!'},
   fast2:{base:6000,cls:'fast',hi:'Снова я, щука Молния! А теперь ошибаться нельзя!',reply:'Опять щука! Ну, держись, я уже умею быстро!'}};
