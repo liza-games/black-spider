@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
 <style>
-:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+:root{color-scheme:only light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 body{margin:0;font:14px system-ui,sans-serif}
 img{max-width:100%}
 [hidden]{display:none!important}
@@ -13,19 +14,13 @@ img{max-width:100%}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Nunito:wght@600;800&display=swap">
 <style>
 /* Layout: one-screen game — сверху карточка этапа (точки, задание, прогресс), сцена с пауками и букашками, снизу кнопки */
-:root{
+:root{color-scheme:only light;
   --bg:#eef0e9; --web:#c7cbbd; --fg:#1b1c18; --muted:#6b6f62;
   --bubble:#ffffff; --accent:#d8432f; --spider:#141412; --violet:#7a3cc9; --red:#d6332b; --blue:#2350c8; --green:#2f9e44; --gold:#e8a816;
   --wing:rgb(160 190 215/.7); --track:rgb(27 28 24/.1); --poison:#2f6fe0;
   --display:"Rubik Mono One","Arial Black",system-ui,sans-serif;
   --body:"Nunito",system-ui,-apple-system,sans-serif;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#17181c; --web:#34363d; --fg:#ecebe6; --muted:#8e9099; --bubble:#2a2c33; --accent:#ff6a52;
-  --spider:#050506; --violet:#9b5cf0; --red:#ff4d43; --blue:#4d7dff; --green:#4cc764; --gold:#f5c03a; --wing:rgb(190 215 240/.55); --track:rgb(236 235 230/.12); --poison:#5a95ff; color-scheme:dark }}
-:root[data-theme="dark"]{
-  --bg:#17181c; --web:#34363d; --fg:#ecebe6; --muted:#8e9099; --bubble:#2a2c33; --accent:#ff6a52;
-  --spider:#050506; --violet:#9b5cf0; --red:#ff4d43; --blue:#4d7dff; --green:#4cc764; --gold:#f5c03a; --wing:rgb(190 215 240/.55); --track:rgb(236 235 230/.12); --poison:#5a95ff; color-scheme:dark }
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden;
   display:flex;flex-direction:column;align-items:center;padding:0 16px;box-sizing:border-box;
@@ -238,12 +233,6 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 :root{ --wall:#e4e9e0; --wallbed:#e6e0ef; --dot:rgb(122 60 201/.12); --floor:#d6c7ad; --tile:#cfe2e8; --grout:rgb(255 255 255/.65);
   --porcelain:#ffffff; --line:rgb(27 28 24/.18); --wood:#a8794f; --wood2:#c99a6b; --water:#4ea3e6; --sheet:#f7f4ee;
   --blanket:#e9a23b; --blanket2:#d18a26; --night:#1d2550; --paper:#fbf6ea }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --wall:#252830; --wallbed:#28243a; --dot:rgb(155 92 240/.14);
-  --floor:#3b342c; --tile:#22343b; --grout:rgb(255 255 255/.07); --porcelain:#e6eaee; --line:rgb(0 0 0/.35); --wood:#8a6040; --wood2:#a8794f;
-  --water:#4d9be0; --sheet:#d9dce2; --blanket:#d8912e; --blanket2:#b97821; --night:#0c1030; --paper:#efe7d4 }}
-:root[data-theme="dark"]{ --wall:#252830; --wallbed:#28243a; --dot:rgb(155 92 240/.14);
-  --floor:#3b342c; --tile:#22343b; --grout:rgb(255 255 255/.07); --porcelain:#e6eaee; --line:rgb(0 0 0/.35); --wood:#8a6040; --wood2:#a8794f;
-  --water:#4d9be0; --sheet:#d9dce2; --blanket:#d8912e; --blanket2:#b97821; --night:#0c1030; --paper:#efe7d4 }
 
 [hidden]{display:none!important}
 #banner{position:fixed;z-index:25}
@@ -386,8 +375,6 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 
 /* ================= эпизод 3: море ================= */
 :root{ --sky:#bfe6f5; --sea:#3d8fd1; --sea2:#2f78b8; --stone:#8d9499; --stone2:#6f777d; --sand:#ecd9a0; --sun:#f7d04a; --ok:#3fa652 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --sky:#1c2f4a; --sea:#17456f; --sea2:#123758; --stone:#6c747a; --stone2:#4f565b; --sand:#8f7f52; --sun:#e9c75a; --ok:#4cc764 }}
-:root[data-theme="dark"]{ --sky:#1c2f4a; --sea:#17456f; --sea2:#123758; --stone:#6c747a; --stone2:#4f565b; --sand:#8f7f52; --sun:#e9c75a; --ok:#4cc764 }
 .room.sea{background:linear-gradient(var(--sky) 0 34%,var(--sea) 34% 70%,var(--sea2))}
 .sea .surf{position:absolute;left:0;right:0;top:calc(34% - 5px);height:10px;background:radial-gradient(circle at 10px -4px,var(--sky) 9px,transparent 10px) 0 0/20px 10px}
 .sea .ripple{position:absolute;left:0;right:0;height:8px;opacity:.3;background:radial-gradient(circle at 12px 12px,transparent 9px,#fff 10px,transparent 11px) 0 0/24px 8px;animation:ripple 3s linear infinite}
