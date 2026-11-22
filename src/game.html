@@ -592,6 +592,12 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
 .langlist button.on{background:var(--accent);color:#fff}
 .vinfo{max-width:520px;text-align:center;color:var(--muted);font-size:13px;font-weight:600;line-height:1.35}
 .vinfo:empty{display:none}
+.vhelp{max-width:520px;margin:2px 16px 0;color:var(--muted);font-size:13px;font-weight:600;line-height:1.4;text-align:left}
+.vhelp summary{cursor:pointer;text-align:center;color:var(--fg);text-decoration:underline;text-underline-offset:3px;list-style:none}
+.vhelp summary::-webkit-details-marker{display:none}
+.vhelp ul{list-style:none;margin:8px 0 0;padding:10px 14px;border-radius:14px;background:var(--bubble,#fff)}
+.vhelp li+li{margin-top:6px}
+.vhelp li.other{opacity:.75}
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
@@ -664,6 +670,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
     <button class="chip" id="vtest" aria-label="Проверить голос">🔊 Голос</button>
   </div>
   <div class="vinfo" id="vinfo" aria-live="polite"></div>
+  <details class="vhelp" id="vhelp"><summary>Как добавить русский голос?</summary><ul id="vhelpt"></ul></details>
   <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
   <div class="cards">
     <button class="card" id="m1">
@@ -846,8 +853,11 @@ function nextSpeech(){
   // Говорим только русским голосом. Если на устройстве его нет, лучше молчать:
   // иначе телефон читает русский текст словацким, японским или китайским голосом.
   const all=speechSynthesis.getVoices(), ru=ruVoices(all);
-  if(all.length&&!ru.length){noRuVoice(true);speaking=false;sq.length=0;return}
-  if(ru.length){const v=it.voiceIdx==='male'?maleVoice(ru):ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
+  // список голосов на компьютере (Chrome, Edge) приходит не сразу: пока он пустой, не говорим голосом по умолчанию
+  // (обычно английским — он читает русский текст тарабарщиной), а ждём; через ~2 секунды пропускаем реплику
+  if(!all.length){ it.tries=(it.tries||0)+1; if(it.tries<8){ sq.unshift(it); it.t=performance.now(); spTimer=setTimeout(nextSpeech,250); return } speaking=false; return }
+  if(!ru.length){noRuVoice(true);speaking=false;sq.length=0;return}
+  {const v=it.voiceIdx==='male'?maleVoice(ru):ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
   u.onend=done; u.onerror=done;
   spTimer=setTimeout(done,1200+it.text.length*120); // на случай, если onend не придёт
   speechSynthesis.resume();
@@ -880,7 +890,21 @@ $('vtest').onclick=()=>{
   u.onerror=e=>show(base+' Ошибка: '+(e.error||'неизвестная'));
   speechSynthesis.resume(); speechSynthesis.speak(u);
 };
-function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
+function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on; if(on){const h=$('vhelp'); if(h) h.open=true}}
+// инструкция, как поставить голос: под то устройство, на котором открыта игра (остальные — ниже, на всякий случай)
+(function(){
+  const ua=navigator.userAgent||'', touchMac=/Macintosh/.test(ua)&&navigator.maxTouchPoints>1;
+  const os=/iPhone|iPad|iPod/.test(ua)||touchMac?'ios':/Android/.test(ua)?'android':/Mac/.test(ua)?'mac':/Windows/.test(ua)?'win':'other';
+  const T={
+    ios:'<b>iPhone / iPad:</b> Настройки → Универсальный доступ → Устный контент → Голоса → Русский → скачай «Милена» или «Юрий». Потом закрой и снова открой игру.',
+    mac:'<b>Mac:</b> Системные настройки → Универсальный доступ → Устный контент → Системный голос → Управлять голосами… → Русский → отметь «Милена» или «Юрий». Потом перезапусти браузер.',
+    win:'<b>Windows:</b> Параметры → Время и язык → Речь → Управление голосами → Добавить голоса → Русский. Потом перезапусти браузер. Проще всего открыть игру в Microsoft Edge: там русские голоса уже есть.',
+    android:'<b>Android:</b> Настройки → Специальные возможности (или Система → Язык и ввод) → Синтез речи → Google → Установка голосовых данных → Русский. Потом закрой и снова открой игру.',
+    other:'<b>Chrome на компьютере:</b> при включённом интернете в нём есть голос «Google русский» — открой игру в Chrome или Edge.'
+  };
+  const order=[os,...['ios','mac','win','android','other'].filter(k=>k!==os)];
+  const box=$('vhelpt'); if(box) box.innerHTML=order.map((k,i)=>`<li${i?' class="other"':''}>${T[k]}</li>`).join('');
+})();
 function checkVoices(){const all=speechSynthesis.getVoices(); if(all.length) noRuVoice(!ruVoices(all).length)}
 if('speechSynthesis' in window){
   checkVoices(); setTimeout(checkVoices,1500);

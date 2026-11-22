@@ -30,7 +30,8 @@
 "Забрать звезду и вернуться в меню": "Take the star and go back to the menu",
 "Забери звезду!": "Take the star!",
 "Эпизод 7 · спорт": "Episode 7 · sports",
-"Паучья олимпиада": "Spider Olympics"
+"Паучья олимпиада": "Spider Olympics",
+"Как добавить русский голос?": "How to add an English voice?"
 },
 "js": {
 "'🔊 Звук'": "'🔊 Sound'",
@@ -1004,6 +1005,11 @@
 "'Эй! Это я тут охочусь! Кто быстрее?'": "\"Hey! I'm the one hunting here! Let's see who's faster!\"",
 "'Ой, вдали что-то виднеется… Это остров?'": "\"Oh, I can see something far away… Is that an island?\"",
 "'Я уже вижу остров! Там домик и пальма!'": "'I can see the island now! There is a little house and a palm tree!'",
-"'Остров совсем близко! Последний рывок!'": "'The island is really close! One last push!'"
+"'Остров совсем близко! Последний рывок!'": "'The island is really close! One last push!'",
+"'<b>iPhone / iPad:</b> Настройки → Универсальный доступ → Устный контент → Голоса → Русский → скачай «Милена» или «Юрий». Потом закрой и снова открой игру.'": "'<b>iPhone / iPad:</b> Settings → Accessibility → Spoken Content → Voices → English → download a voice such as Daniel or Serena. Then close and reopen the game.'",
+"'<b>Mac:</b> Системные настройки → Универсальный доступ → Устный контент → Системный голос → Управлять голосами… → Русский → отметь «Милена» или «Юрий». Потом перезапусти браузер.'": "'<b>Mac:</b> System Settings → Accessibility → Spoken Content → System Voice → Manage Voices… → English → tick a voice such as Daniel. Then restart the browser.'",
+"'<b>Windows:</b> Параметры → Время и язык → Речь → Управление голосами → Добавить голоса → Русский. Потом перезапусти браузер. Проще всего открыть игру в Microsoft Edge: там русские голоса уже есть.'": "'<b>Windows:</b> Settings → Time & language → Speech → Manage voices → Add voices → English (United Kingdom). Then restart the browser. The easiest option is Microsoft Edge, which already has English voices.'",
+"'<b>Android:</b> Настройки → Специальные возможности (или Система → Язык и ввод) → Синтез речи → Google → Установка голосовых данных → Русский. Потом закрой и снова открой игру.'": "'<b>Android:</b> Settings → Accessibility (or System → Languages & input) → Text-to-speech → Google → Install voice data → English (United Kingdom). Then close and reopen the game.'",
+"'<b>Chrome на компьютере:</b> при включённом интернете в нём есть голос «Google русский» — открой игру в Chrome или Edge.'": "'<b>Chrome on a computer:</b> with internet on, it has the Google UK English voice, so open the game in Chrome or Edge.'"
 }
 }
