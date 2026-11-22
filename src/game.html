@@ -670,7 +670,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
     <button class="chip" id="vtest" aria-label="Проверить голос">🔊 Голос</button>
   </div>
   <div class="vinfo" id="vinfo" aria-live="polite"></div>
-  <details class="vhelp" id="vhelp"><summary>Как добавить русский голос?</summary><ul id="vhelpt"></ul></details>
+  <details class="vhelp" id="vhelp" hidden><summary>Как добавить русский голос?</summary><ul id="vhelpt"></ul></details>
   <p class="vnote" id="vnote" hidden>На этом устройстве нет русского голоса, поэтому герои молчат, а их слова видны в облачках. Русский голос можно добавить в настройках телефона, в разделе «Синтез речи» или «Преобразование текста в речь».</p>
   <div class="cards">
     <button class="card" id="m1">
@@ -877,6 +877,8 @@ function maleVoice(ru){return ru.find(v=>MALE_RE.test(v.name)&&!/female|женс
 // проверка голоса из меню: говорит фразу и пишет, каким голосом и что пошло не так
 $('vtest').onclick=()=>{
   const info=$('vinfo'), show=t=>{info.textContent=t};
+  // ссылка «Как добавить голос?» появляется только после проверки голоса; если голоса нет — сразу раскрыта
+  { const h=$('vhelp'), all0=('speechSynthesis' in window)?speechSynthesis.getVoices():[]; h.hidden=false; if(all0.length&&!ruVoices(all0).length) h.open=true }
   if(!('speechSynthesis' in window)){show('Этот браузер не умеет говорить вслух.');return}
   if(!soundOn){show('Звук выключен — включи его кнопкой «Звук» внизу.');return}
   const all=speechSynthesis.getVoices(), ru=ruVoices(all), v=ru[0];
@@ -890,7 +892,7 @@ $('vtest').onclick=()=>{
   u.onerror=e=>show(base+' Ошибка: '+(e.error||'неизвестная'));
   speechSynthesis.resume(); speechSynthesis.speak(u);
 };
-function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on; if(on){const h=$('vhelp'); if(h) h.open=true}}
+function noRuVoice(on){const n=$('vnote'); if(n) n.hidden=!on}
 // инструкция, как поставить голос: под то устройство, на котором открыта игра (остальные — ниже, на всякий случай)
 (function(){
   const ua=navigator.userAgent||'', touchMac=/Macintosh/.test(ua)&&navigator.maxTouchPoints>1;
