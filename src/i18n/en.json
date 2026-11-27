@@ -1076,6 +1076,22 @@
 "'Красиво! Теперь конфетки-пуговки!'": "'Pretty! Now the candy buttons!'",
 "'Нажимай на конфетки — они прилипнут к прянику'": "'Tap the candies and they will stick to the gingerbread'",
 "'❄ Только в декабре ❄'": "'❄ December only ❄'",
-"`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"${d} декабря\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`": "`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"December ${d}\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`"
+"`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"${d} декабря\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`": "`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"December ${d}\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`",
+"'Печём пряники'": "'Baking gingerbread'",
+"'Вкусные пряники!'": "'Yummy gingerbread!'",
+"'Давай печь пряники! Сначала раскатаем тесто!'": "\"Let's bake gingerbread! First, roll out the dough!\"",
+"'Води пальцем вправо-влево — раскатывай тесто скалкой'": "'Move your finger left and right to roll the dough'",
+"'Ровненько! Теперь формочки!'": "'Nice and flat! Now the cookie cutters!'",
+"'Нажимай на тесто — формочка вырежет пряник'": "'Tap the dough and the cutter will cut out a cookie'",
+"'Три пряника! В духовку!'": "'Three cookies! Into the oven!'",
+"'Смотри на пряники и нажми «Достать!», когда они станут золотыми'": "'Watch the cookies and tap “Take out!” when they turn golden'",
+"`<div class=\"oven\"><div class=\"ovwin\" id=\"r-ow\">${['spider','star','tree'].map(k=>`<svg viewBox=\"0 0 100 100\" class=\"ovc\">${GB_SHAPES[k]}</svg>`).join('')}</div>\n      <div class=\"ovbar\"><i class=\"z1\"></i><i class=\"z2\"></i><i class=\"z3\"></i><b id=\"r-ob\"></b></div><button class=\"ovbtn\" id=\"r-take\">Достать!</button></div>`": "`<div class=\"oven\"><div class=\"ovwin\" id=\"r-ow\">${['spider','star','tree'].map(k=>`<svg viewBox=\"0 0 100 100\" class=\"ovc\">${GB_SHAPES[k]}</svg>`).join('')}</div>\n      <div class=\"ovbar\"><i class=\"z1\"></i><i class=\"z2\"></i><i class=\"z3\"></i><b id=\"r-ob\"></b></div><button class=\"ovbtn\" id=\"r-take\">Take out!</button></div>`",
+"'Ой, подгорели! Ничего, испечём новые!'": "\"Oops, they burnt! Never mind, let's bake new ones!\"",
+"'Ещё сыроватые! Подождём…'": "'Still a bit raw! Let us wait…'",
+"'Золотые! Как надо!'": "'Golden! Just right!'",
+"'Румяные! Вкусно пахнет!'": "'Nice and brown! Smells yummy!'",
+"'Веди пальцем по пунктиру — это глазурь'": "'Trace the dotted lines with your finger: that is the icing'",
+"'Теперь украсим глазурью — по точечкам!'": "\"Now let's decorate with icing, along the dots!\"",
+"'Ням! Один пряник я съем!'": "\"Yum! I'll eat one cookie!\""
 }
 }

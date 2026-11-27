@@ -444,6 +444,33 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .mitt.shake{animation:shake .4s}
 .mitton{animation:mitton .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes mitton{from{opacity:0}}
+.gbstage{position:absolute;inset:0;z-index:2}
+.dough{--k:0;position:absolute;left:50%;top:44%;width:calc(34% + 52% * var(--k));height:calc(26% - 10% * var(--k));translate:-50% -50%;border-radius:calc(48% - 30% * var(--k));
+  background:radial-gradient(circle at 40% 35%,#f8e7c4,#ebcf98);box-shadow:inset 0 -6px 0 #d9b479,0 6px 14px #0002}
+.dough.flat{--k:1;border-radius:14px;width:86%;height:34%}
+.pin{position:absolute;top:44%;width:16%;height:40%;translate:-50% -50%;border-radius:12px;background:linear-gradient(90deg,#c48a50,#e3b27a 40%,#c48a50);box-shadow:0 4px 8px #0003;transition:left .05s}
+.pin i{position:absolute;left:50%;width:30%;height:22%;translate:-50% 0;border-radius:8px;background:#9c6232}
+.pin i{top:-18%}.pin::after{content:"";position:absolute;left:35%;bottom:-18%;width:30%;height:22%;border-radius:8px;background:#9c6232}
+.cutters{position:absolute;left:50%;top:6%;translate:-50% 0;display:flex;gap:14px}
+.room svg.cutter{flex:0 0 52px;width:52px;height:52px;fill:none;stroke:#8a96a3;stroke-width:6;color:#8a96a3;filter:drop-shadow(0 2px 2px #0003);transition:opacity .3s}
+.cutter.used{opacity:.25}
+.gbcut{position:absolute;width:28%;aspect-ratio:1;translate:-50% -50%;color:#d9a35e}
+.gbcut svg{width:100%;height:100%;fill:#e9c085;stroke:#c48a50;stroke-width:3}
+.gbcut.stamp{animation:stamp .35s ease-out}
+@keyframes stamp{0%{scale:1.4;opacity:.3}60%{scale:.92}100%{scale:1}}
+.oven{position:absolute;left:50%;top:6%;width:min(84%,52vh);aspect-ratio:1/1.05;translate:-50% 0;border-radius:18px;background:linear-gradient(#e8e8e8,#bfc4c9);box-shadow:inset 0 0 0 4px #9aa3ab,0 8px 18px #0003;padding:6%;display:flex;flex-direction:column;gap:6%}
+.ovwin{flex:1;border-radius:12px;background:radial-gradient(#ffb24a55,#3a1d0a 80%);box-shadow:inset 0 0 0 5px #555;display:flex;align-items:center;justify-content:space-evenly;padding:4%;color:#f2dcb0;transition:color .2s}
+.ovwin.smoke{animation:ovsmoke .6s ease-in-out infinite alternate}
+@keyframes ovsmoke{to{box-shadow:inset 0 0 0 5px #555,inset 0 -30px 40px #8888}}
+.room svg.ovc{flex:0 0 28%;width:28%;height:auto;fill:currentColor;color:inherit;stroke:#0002;stroke-width:3}
+.ovbar{position:relative;height:16px;border-radius:8px;overflow:visible;display:flex}
+.ovbar i{height:100%}.ovbar .z1{flex:42;background:#f2dcb0;border-radius:8px 0 0 8px}.ovbar .z2{flex:43;background:#e0a24a;box-shadow:inset 0 0 0 2px #fff8}.ovbar .z3{flex:15;background:#5a3418;border-radius:0 8px 8px 0}
+.ovbar b{position:absolute;top:-6px;width:6px;height:28px;margin-left:-3px;border-radius:3px;background:#e8483c;box-shadow:0 0 0 2px #fff}
+.ovbtn{border:0;border-radius:999px;padding:12px;font:900 18px var(--body);color:#fff;background:#e8483c;box-shadow:0 4px 0 #a32420;cursor:pointer}
+.ovbtn:active{translate:0 3px;box-shadow:0 1px 0 #a32420}
+.ovbtn:disabled{opacity:.5}
+.guide{fill:none;stroke:#fff;stroke-width:4;stroke-linecap:round;stroke-dasharray:1 8;opacity:.9}
+.guide.iced{stroke-dasharray:none;stroke-width:6;opacity:1}
 .gbwrap{position:absolute;left:50%;top:12%;width:min(78%,52vh);aspect-ratio:1;translate:-50% 0;z-index:2;touch-action:none}
 .gbwrap svg{width:100%;height:100%;display:block}
 .room.sea{background:linear-gradient(var(--sky) 0 34%,var(--sea) 34% 70%,var(--sea2))}
@@ -4612,7 +4639,7 @@ const ADV=[null,
   {t:'Первый снег',        o:'❄️', goal:10, unit:'снежинок', done:'Ням! Холодненько и вкусно!'},
   {t:'Слепи снеговика',    o:'⛄', goal:6,  unit:'',         done:'Привет, снеговик!'},
   {t:'Найди пары варежкам',o:'🧤', goal:4,  unit:'пары',     done:'Все лапки в тепле!'},
-  {t:'Пряничный паук',     o:'🍪', goal:9,  unit:'',         done:'Какой красивый пряник!'},
+  {t:'Печём пряники',      o:'🍪', goal:9,  unit:'',         done:'Вкусные пряники!'},
   ...Array.from({length:20},(_,i)=>({t:'Сюрприз',o:['☃️','💡','☕','⛸️','🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
 ];
 var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done}))];
@@ -4816,31 +4843,96 @@ SCENES.adv3=function(alive){
   });
 };
 
-/* ---- День 4. Пряничный паук: украсить глазурью (рисовать пальцем), потом конфетки ---- */
+/* ---- День 4. Печём пряники: раскатать тесто, вырезать формочками, испечь (вынуть, когда золотые), украсить по пунктиру ---- */
+const GB_SHAPES={
+  spider:'<g stroke="currentColor" stroke-width="7" stroke-linecap="round"><path d="M38 44 L18 30 M38 50 L14 50 M38 56 L18 70 M62 44 L82 30 M62 50 L86 50 M62 56 L82 70"/></g><circle cx="50" cy="54" r="20"/><circle cx="50" cy="32" r="12"/>',
+  star:'<path d="M50 10 L61 38 L91 38 L67 56 L76 86 L50 68 L24 86 L33 56 L9 38 L39 38 Z"/>',
+  tree:'<path d="M50 8 L74 40 H62 L84 70 H58 V88 H42 V70 H16 L38 40 H26 Z"/>'
+};
 SCENES.adv4=function(alive){
   room.className='room advkitchen';
-  room.innerHTML=`<div class="gbwrap" id="r-gb"><svg viewBox="0 0 200 200" id="r-gbsvg"><g stroke="#b5702c" stroke-width="12" stroke-linecap="round">
-      <path d="M70 90 L30 60 M70 100 L22 100 M70 112 L28 140 M78 122 L48 170 M130 90 L170 60 M130 100 L178 100 M130 112 L172 140 M122 122 L152 170"/></g>
-      <circle cx="100" cy="105" r="46" fill="#c98a45" stroke="#a8692c" stroke-width="5"/><circle cx="100" cy="64" r="26" fill="#c98a45" stroke="#a8692c" stroke-width="5"/>
-      <circle cx="91" cy="60" r="5" fill="#3a2410"/><circle cx="109" cy="60" r="5" fill="#3a2410"/><path d="M90 72 Q100 80 110 72" stroke="#3a2410" stroke-width="3" fill="none" stroke-linecap="round"/>
-      <g id="r-icing" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></g><g id="r-candy"></g></svg></div>
-    <div class="candies" id="r-cand" hidden><button aria-label="Конфетка">🔴</button><button aria-label="Конфетка">🟢</button><button aria-label="Конфетка">🔵</button></div>`;
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.13,y:s.height*.8});
-  setHint('Рисуй пальцем по прянику — это белая глазурь');
-  talk2(S2,'Я испёк пряник в виде паука! Давай украсим глазурью!',2600);
-  const svg=$('r-gbsvg'), icing=$('r-icing'); let path=null, len=0, last=null, stage='draw';
-  const toSvg=e=>{ const r=svg.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*200,y:(e.clientY-r.top)/r.height*200} };
-  handlers2={
-    down(e){ if(stage!=='draw') return; const q=toSvg(e); if(q.x<0||q.x>200||q.y<0||q.y>200) return; last=q; path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',`M${q.x.toFixed(1)} ${q.y.toFixed(1)}`); icing.appendChild(path) },
-    move(e){ if(stage!=='draw'||!path||!(e.buttons&1)) return; const q=toSvg(e), d=Math.hypot(q.x-last.x,q.y-last.y); if(d<3) return;
-      path.setAttribute('d',path.getAttribute('d')+` L${q.x.toFixed(1)} ${q.y.toFixed(1)}`); last=q; len+=d; if(Math.random()<.25) tone(rand(900,1300),.04,'sine',0,.02);
-      if(len>=110){ len=0; add2(1,false); if(p2>=6){ stage='candy'; path=null; talk2(S2,'Красиво! Теперь конфетки-пуговки!',2200); setHint('Нажимай на конфетки — они прилипнут к прянику'); $('r-cand').hidden=false } } },
-    up(){ path=null }
-  };
-  const SPOTS=[[100,92],[100,108],[100,124]];
-  $('r-cand').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; b.disabled=true; b.classList.add('used');
-    const [x,y]=SPOTS[$('r-candy').children.length]; const t=document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x',x); t.setAttribute('y',y+6); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','18'); t.textContent=b.textContent; $('r-candy').appendChild(t);
-    sfx.pop(); add2(1) });
+  room.innerHTML=`<div class="gbstage" id="r-gs"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.13,y:s.height*.84});
+  const gs=$('r-gs');
+  const go=fn=>{ if(alive()) fn() };
+  talk2(S2,'Давай печь пряники! Сначала раскатаем тесто!',2400);
+  roll();
+
+  // 1. Раскатать тесто: водить пальцем вправо-влево — скалка катается, тесто расплющивается
+  function roll(){
+    setHint('Води пальцем вправо-влево — раскатывай тесто скалкой');
+    gs.innerHTML=`<div class="dough" id="r-dough"></div><div class="pin" id="r-pin"><i></i></div>`;
+    const dough=$('r-dough'), pin=$('r-pin'); let k=0, last=null, acc=0, px=.5;
+    const draw=()=>{ dough.style.setProperty('--k',k); pin.style.left=(14+px*72)+'%' }; draw();
+    handlers2={ down(e,p){ last=p.x }, up(){ last=null },
+      move(e,p){ if(last===null||!(e.buttons&1)) return; const dx=p.x-last; last=p.x; const W=rr().width;
+        px=Math.max(0,Math.min(1,px+dx/W*1.4)); k=Math.min(1,k+Math.abs(dx)/W*.18); draw();
+        acc+=Math.abs(dx); if(acc>26){ acc=0; noise(.08,600,300,.04,0,'lowpass',.8); tone(180+k*60,.06,'sine',0,.015) }
+        if(k>=1){ handlers2={}; add2(1,false); sfx.pop(); talk2(S2,'Ровненько! Теперь формочки!',1800); setTimeout(()=>go(cut),900) } } };
+  }
+
+  // 2. Вырезать: нажимаешь на тесто — формочка «чпок» и вырезает пряник (паук, звёздочка, ёлочка)
+  function cut(){
+    setHint('Нажимай на тесто — формочка вырежет пряник');
+    gs.innerHTML=`<div class="dough flat" id="r-dough"></div><div class="cutters">${['spider','star','tree'].map(k=>`<svg viewBox="0 0 100 100" class="cutter" data-k="${k}">${GB_SHAPES[k]}</svg>`).join('')}</div>`;
+    const dough=$('r-dough'), order=['spider','star','tree']; let n=0;
+    handlers2={ down(e,p){
+      const r=dough.getBoundingClientRect(), st=rr(), x=p.x+st.left, y=p.y+st.top;
+      if(x<r.left+20||x>r.right-20||y<r.top+20||y>r.bottom-20||n>=3) return;
+      const k=order[n++], c=document.createElement('div'); c.className='gbcut'; c.innerHTML=`<svg viewBox="0 0 100 100">${GB_SHAPES[k]}</svg>`;
+      c.style.left=(x-r.left)/r.width*100+'%'; c.style.top=(y-r.top)/r.height*100+'%'; dough.appendChild(c);
+      gs.querySelector(`.cutter[data-k="${k}"]`).classList.add('used');
+      tone(240,.08,'square',0,.03,120); noise(.06,1200,600,.05); restart(c,'stamp');
+      add2(1,false);
+      if(n>=3){ handlers2={}; talk2(S2,'Три пряника! В духовку!',1800); setTimeout(()=>go(bake),1200) } } };
+  }
+
+  // 3. Испечь: пряники за стеклом темнеют; нажать «Достать!», когда они золотые. Рано — пусть ещё пекутся, поздно — подгорели, печём новые
+  function bake(){
+    setHint('Смотри на пряники и нажми «Достать!», когда они станут золотыми');
+    gs.innerHTML=`<div class="oven"><div class="ovwin" id="r-ow">${['spider','star','tree'].map(k=>`<svg viewBox="0 0 100 100" class="ovc">${GB_SHAPES[k]}</svg>`).join('')}</div>
+      <div class="ovbar"><i class="z1"></i><i class="z2"></i><i class="z3"></i><b id="r-ob"></b></div><button class="ovbtn" id="r-take">Достать!</button></div>`;
+    const ow=$('r-ow'), mark=$('r-ob'); let t0=performance.now(), done=false;
+    const T=7000;   // от сырого до горелого
+    const col=f=>f<.5?mix('#f2dcb0','#d99a4a',f/.5):f<.8?mix('#d99a4a','#a8662a',(f-.5)/.3):mix('#a8662a','#3a2414',Math.min(1,(f-.8)/.2));
+    (function tick(){ if(!alive()||done) return; const f=Math.min(1,(performance.now()-t0)/T);
+      ow.style.color=col(f); mark.style.left=f*100+'%'; ow.classList.toggle('smoke',f>.85);
+      if(Math.random()<.04) noise(.3,300,150,.015,0,'lowpass',.6);
+      if(f>=1){ burnt(); return } requestAnimationFrame(tick) })();
+    function burnt(){ done=true; restart(S2.btn,'laugh'); sfx.laugh(); talk2(S2,'Ой, подгорели! Ничего, испечём новые!',2200); setTimeout(()=>go(bake),2400) }
+    $('r-take').onclick=()=>{ if(done) return; const f=(performance.now()-t0)/T;
+      if(f<.42){ restart(ow,'shake'); talk2(S2,'Ещё сыроватые! Подождём…',1500); tone(300,.12,'triangle',0,.04); return }
+      if(f>.85){ burnt(); return }
+      done=true; $('r-take').disabled=true; sfx.magic(); talk2(S2,f<.75?'Золотые! Как надо!':'Румяные! Вкусно пахнет!',1800); add2(1,false); setTimeout(()=>go(decorate),1800) };
+  }
+
+  // 4. Украсить: вести пальцем по пунктиру — там появляется глазурь
+  function decorate(){
+    setHint('Веди пальцем по пунктиру — это глазурь');
+    talk2(S2,'Теперь украсим глазурью — по точечкам!',2200);
+    const PATHS=['M68 132 Q100 152 132 132','M46 96 L60 84 L74 96 L88 84 M112 84 L126 96 L140 84 L154 96','M84 58 Q100 46 116 58'];
+    gs.innerHTML=`<div class="gbwrap"><svg viewBox="0 0 200 200" id="r-gbsvg"><g stroke="#c9873f" stroke-width="12" stroke-linecap="round">
+        <path d="M70 90 L30 60 M70 100 L22 100 M70 112 L28 140 M78 122 L48 170 M130 90 L170 60 M130 100 L178 100 M130 112 L172 140 M122 122 L152 170"/></g>
+        <circle cx="100" cy="105" r="46" fill="#d99a4a" stroke="#b8792e" stroke-width="5"/><circle cx="100" cy="64" r="26" fill="#d99a4a" stroke="#b8792e" stroke-width="5"/>
+        <circle cx="91" cy="62" r="4.5" fill="#3a2410"/><circle cx="109" cy="62" r="4.5" fill="#3a2410"/>
+        ${PATHS.map((d,i)=>`<path class="guide" id="r-gd${i}" d="${d}"/>`).join('')}<g id="r-ice" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"></g></svg></div>`;
+    const svg=$('r-gbsvg'), ice=$('r-ice');
+    // точки на каждом пунктире; закрашиваем те, рядом с которыми прошёл палец
+    const G=PATHS.map((d,i)=>{ const el=$('r-gd'+i), L=el.getTotalLength(), pts=[]; for(let l=0;l<=L;l+=4){ const q=el.getPointAtLength(l); pts.push({x:q.x,y:q.y,on:false}) } return {el,pts,done:false} });
+    const toSvg=e=>{ const r=svg.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*200,y:(e.clientY-r.top)/r.height*200} };
+    let path=null, last=null, left=G.length;
+    handlers2={
+      down(e){ const q=toSvg(e); last=q; path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',`M${q.x.toFixed(1)} ${q.y.toFixed(1)}`); ice.appendChild(path) },
+      move(e){ if(!path||!(e.buttons&1)) return; const q=toSvg(e); if(Math.hypot(q.x-last.x,q.y-last.y)<2.5) return; last=q;
+        path.setAttribute('d',path.getAttribute('d')+` L${q.x.toFixed(1)} ${q.y.toFixed(1)}`); if(Math.random()<.2) tone(rand(900,1300),.04,'sine',0,.02);
+        for(const g of G){ if(g.done) continue; let hit=0; for(const pt of g.pts){ if(!pt.on&&Math.hypot(pt.x-q.x,pt.y-q.y)<11){ pt.on=true; hit++ } }
+          if(g.pts.filter(p=>p.on).length/g.pts.length>=.85){ g.done=true; g.el.classList.add('iced'); const r=svg.getBoundingClientRect(), b=g.el.getBBox();
+            burst(r.left+(b.x+b.width/2)/200*r.width,r.top+(b.y+b.height/2)/200*r.height,18,4,['#fff','#ffe27a','#ff9ab8']); [1046,1318].forEach((f,i)=>tone(f,.12,'sine',i*.08,.04));
+            add2(1,false); if(--left===0) finish() } } },
+      up(){ path=null }
+    };
+    function finish(){ handlers2={}; setTimeout(()=>{ if(!alive())return; ice.style.opacity=.35; sfx.chomp(1); restart(S2.btn,'jump'); talk2(S2,'Ням! Один пряник я съем!',1600); setTimeout(()=>go(()=>add2(1)),900) },500) }
+  }
 };
 
 STORIES[8].levels=EP8;
