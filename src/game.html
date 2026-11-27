@@ -4596,9 +4596,12 @@ const ADV=[null,
   ...Array.from({length:20},(_,i)=>({t:'Сюрприз',o:['☃️','💡','☕','⛸️','🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
 ];
 var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done}))];
-const advDone=()=>{try{return new Set((localStorage.getItem('spider-adv-done')||'').split(',').filter(Boolean).map(Number))}catch(e){return new Set()}};
-const advMark=d=>{const s=advDone(); s.add(d); lsSet('spider-adv-done',[...s].join(','))};
+// в волшебном режиме прогресс отдельный и стирается при выключении — настоящий не трогаем
 const advMagic=()=>lsGet('spider-adv-magic',0)===1;
+const advKey=()=>advMagic()?'spider-adv-done-test':'spider-adv-done';
+// настоящий прогресс не может опережать дату: дни «из будущего» (остались от проверок) не считаем
+const advDone=()=>{try{const m=advMagic(), t=m?24:advToday(); return new Set((localStorage.getItem(advKey())||'').split(',').filter(Boolean).map(Number).filter(d=>d<=t))}catch(e){return new Set()}};
+const advMark=d=>{const s=advDone(); s.add(d); lsSet(advKey(),[...s].join(','))};
 // какой сегодня день календаря: 0 — декабрь ещё не начался, 1…24 — декабрь, после праздников — все 24
 function advToday(){
   const fake=lsGet('spider-adv-fake',-1); if(advMagic()&&fake>=0) return fake;
@@ -4658,7 +4661,7 @@ SCENES.cal=function(alive){
   const secret=(which,el)=>e=>{ e.stopPropagation(); const now=performance.now(); if(now-seqT>1500) seqN=0; seqT=now;
     if(which!==(seqN%2?'star':'moon')){ seqN=which==='moon'?1:0; return }
     seqN++; if(seqN>1) tone(1100+seqN*90,.05,'sine',0,.015);
-    if(seqN>=8){ seqN=0; lsSet('spider-adv-magic',magic?0:1); if(magic) lsSet('spider-adv-fake',-1); sfx.magic(); enter2(0) } };
+    if(seqN>=8){ seqN=0; lsSet('spider-adv-magic',magic?0:1); lsSet('spider-adv-fake',-1); try{localStorage.removeItem('spider-adv-done-test')}catch(e){} sfx.magic(); enter2(0) } };
   $('r-moon').addEventListener('pointerdown',secret('moon'));
   $('r-star').addEventListener('pointerdown',secret('star'));
   if(magic){ const step=k=>{ let f=lsGet('spider-adv-fake',-1); f=f<0?(k<0?24:0):f+k; if(f>24) f=-1; if(f<0&&k<0) f=-1; lsSet('spider-adv-fake',Math.max(-1,Math.min(24,f))); draw() };
