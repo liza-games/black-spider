@@ -449,6 +449,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .fort.far i{position:absolute;top:-14px;width:22%;height:22px;border-radius:12px 12px 0 0;background:#fff;box-shadow:inset 0 -4px 0 #e3eef7}
 .fort.far i:nth-child(1){left:6%}.fort.far i:nth-child(2){left:39%}.fort.far i:nth-child(3){left:72%}
 .fort.near{left:2%;right:auto;width:40%;bottom:12%;height:12%;z-index:5}
+.sw.snowy .sp{filter:drop-shadow(0 -4px 0 #fff) drop-shadow(0 2px 0 #fff)}
 .walker.purple{transition:transform .25s cubic-bezier(.3,1.4,.5,1),opacity .2s}
 .snowball{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#dbe8f3);box-shadow:0 2px 3px #0003;z-index:8;pointer-events:none}
 .garwire{position:absolute;left:0;top:10%;width:100%;height:22%;z-index:1}
@@ -4986,7 +4987,7 @@ STORIES[8].levels=EP8;
 SCENES.adv5=function(alive){
   room.className='room advday';
   room.innerHTML=`<div class="snowground"></div><div class="fort far"><i></i><i></i><i></i></div><div class="fort near"></div>`;
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.2,y:s.height*.86});
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.2,y:s.height*.71});
   const P=makeWalker('purple small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:'Фиолетовый паук'});
   const PW=Math.min(s.width*.24,s.height*.15); P.wrap.style.width=PW+'px'; P.wrap.style.zIndex=2; P.wrap.style.opacity=0;
   const HOLES=[.3,.55,.8];   // где он может выглянуть (доля ширины)
@@ -4998,10 +4999,28 @@ SCENES.adv5=function(alive){
   async function popup(){
     if(!alive()||p2>=EPX[l2].goal) return;
     const x=pick(HOLES); P.x=x; posP(x,false); await wait(60); posP(x,true); up=true; tone(700,.08,'sine',0,.03,900);
-    if(Math.random()<.35) say(P,pick(['<b>Попробуй попади!</b>','<b>Я тут!</b>','<b>Хи-хи!</b>']),900);
-    hidingT=setTimeout(()=>{ up=false; posP(x,false); setTimeout(popup,rand(500,1100)) },Math.max(1100,2100-hits*120));
+    const stay=Math.max(1100,2100-hits*120);
+    if(Math.random()<.45){ setTimeout(()=>{ if(up&&alive()) enemyThrow(x) },stay*.45) }   // иногда и он кидается
+    else if(Math.random()<.4) say(P,pick(['<b>Попробуй попади!</b>','<b>Я тут!</b>','<b>Хи-хи!</b>']),900);
+    hidingT=setTimeout(()=>{ up=false; posP(x,false); setTimeout(popup,rand(500,1100)) },stay);
   }
   setTimeout(popup,2600);
+  // снежок Фиолетового: летит к нашему пауку; попадает примерно в двух случаях из трёх
+  function enemyThrow(x){
+    const from={x:x*s.width,y:s.height*.36}, me=anchor(S2.btn,.5,.4), hit=Math.random()<.65;
+    const to=hit?me:{x:me.x+rand(50,90)*(Math.random()<.5?-1:1),y:me.y+rand(10,30)};
+    say(P,pick(['<b>Получай!</b>','<b>Лови!</b>','<b>Ап!</b>']),700); restart(P.btn,'jump');
+    arc(from,to,460,()=>{ if(!alive()) return; const st=rr(); burst(st.left+to.x,st.top+to.y,14,4,['#fff','#e6f6ff']); noise(.12,1500,500,.06);
+      if(hit){ restart(S2.btn,'shake'); S2.wrap.classList.add('snowy'); setTimeout(()=>S2.wrap.classList.remove('snowy'),1600);
+        talk2(S2,pick(['Ай! Прямо в нос!','Брр! Снег за шиворот!','Эй! Я теперь снеговик!','Ой! Холодно-холодно!']),1500);
+        setTimeout(()=>alive()&&say(P,pick(['<b>Ха-ха!</b> Снежный паук!','<b>Я снежный снайпер!</b>','<b>Бу-га-га!</b>','<b>Один-ноль!</b>']),1200),700) }
+      else say(P,pick(['<b>Мимо!</b> Ну ладно…','<b>Эх, промазал!</b>']),1000) });
+  }
+  function arc(a,b,D,done){
+    const e=document.createElement('div'); e.className='snowball'; room.appendChild(e); const t0=performance.now();
+    (function fl(now){ const k=Math.min(1,(now-t0)/D), x=a.x+(b.x-a.x)*k, y=a.y+(b.y-a.y)*k-Math.sin(Math.PI*k)*s.height*.18;
+      e.style.transform=`translate(${x-9}px,${y-9}px)`; if(k<1) requestAnimationFrame(fl); else { e.remove(); done() } })(t0);
+  }
   // снежок летит дугой от нашего паука к пальцу
   function throwTo(tx,ty,hit){
     const b=document.createElement('div'); b.className='snowball'; room.appendChild(b);
@@ -5015,7 +5034,8 @@ SCENES.adv5=function(alive){
     const pr=P.wrap.getBoundingClientRect(), st=rr(), inP=up&&p.x>pr.left-st.left-10&&p.x<pr.right-st.left+10&&p.y>pr.top-st.top-10&&p.y<pr.bottom-st.top+10;
     throwTo(p.x,p.y,()=>{ if(!alive()) return;
       burst(st.left+p.x,st.top+p.y,14,4,['#fff','#e6f6ff']); noise(.12,1500,500,.06);
-      if(inP&&up){ clearTimeout(hidingT); up=false; hits++; restart(P.btn,'shake'); say(P,pick(['<b>Ой!</b> Попал!','<b>Бух!</b>','<b>Холодно!</b>','<b>Ай-ай!</b>']),900);
+      if(inP&&up){ clearTimeout(hidingT); up=false; hits++; restart(P.btn,'shake'); say(P,pick(['<b>Ой!</b> Попал!','<b>Бух!</b> Прямо в лоб!','<b>Холодно!</b> Нечестно!','<b>Ай-ай!</b> Снег в ушах!']),1000);
+        if(hits%2===1) setTimeout(()=>alive()&&say(S2,pick(['<b>Есть!</b>','<b>Вот тебе!</b>','<b>Попал!</b>','<b>Ура!</b>']),800),500);
         setTimeout(()=>{ posP(P.x,false); setTimeout(popup,rand(700,1200)) },500); add2(1) } }) },
     move(){}, up(){} };
 };
