@@ -420,13 +420,15 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sdecor{left:5%;top:auto;bottom:21%;translate:none;flex-direction:column}
 .sdecor button,.candies button{width:56px;height:56px;border-radius:16px;border:3px solid #fff;background:#ffffffc0;font-size:30px;cursor:pointer;box-shadow:0 3px 8px #0002;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
 .sdecor button.used,.candies button.used{opacity:.25;scale:.8}
-.mitts{position:absolute;left:4%;right:4%;top:6%;height:56%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;z-index:3}
+.mitts{position:absolute;left:4%;right:4%;top:4%;height:50%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;z-index:3}
 .mitt{border:0;background:none;padding:0;cursor:pointer;rotate:var(--r);transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .7s,scale .2s}
 .mitt svg{width:100%;height:100%;max-height:120px}
 .mitt.flip svg{transform:scaleX(-1)}
 .mitt.sel{scale:1.15;filter:drop-shadow(0 0 8px #ffe27a)}
 .mitt.gone{transform:translate(var(--tx),var(--ty)) scale(.2);opacity:0;pointer-events:none}
 .mitt.shake{animation:shake .4s}
+.mitton{animation:mitton .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes mitton{from{opacity:0}}
 .gbwrap{position:absolute;left:50%;top:12%;width:min(78%,52vh);aspect-ratio:1;translate:-50% 0;z-index:2;touch-action:none}
 .gbwrap svg{width:100%;height:100%;display:block}
 .room.sea{background:linear-gradient(var(--sky) 0 34%,var(--sea) 34% 70%,var(--sea2))}
@@ -4768,10 +4770,18 @@ SCENES.adv3=function(alive){
   const pairs=[['#e8483c','#fff','dots'],['#3d8fe0','#ffe27a','stripe'],['#4fae5a','#fff','star'],['#b56be0','#ff9ab8','heart']];
   const items=pairs.flatMap((p,i)=>[{i,p,flip:false},{i,p,flip:true}]).sort(()=>Math.random()-.5);
   room.innerHTML=`<div class="snowground"></div><div class="mitts" id="r-mitts">${items.map((m,j)=>`<button class="mitt${m.flip?' flip':''}" data-i="${m.i}" aria-label="Варежка" style="--r:${rand(-14,14).toFixed(0)}deg">${MITT(...m.p)}</button>`).join('')}</div>`;
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.8});
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); S2.wrap.style.width=Math.min(s.width*.42,s.height*.26)+'px'; put(S2,{x:s.width*.5,y:s.height*.8});   // покрупнее, чтобы варежки на лапках было видно
   setHint('Нажми на варежку, а потом на такую же — это пара');
   talk2(S2,'Ой, все варежки перепутались! Помоги найти пары!',2600);
-  let sel=null, lock=false;
+  let sel=null, lock=false, worn=0;
+  // найденная пара надевается на две лапки (сверху вниз, слева и справа) и шевелится вместе с ними
+  const TIPS=[[[18,84],[182,84]],[[8,112],[192,112]],[[16,148],[184,148]],[[40,166],[160,166]]];
+  function wearMitts([c1,c2]){
+    const [L,R]=TIPS[worn++]; const svg=S2.btn.querySelector('svg');
+    [[L,'.legs-l',1],[R,'.legs-r',-1]].forEach(([[x,y],g,flip])=>{
+      svg.querySelector(g).insertAdjacentHTML('beforeend',`<g class="mitton" transform="translate(${x} ${y}) scale(${.55*flip} .55) translate(-31 -40)"><path d="M14 72 V34 Q14 8 32 8 Q48 8 48 30 V72 Z" fill="${c1}" stroke="#0004" stroke-width="3"/><path d="M14 40 Q2 38 4 26 Q6 16 16 22" fill="${c1}" stroke="#0004" stroke-width="3"/><rect x="12" y="62" width="38" height="14" rx="4" fill="${c2}"/></g>`) });
+    const r=S2.wrap.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,18,4,[c1,c2,'#fff']); tone(880,.12,'sine',0,.04); tone(1320,.15,'sine',.1,.04);
+  }
   $('r-mitts').addEventListener('click',async e=>{
     const b=e.target.closest('.mitt'); if(!b||lock||b.classList.contains('gone')) return;
     if(!sel){ sel=b; b.classList.add('sel'); tone(700,.06,'sine',0,.04); return }
@@ -4779,7 +4789,7 @@ SCENES.adv3=function(alive){
     if(sel.dataset.i===b.dataset.i){ lock=true; const a=sel; sel=null; b.classList.add('sel'); sfx.magic();
       const m=anchor(S2.btn,.5,.5), st=rr();
       [a,b].forEach(x=>{ const r=x.getBoundingClientRect(); x.style.setProperty('--tx',`${m.x+st.left-(r.left+r.width/2)}px`); x.style.setProperty('--ty',`${m.y+st.top-(r.top+r.height/2)}px`); x.classList.add('gone') });
-      await wait(700); if(!alive())return; restart(S2.btn,'jump'); lock=false; if(p2<3) say(S2,pick(['<b>Пара!</b>','<b>Тёпленько!</b>','<b>Ура!</b>']),900); add2(1) }
+      await wait(700); if(!alive())return; wearMitts(pairs[+a.dataset.i]); restart(S2.btn,'jump'); lock=false; if(p2<3) say(S2,pick(['<b>Пара!</b>','<b>Тёпленько!</b>','<b>Ура!</b>']),900); add2(1) }
     else { const a=sel; sel=null; [a,b].forEach(x=>{x.classList.remove('sel'); restart(x,'shake')}); tone(260,.15,'triangle',0,.04,200); say(S2,'<b>Не пара!</b>',900) }
   });
 };
