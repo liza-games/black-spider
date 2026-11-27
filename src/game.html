@@ -402,10 +402,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .advw.shake{animation:shake .4s}
 .advmagic{position:absolute;left:3%;top:3%;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:14px;background:#fff3;color:#fff;font:800 13px var(--body);z-index:4}
 .advmagic button{width:28px;height:28px;border-radius:50%;border:0;background:#fff;color:#22335c;font:900 16px var(--body);cursor:pointer}
-.flake{position:absolute;border:0;background:none;padding:6px;color:#fff;text-shadow:0 0 6px #7fb8e8,0 0 2px #5a9fd6;cursor:pointer;z-index:4;animation:flakefall linear forwards;transition:left .4s ease-in,top .4s ease-in,scale .4s;line-height:1}
-@keyframes flakefall{to{transform:translate(var(--dx),calc(100vh));rotate:200deg}}
-.flake.eaten{scale:.3}
-.sball{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;z-index:3}
+.flake{position:absolute;left:0;top:0;border:0;background:none;padding:6px;color:#fff;text-shadow:0 0 6px #7fb8e8,0 0 2px #5a9fd6;cursor:pointer;z-index:4;line-height:1;will-change:transform}
+.sball{position:absolute;border-radius:50%;z-index:4;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;z-index:3}
 .sball::after{content:"";position:absolute;left:30%;top:20%;width:14%;height:14%;border-radius:50%;background:#d6e6f2}
 .sman{position:absolute;left:70%;bottom:13%;width:34%;height:70%;translate:-50% 0;z-index:2}
 .sman .sb{position:absolute;left:50%;translate:-50% 0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
@@ -419,6 +417,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .thread{position:absolute;top:0;width:2px;margin-left:-1px;background:rgb(120 120 120/.55);z-index:1}
 .sd.hat{left:50%;top:-38%;translate:-50% 0;font-size:min(10vw,44px)}
 .sdecor,.candies{position:absolute;left:50%;top:4%;translate:-50% 0;display:flex;gap:10px;z-index:5}
+.sdecor{left:5%;top:auto;bottom:21%;translate:none;flex-direction:column}
 .sdecor button,.candies button{width:56px;height:56px;border-radius:16px;border:3px solid #fff;background:#ffffffc0;font-size:30px;cursor:pointer;box-shadow:0 3px 8px #0002;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
 .sdecor button.used,.candies button.used{opacity:.25;scale:.8}
 .mitts{position:absolute;left:4%;right:4%;top:6%;height:56%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;z-index:3}
@@ -4696,24 +4695,29 @@ SCENES.adv1=function(alive){
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.74});
   setHint('Нажимай на снежинки — паук их поймает!');
   talk2(S2,'Ура, первый снег! Давай ловить снежинки!',2400);
-  let caught=0;
+  // снежинки двигаем сами (не CSS-анимацией): тогда точно знаем, где снежинка в момент нажатия, и летит она к пауку оттуда
+  let caught=0; const flakes=[];
   (function spawn(){
     if(!alive()||p2>=EPX[l2].goal) return;
     const f=document.createElement('button'); f.className='flake'; f.setAttribute('aria-label','Снежинка'); f.textContent='❄';
-    const st=rr(), x0=rand(.08,.92)*st.width; f.style.left=x0+'px'; f.style.top='-30px'; f.style.fontSize=rand(30,44)+'px';
-    f.style.setProperty('--dx',rand(-40,40)+'px'); f.style.animationDuration=rand(5,8)+'s'; room.appendChild(f);
-    f.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(f.dataset.got) return; f.dataset.got=1;
-      // где снежинка сейчас: её left/top плюс сдвиг падения (по повёрнутой рамке мерить нельзя — она огромная)
-      const M=new DOMMatrix(getComputedStyle(f).transform), x=parseFloat(f.style.left)+M.m41, y=parseFloat(f.style.top)+M.m42, w=f.offsetWidth, h=f.offsetHeight;
-      f.style.transition='none'; f.style.animation='none'; f.style.left=x+'px'; f.style.top=y+'px';
-      void f.offsetWidth; f.style.transition='';   // сначала ставим туда, где нажали, и только потом включаем полёт
-      requestAnimationFrame(()=>{ const m=anchor(S2.btn,.5,.62); f.classList.add('eaten'); f.style.left=m.x-w/2+'px'; f.style.top=m.y-h/2+'px' });
-      tone(rand(1500,2100),.08,'sine',0,.04);
-      setTimeout(()=>{ if(!alive())return; f.remove(); sfx.chomp(1.3); restart(S2.btn,'jump'); caught++;
-        if(caught%4===2) say(S2,pick(['<b>Ням!</b>','<b>Холодненько!</b>','<b>Вкусно!</b>','<b>Ещё!</b>']),800); add2(1) },420) };
-    setTimeout(()=>{ if(!f.dataset.got) f.remove() },9000);
+    const st=rr(), o={el:f,x:rand(.08,.92)*st.width,y:-30,vy:rand(60,95),sway:rand(15,35),ph:rand(0,6),rot:0,vr:rand(-60,60),eat:0};
+    f.style.fontSize=rand(30,44)+'px'; room.appendChild(f); flakes.push(o);
+    f.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(o.eat) return;
+      const m=anchor(S2.btn,.5,.62); o.eat=1; o.fx=o.x; o.fy=o.y; o.tx=m.x; o.ty=m.y; o.t=0; f.classList.add('eaten'); tone(rand(1500,2100),.08,'sine',0,.04) };
     setTimeout(spawn,rand(550,900));
   })();
+  let last=performance.now();
+  (function tick(now){
+    if(!alive()) return; const dt=Math.min(.05,(now-last)/1000); last=now; const H=rr().height;
+    for(let i=flakes.length-1;i>=0;i--){ const o=flakes[i], f=o.el;
+      if(o.eat){ o.t=Math.min(1,o.t+dt/.4); const k=o.t*o.t; o.x=o.fx+(o.tx-o.fx)*k; o.y=o.fy+(o.ty-o.fy)*k;
+        if(o.t>=1){ f.remove(); flakes.splice(i,1); sfx.chomp(1.3); restart(S2.btn,'jump'); caught++;
+          if(caught%4===2) say(S2,pick(['<b>Ням!</b>','<b>Холодненько!</b>','<b>Вкусно!</b>','<b>Ещё!</b>']),800); add2(1); continue } }
+      else { o.y+=o.vy*dt; o.ph+=dt*1.3; o.rot+=o.vr*dt; if(o.y>H+40){ f.remove(); flakes.splice(i,1); continue } }
+      const sx=o.eat?0:Math.sin(o.ph)*o.sway;
+      f.style.transform=`translate(${(o.x+sx-f.offsetWidth/2).toFixed(1)}px,${(o.y-f.offsetHeight/2).toFixed(1)}px) rotate(${o.rot.toFixed(0)}deg) scale(${o.eat?1-.7*o.t:1})`; }
+    requestAnimationFrame(tick);
+  })(last);
 };
 
 /* ---- День 2. Снеговик: катать снежный ком пальцем, потом нос, глазки и шляпа ---- */
@@ -4724,7 +4728,7 @@ SCENES.adv2=function(alive){
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.2,y:s.height*.2});
   { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.2+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
   const ball=$('r-ball'), man=$('r-sman'), SIZES=[.30,.23,.16];   // доли ширины сцены
-  let k=0, size=.06, rot=0, bx=.5, lastX=null, stage='roll';
+  let k=0, size=.06, rot=0, bx=.5, lastX=null, stage='roll', roll=0;
   const drawBall=()=>{ const st=rr(), px=size*st.width; ball.style.width=ball.style.height=px+'px'; ball.style.left=(bx*st.width-px/2)+'px'; ball.style.top=(st.height*.86-px)+'px'; ball.style.rotate=rot+'deg' };
   drawBall();
   setHint('Води пальцем влево-вправо — катай снежный ком, он будет расти!');
@@ -4732,8 +4736,9 @@ SCENES.adv2=function(alive){
   handlers2={
     down(e,p){ lastX=p.x },
     move(e,p){ if(stage!=='roll'||lastX===null||!(e.buttons&1)) return; const st=rr(), dx=p.x-lastX; lastX=p.x;
-      bx=Math.max(.38,Math.min(.92,bx+dx/st.width)); rot+=dx*1.6; size=Math.min(SIZES[k],size+Math.abs(dx)/st.width*.06); drawBall();
-      if(Math.random()<.2) noise(.06,900,500,.03,0,'lowpass',.8);
+      bx=Math.max(.06,Math.min(.94,bx+dx/st.width)); rot+=dx*1.6; size=Math.min(SIZES[k],size+Math.abs(dx)/st.width*.06); drawBall();
+      // мягкий хруст снега каждые ~22px, а тон чуть ниже, чем больше ком
+      roll+=Math.abs(dx); if(roll>22){ roll=0; noise(.09,2400-size*3000,700,.045,0,'bandpass',1.4); tone(520-size*600+rand(-20,20),.07,'sine',0,.012) }
       if(size>=SIZES[k]) placeBall() },
     up(){ lastX=null }
   };
