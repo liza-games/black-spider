@@ -377,7 +377,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes glint{50%{box-shadow:0 0 40px #fff6c8}}
 .advtree{position:absolute;left:50%;top:2%;height:44%;aspect-ratio:200/230;translate:-50% 0;z-index:1}
 .advtree svg{width:100%;height:100%;display:block}
-.advstar{position:absolute;left:50%;top:0;width:18%;translate:-50% -30%;--starc:#c9c9c9}
+.advstar{position:absolute;left:50%;top:0;width:18%;translate:-50% -30%;--starc:#c9c9c9;pointer-events:auto;cursor:pointer}
 .advstar svg{width:100%;display:block}
 .advstar.lit{--starc:#ffd23a;filter:drop-shadow(0 0 10px #ffe27a);animation:starlit 1.6s ease-in-out infinite alternate}
 @keyframes starlit{to{filter:drop-shadow(0 0 18px #fff3a0)}}
@@ -412,8 +412,11 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes sbin{from{scale:.3;translate:-50% -60px}}
 .sman .sb.wob{animation:wob .5s}
 .sd{position:absolute;line-height:1;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
-.sd.eyes{left:50%;top:22%;translate:-50% 0;font-size:min(7vw,30px)}
-.sd.nose{left:56%;top:46%;font-size:min(6vw,26px);rotate:-80deg}
+.sd.eyes{left:50%;top:30%;width:44%;translate:-50% 0;display:flex;justify-content:space-between}
+.sd.eyes i{width:22%;aspect-ratio:1;border-radius:50%;background:#222;min-width:7px}
+.sd.nose{left:48%;top:46%;width:42%}
+.sd.nose svg{display:block;width:100%}
+.thread{position:absolute;top:0;width:2px;margin-left:-1px;background:rgb(120 120 120/.55);z-index:1}
 .sd.hat{left:50%;top:-38%;translate:-50% 0;font-size:min(10vw,44px)}
 .sdecor,.candies{position:absolute;left:50%;top:4%;translate:-50% 0;display:flex;gap:10px;z-index:5}
 .sdecor button,.candies button{width:56px;height:56px;border-radius:16px;border:3px solid #fff;background:#ffffffc0;font-size:30px;cursor:pointer;box-shadow:0 3px 8px #0002;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
@@ -4650,11 +4653,14 @@ SCENES.cal=function(alive){
     busy2=true; b.classList.add('opening'); sfx.door(); stardust(.8,.02);
     await wait(650); if(!alive()) return; busy2=false; enter2(d);
   });
-  // секрет: 7 нажатий на луну
-  let moonN=0, moonT=0;
-  $('r-moon').addEventListener('pointerdown',e=>{ e.stopPropagation(); const now=performance.now(); if(now-moonT>1500) moonN=0; moonT=now;
-    tone(1200+moonN*120,.06,'sine',0,.02); restart($('r-moon'),'glint');
-    if(++moonN>=7){ moonN=0; lsSet('spider-adv-magic',magic?0:1); if(magic) lsSet('spider-adv-fake',-1); sfx.magic(); enter2(0) } });
+  // секрет: по очереди луна, звезда, луна, звезда… — 8 нажатий без ошибок и без долгих пауз
+  let seqN=0, seqT=0;
+  const secret=(which,el)=>e=>{ e.stopPropagation(); const now=performance.now(); if(now-seqT>1500) seqN=0; seqT=now;
+    if(which!==(seqN%2?'star':'moon')){ seqN=which==='moon'?1:0; return }
+    seqN++; if(seqN>1) tone(1100+seqN*90,.05,'sine',0,.015);
+    if(seqN>=8){ seqN=0; lsSet('spider-adv-magic',magic?0:1); if(magic) lsSet('spider-adv-fake',-1); sfx.magic(); enter2(0) } };
+  $('r-moon').addEventListener('pointerdown',secret('moon'));
+  $('r-star').addEventListener('pointerdown',secret('star'));
   if(magic){ const step=k=>{ let f=lsGet('spider-adv-fake',-1); f=f<0?(k<0?24:0):f+k; if(f>24) f=-1; if(f<0&&k<0) f=-1; lsSet('spider-adv-fake',Math.max(-1,Math.min(24,f))); draw() };
     $('r-fm').onclick=()=>step(-1); $('r-fp').onclick=()=>step(1) }
   setHint(today===0?'Окошки откроются 1 декабря':'Нажми на окошко с сегодняшним числом');
@@ -4689,8 +4695,11 @@ SCENES.adv1=function(alive){
     const st=rr(), x0=rand(.08,.92)*st.width; f.style.left=x0+'px'; f.style.top='-30px'; f.style.fontSize=rand(30,44)+'px';
     f.style.setProperty('--dx',rand(-40,40)+'px'); f.style.animationDuration=rand(5,8)+'s'; room.appendChild(f);
     f.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(f.dataset.got) return; f.dataset.got=1;
-      const fr=f.getBoundingClientRect(); f.style.animation='none'; f.style.left=fr.left-st.left+'px'; f.style.top=fr.top-st.top+'px';
-      requestAnimationFrame(()=>{ const m=anchor(S2.btn,.5,.62); f.classList.add('eaten'); f.style.left=m.x-fr.width/2+'px'; f.style.top=m.y-fr.height/2+'px' });
+      // где снежинка сейчас: её left/top плюс сдвиг падения (по повёрнутой рамке мерить нельзя — она огромная)
+      const M=new DOMMatrix(getComputedStyle(f).transform), x=parseFloat(f.style.left)+M.m41, y=parseFloat(f.style.top)+M.m42, w=f.offsetWidth, h=f.offsetHeight;
+      f.style.transition='none'; f.style.animation='none'; f.style.left=x+'px'; f.style.top=y+'px';
+      void f.offsetWidth; f.style.transition='';   // сначала ставим туда, где нажали, и только потом включаем полёт
+      requestAnimationFrame(()=>{ const m=anchor(S2.btn,.5,.62); f.classList.add('eaten'); f.style.left=m.x-w/2+'px'; f.style.top=m.y-h/2+'px' });
       tone(rand(1500,2100),.08,'sine',0,.04);
       setTimeout(()=>{ if(!alive())return; f.remove(); sfx.chomp(1.3); restart(S2.btn,'jump'); caught++;
         if(caught%4===2) say(S2,pick(['<b>Ням!</b>','<b>Холодненько!</b>','<b>Вкусно!</b>','<b>Ещё!</b>']),800); add2(1) },420) };
@@ -4704,7 +4713,8 @@ SCENES.adv2=function(alive){
   room.className='room advday';
   room.innerHTML=`<div class="snowground"></div><div class="sman" id="r-sman"></div><div class="sball" id="r-ball"></div>
     <div class="sdecor" id="r-decor" hidden><button data-k="eyes" aria-label="Глазки">👀</button><button data-k="nose" aria-label="Нос-морковка">🥕</button><button data-k="hat" aria-label="Шляпа">🎩</button></div>`;
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.14,y:s.height*.74});
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.2,y:s.height*.2});
+  { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.2+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
   const ball=$('r-ball'), man=$('r-sman'), SIZES=[.30,.23,.16];   // доли ширины сцены
   let k=0, size=.06, rot=0, bx=.5, lastX=null, stage='roll';
   const drawBall=()=>{ const st=rr(), px=size*st.width; ball.style.width=ball.style.height=px+'px'; ball.style.left=(bx*st.width-px/2)+'px'; ball.style.top=(st.height*.86-px)+'px'; ball.style.rotate=rot+'deg' };
@@ -4728,7 +4738,11 @@ SCENES.adv2=function(alive){
     talk2(S2,'Готово! Теперь глазки, нос и шляпа!',2200); setHint('Нажимай на глазки, морковку и шляпу'); $('r-decor').hidden=false;
   }
   $('r-decor').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; b.disabled=true; b.classList.add('used');
-    const head=man.lastElementChild, d=document.createElement('span'); d.className='sd '+b.dataset.k; d.textContent=b.textContent; head.appendChild(d);
+    const head=man.lastElementChild, d=document.createElement('span'); d.className='sd '+b.dataset.k;
+    if(b.dataset.k==='eyes') d.innerHTML='<i></i><i></i>';
+    else if(b.dataset.k==='nose') d.innerHTML='<svg viewBox="0 0 40 16"><path d="M0 3 Q2 8 0 13 L38 8 Z" fill="#f08a24"/><path d="M8 5 l1 6 M16 6 l1 4" stroke="#c8651a" stroke-width="1.5"/></svg>';
+    else d.textContent=b.textContent;
+    head.appendChild(d);
     sfx.pop(); restart(head,'wob'); add2(1) });
 };
 
