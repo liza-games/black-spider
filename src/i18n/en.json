@@ -1076,6 +1076,6 @@
 "'Красиво! Теперь конфетки-пуговки!'": "'Pretty! Now the candy buttons!'",
 "'Нажимай на конфетки — они прилипнут к прянику'": "'Tap the candies and they will stick to the gingerbread'",
 "'❄ Только в декабре ❄'": "'❄ December only ❄'",
-"`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"${d} декабря\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`": "`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"December ${d}\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`"
+"`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"${d} декабря\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`": "`<button class=\"advw ${cls} th${k%5}${h*w>1?' big':''}\" data-d=\"${d}\" aria-label=\"December ${d}\" style=\"grid-area:${r}/${c}/span ${h}/span ${w}\">\n        <span class=\"advin\"><i>${ADV[d].o}</i><em>${d}</em></span>\n        <span class=\"advdoor\"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`"
 }
 }

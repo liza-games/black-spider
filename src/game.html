@@ -410,8 +410,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 /* открывается / уже открыто */
 .advw.opening .advdoor{transform:rotateY(-118deg);box-shadow:none}
 .advw.opening .advin i,.advw.done .advin i{scale:1;opacity:1}
-.advw.done .advdoor{transform:rotateY(-72deg);transition:none;box-shadow:inset 0 0 0 2px #f5d77a}
-.advw.done .advdoor b{scale:.8}
+.advw.done .advdoor{display:none}
+.advin em{display:none;position:absolute;left:3px;top:3px;min-width:1.5em;height:1.5em;padding:0 .2em;border-radius:999px;background:#6b4325;color:#ffe9a8;font:400 clamp(9px,2.8vw,12px)/1.5em var(--display);text-align:center;font-style:normal}
+.advw.done .advin em{display:block}
+.advw.done .advin{box-shadow:inset 0 0 0 3px #f5d77a,inset 0 0 0 5px #6b4325,inset 0 4px 10px #0004}
 .advw.shake{animation:shake .4s}
 .advmagic{position:absolute;left:3%;top:3%;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:14px;background:#fff3;color:#fff;font:800 13px var(--body);z-index:4}
 .advmagic button{width:28px;height:28px;border-radius:50%;border:0;background:#fff;color:#22335c;font:900 16px var(--body);cursor:pointer}
@@ -4665,7 +4667,7 @@ SCENES.cal=function(alive){
     grid.innerHTML=ADV_LAYOUT.map(([d,r,c,h,w],k)=>{const isDone=done.has(d), open=d<=t, soon=ADV[d].soon;
       const cls=isDone?'done':!open?'locked':soon?'soon':d===t?'today':'open';
       return `<button class="advw ${cls} th${k%5}${h*w>1?' big':''}" data-d="${d}" aria-label="${d} декабря" style="grid-area:${r}/${c}/span ${h}/span ${w}">
-        <span class="advin"><i>${ADV[d].o}</i></span>
+        <span class="advin"><i>${ADV[d].o}</i><em>${d}</em></span>
         <span class="advdoor"><b>${d}</b>${!open?'<u>🔒</u>':soon?'<u>🚧</u>':''}</span></button>`}).join('');
     if(magic) $('r-fd').textContent=lsGet('spider-adv-fake',-1)<0?'все':`${t} дек`;
     if(done.has(24)) $('r-star').classList.add('lit');
