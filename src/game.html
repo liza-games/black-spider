@@ -4678,7 +4678,7 @@ const ADV=[null,
   {t:'Найди пары варежкам',o:'🧤', goal:4,  unit:'пары',     done:'Все лапки в тепле!'},
   {t:'Печём пряники',      o:'🍪', goal:9,  unit:'',         done:'Вкусные пряники!'},
   {t:'Снежки с Фиолетовым',o:'☃️', goal:6,  unit:'попаданий', done:'Вот это меткость!'},
-  {t:'Волшебная гирлянда', o:'💡', goal:3,  unit:'',         done:'Гирлянда сияет!'},
+  {t:'Волшебная гирлянда', o:'💡', goal:9,  unit:'',         done:'Гирлянда сияет!'},
   {t:'Горячий шоколад',    o:'☕', goal:3,  unit:'кружки',   done:'Всем хватило шоколада!'},
   {t:'Каток',              o:'⛸️', goal:8,  unit:'звёздочек', done:'Чемпион катка!'},
   ...Array.from({length:16},(_,i)=>({t:'Сюрприз',o:['🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
@@ -5054,19 +5054,22 @@ SCENES.adv6=function(alive){
   window._adv6={get seq(){return seq},get listening(){return listening}};   // для автопроверки
   async function show(){
     listening=false; setHint('Смотри и слушай, как мигают лампочки…'); await wait(700); if(!alive()) return;
-    for(const i of seq){ flash(i); await wait(650); if(!alive()) return }
+    const gap=Math.max(430,650-seq.length*25);   // длинные цепочки показываем чуть быстрее
+    for(const i of seq){ flash(i,Math.min(420,gap-150)); await wait(gap); if(!alive()) return }
     listening=true; pos=0; setHint('Теперь ты! Нажимай лампочки в том же порядке');
   }
   async function next(){
-    round++; const n=round+1; seq=[]; while(seq.length<n){ const i=Math.floor(Math.random()*5); if(seq[seq.length-1]!==i) seq.push(i) }
-    talk2(S2,round===1?'Гирлянда мигает! Повтори за ней!':round===2?'Молодец! Теперь три лампочки!':'Последний раз — четыре!',2000); await wait(1600); if(alive()) show();
+    // как в «Саймоне»: цепочка каждый раз та же плюс одна новая лампочка — от 2 до 10
+    round++; if(!seq.length) seq=[Math.floor(Math.random()*5)]; while(seq.length<round+1){ const i=Math.floor(Math.random()*5); if(seq[seq.length-1]!==i) seq.push(i) }
+    const n=seq.length;
+    talk2(S2,round===1?'Гирлянда мигает! Повтори за ней!':n===10?'Последняя — целых десять лампочек!':pick([`Молодец! Теперь ${n}!`,`Отлично! А теперь ${n} лампочек!`,`Ещё одна! Уже ${n}!`]),1800); await wait(1500); if(alive()) show();
   }
   room.querySelector('.garland').addEventListener('pointerdown',async e=>{
     const b=e.target.closest('.bulb'); if(!b||!listening) return; e.preventDefault(); const i=+b.dataset.i; flash(i,300);
     if(i!==seq[pos]){ listening=false; restart(b,'shake'); tone(220,.25,'sawtooth',0,.03,160); talk2(S2,'Ой, не та! Давай посмотрим ещё раз!',1800); await wait(1500); if(alive()) show(); return }
     if(++pos===seq.length){ listening=false; add2(1,false); await wait(400); if(!alive()) return;
       bulbs.forEach((x,j)=>setTimeout(()=>flash(j,250),j*90));
-      if(round>=3){ await wait(700); if(!alive()) return; room.classList.add('twinkle'); add2(0); return }
+      if(round>=9){ await wait(700); if(!alive()) return; room.classList.add('twinkle'); add2(0); return }
       await wait(700); if(alive()) next() }
   });
   setTimeout(()=>alive()&&next(),500);
