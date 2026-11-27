@@ -5160,6 +5160,7 @@ SCENES.adv8=function(alive){
       P=makeWalker('purple small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:'Фиолетовый паук'}); P.wrap.style.width=sw*.9+'px';
       pv.x=s.width*.85; pv.y=s.height*.2; setTimeout(()=>alive()&&P&&talk2(P,'Не догонишь! Я самый быстрый на льду!',2000),1200) }
   }
+  window._rink={st,pv,toTag:()=>{ st.got=8; hi=HEART.length; p2=18; render2(); nextPart('tag') }};   // для автопроверки
   let last=performance.now(), swish=0;
   (function frame(now){
     if(!alive()) return; const dt=Math.min(.04,(now-last)/1000); last=now; st.t+=dt;
@@ -5178,17 +5179,27 @@ SCENES.adv8=function(alive){
     // 3) догонялки: убегает от паука, отталкивается от бортиков
     if(st.part==='tag'&&P){
       pv.stun=Math.max(0,pv.stun-dt);
-      if(pv.stun<=0){ const dx=pv.x-st.x, dy=pv.y-st.y, d=Math.hypot(dx,dy)||1, run=d<s.width*.45?1:.25;
-        pv.vx+=(dx/d*run*260+Math.sin(st.t*1.7)*90)*dt; pv.vy+=(dy/d*run*260+Math.cos(st.t*1.3)*90)*dt;
-        if(pv.x<s.width*.15) pv.vx+=400*dt; if(pv.x>s.width*.85) pv.vx-=400*dt; if(pv.y<s.height*.15) pv.vy+=400*dt; if(pv.y>s.height*.85) pv.vy-=400*dt }
-      pv.vx*=Math.pow(.4,dt); pv.vy*=Math.pow(.4,dt); const ps=Math.hypot(pv.vx,pv.vy), mx=s.width*.55; if(ps>mx){ pv.vx*=mx/ps; pv.vy*=mx/ps }
+      // куда удирать: перебираем 16 направлений и берём то, где окажемся дальше всего от паука, но не у бортика —
+      // так он не забивается в угол, а выкатывается вдоль борта мимо паука и кружит по катку
+      pv.think=(pv.think||0)-dt;
+      if(pv.stun<=0&&pv.think<=0){ pv.think=.22; const R=Math.min(s.width,s.height)*.28, d0=Math.hypot(pv.x-st.x,pv.y-st.y);
+        let best=null,bs=-1e9;
+        for(let k=0;k<16;k++){ const a=k/16*Math.PI*2, x=pv.x+Math.cos(a)*R, y=pv.y+Math.sin(a)*R;
+          const mX=Math.min(x,s.width-x), mY=Math.min(y,s.height-y), edge=Math.min(mX/s.width,mY/s.height);
+          let sc=Math.hypot(x-st.x,y-st.y) - (edge<.14?(.14-edge)*s.width*9:0) + Math.cos(a-(pv.ang||0))*R*.25;   // плавнее — не дёргается туда-сюда
+          if(sc>bs){bs=sc;best=a} }
+        pv.ang=best; pv.calm=d0>s.width*.55 }
+      // иногда выдыхается и стоит секунду — тут-то его и ловить
+      pv.rest=(pv.rest??rand(3,5))-dt; if(pv.rest<0&&pv.stun<=0){ pv.rest=rand(4,6); pv.stun=.9; pv.tired=true; if(Math.random()<.6) talk2(P,pick(['Уф, устал!','Фух, передышка…','Ой, скользко!']),900) }
+      if(pv.stun<=0){ pv.tired=false; const spd=(pv.calm?.2:.4)*s.width; pv.vx+=(Math.cos(pv.ang||0)*spd-pv.vx)*2.2*dt; pv.vy+=(Math.sin(pv.ang||0)*spd-pv.vy)*2.2*dt }
+      else { pv.vx*=Math.pow(.3,dt); pv.vy*=Math.pow(.3,dt) }
       pv.x=Math.max(sw*.4,Math.min(s.width-sw*.4,pv.x+pv.vx*dt)); pv.y=Math.max(sw*.4,Math.min(s.height-sw*.3,pv.y+pv.vy*dt));
-      if(pv.stun<=0&&Math.hypot(pv.x-st.x,pv.y-st.y)<sw*.6){ pv.stun=1.6; pv.vx=(pv.x-st.x)*4; pv.vy=(pv.y-st.y)*4; st.got++; sparkle(pv.x,pv.y,26); restart(P.btn,'shake'); sfx.pop();
+      if((pv.stun<=0||pv.tired)&&Math.hypot(pv.x-st.x,pv.y-st.y)<sw*.6){ pv.tired=false; pv.stun=1.6; pv.vx=(pv.x-st.x)*4; pv.vy=(pv.y-st.y)*4; st.got++; sparkle(pv.x,pv.y,26); restart(P.btn,'shake'); sfx.pop();
         const left=11-st.got; add2(1,false);
         if(left>0) talk2(P,pick(['Ой, поймал!','Эй, щекотно!','Ладно-ладно, ещё раз!']),1300);
         else { talk2(P,'Сдаюсь! Ты катаешься лучше всех!',2000); st.part='done'; setTimeout(()=>alive()&&add2(0),1600) } }
       P.btn.style.rotate=Math.max(-20,Math.min(20,pv.vx*.06)).toFixed(1)+'deg'; P.wrap.style.transform=`translate(${(pv.x-sw*.45).toFixed(1)}px,${(pv.y-sw*.45).toFixed(1)}px)`;
-      if(pv.stun>0) P.wrap.style.opacity=.6+.4*Math.round(st.t*8%1); else P.wrap.style.opacity=1 }
+      if(pv.stun>0&&!pv.tired) P.wrap.style.opacity=.6+.4*Math.round(st.t*8%1); else P.wrap.style.opacity=1 }
     // рисуем: следы коньков, звёзды, точки сердечка
     g.clearRect(0,0,s.width,s.height);
     g.strokeStyle='rgb(255 255 255/.85)'; g.lineWidth=2; g.lineCap='round';
