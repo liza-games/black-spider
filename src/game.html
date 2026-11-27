@@ -444,6 +444,42 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .mitt.shake{animation:shake .4s}
 .mitton{animation:mitton .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes mitton{from{opacity:0}}
+.fort{position:absolute;left:18%;right:4%;border-radius:40px 40px 0 0;background:linear-gradient(#fff,#e3eef7);box-shadow:inset 0 -6px 0 #cfdfec;z-index:3}
+.fort.far{top:42%;height:16%;left:16%;right:4%}
+.fort.far i{position:absolute;top:-14px;width:22%;height:22px;border-radius:12px 12px 0 0;background:#fff;box-shadow:inset 0 -4px 0 #e3eef7}
+.fort.far i:nth-child(1){left:6%}.fort.far i:nth-child(2){left:39%}.fort.far i:nth-child(3){left:72%}
+.fort.near{left:2%;right:auto;width:40%;bottom:12%;height:12%;z-index:5}
+.walker.purple{transition:transform .25s cubic-bezier(.3,1.4,.5,1),opacity .2s}
+.snowball{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#dbe8f3);box-shadow:0 2px 3px #0003;z-index:8;pointer-events:none}
+.garwire{position:absolute;left:0;top:10%;width:100%;height:22%;z-index:1}
+.garland{position:absolute;inset:0;z-index:2}
+.bulb{position:absolute;width:15%;aspect-ratio:.72;translate:-50% 0;border:0;padding:0;background:none;cursor:pointer}
+.bulb::before{content:"";position:absolute;left:32%;top:0;width:36%;height:16%;border-radius:3px;background:#7d8894}
+.bulb i{position:absolute;left:0;right:0;top:13%;bottom:0;border-radius:50% 50% 46% 46%/56% 56% 44% 44%;background:var(--c);opacity:.45;filter:saturate(.6);transition:opacity .12s,filter .12s,box-shadow .12s}
+.bulb.on i,.room.twinkle .bulb i{opacity:1;filter:none;box-shadow:0 0 18px 6px var(--c),0 0 40px 10px var(--c)}
+.room.twinkle .bulb i{animation:twinkle .8s ease-in-out infinite alternate}
+.room.twinkle .bulb:nth-child(2n) i{animation-delay:.4s}
+@keyframes twinkle{to{opacity:.55}}
+.bulb.shake{animation:shake .4s}
+.mug{position:absolute;left:50%;top:22%;width:min(46%,30vh);aspect-ratio:1/1.05;translate:-50% 0;border-radius:10px 10px 38% 38%/10px 10px 26% 26%;background:linear-gradient(90deg,#d23a32,#ef6a5c 40%,#c4302a);box-shadow:inset 0 -8px 0 #0002,0 8px 16px #0003;z-index:2}
+.mug .handle{position:absolute;right:-24%;top:22%;width:32%;height:46%;border:9px solid #c4302a;border-left:0;border-radius:0 50% 50% 0}
+.cocoa{position:absolute;left:6%;right:6%;top:5%;height:22%;border-radius:50%;background:radial-gradient(#7a4426,#4f2a16);overflow:visible}
+.mallows{position:absolute;inset:0}
+.mallows i{position:absolute;width:22%;aspect-ratio:1.2;border-radius:30%;background:linear-gradient(#fff,#f3e6ee);box-shadow:inset 0 -3px 0 #e6c9d6;translate:-50% -50%;animation:mlin .35s cubic-bezier(.3,1.6,.5,1)}
+@keyframes mlin{from{translate:-50% -220%;opacity:.3}}
+.mug.pop{animation:pop .4s}
+.steam{position:absolute;left:0;right:0;top:-34%;height:34%}
+.steam i{position:absolute;bottom:0;width:8%;height:70%;border-radius:50%;background:#ffffff80;filter:blur(3px);animation:steam 2.4s ease-in infinite}
+.steam i:nth-child(1){left:28%}.steam i:nth-child(2){left:48%;animation-delay:.8s}.steam i:nth-child(3){left:66%;animation-delay:1.6s}
+@keyframes steam{0%{translate:0 20%;opacity:0}40%{opacity:.9}100%{translate:6px -60%;opacity:0}}
+.mlbag{position:absolute;right:6%;top:4%;width:30%;aspect-ratio:.8;border-radius:14px 14px 10px 10px;background:linear-gradient(#e6f2ff,#c8dcf2);box-shadow:inset 0 0 0 3px #fff,0 6px 12px #0002;display:grid;place-items:center;cursor:pointer;z-index:3;touch-action:none}
+.mlbag::before{content:"";position:absolute;inset:18% 16% 30%;background:radial-gradient(circle at 30% 40%,#fff 0 16%,transparent 17%),radial-gradient(circle at 66% 36%,#ffe6f1 0 15%,transparent 16%),radial-gradient(circle at 48% 70%,#fff 0 16%,transparent 17%)}
+.mlbag span{position:absolute;bottom:8%;font:800 12px var(--body);color:#3d5a80}
+.mlbag.squish{animation:squish .25s}
+@keyframes squish{50%{scale:1.08 .9}}
+.mugnum{position:absolute;left:50%;bottom:24%;translate:-50% 0;padding:6px 14px;border-radius:999px;background:#fff;font:800 16px var(--body);color:var(--fg);box-shadow:0 3px 8px #0002;white-space:nowrap;z-index:3}
+.mugnum b{font-family:var(--display);color:#c4302a;font-weight:400}
+.room.rink{background:radial-gradient(ellipse at 50% 40%,#f2fbff,#cfe9f7 60%,#a9d3ec);box-shadow:inset 0 0 0 8px #e9f5fc,inset 0 0 0 12px #7fb8e0}
 .gbstage{position:absolute;inset:0;z-index:2}
 .dough{position:absolute;left:50%;top:44%;width:34%;height:26%;transform:translate(-50%,-50%);border-radius:40%;will-change:transform;
   background:radial-gradient(circle at 40% 35%,#f8e7c4,#ebcf98);box-shadow:inset 0 -6px 0 #d9b479}
@@ -4640,7 +4676,11 @@ const ADV=[null,
   {t:'Слепи снеговика',    o:'⛄', goal:6,  unit:'',         done:'Привет, снеговик!'},
   {t:'Найди пары варежкам',o:'🧤', goal:4,  unit:'пары',     done:'Все лапки в тепле!'},
   {t:'Печём пряники',      o:'🍪', goal:9,  unit:'',         done:'Вкусные пряники!'},
-  ...Array.from({length:20},(_,i)=>({t:'Сюрприз',o:['☃️','💡','☕','⛸️','🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
+  {t:'Снежки с Фиолетовым',o:'☃️', goal:6,  unit:'попаданий', done:'Вот это меткость!'},
+  {t:'Волшебная гирлянда', o:'💡', goal:3,  unit:'',         done:'Гирлянда сияет!'},
+  {t:'Горячий шоколад',    o:'☕', goal:3,  unit:'кружки',   done:'Всем хватило шоколада!'},
+  {t:'Каток',              o:'⛸️', goal:8,  unit:'звёздочек', done:'Чемпион катка!'},
+  ...Array.from({length:16},(_,i)=>({t:'Сюрприз',o:['🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
 ];
 var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done}))];
 // в волшебном режиме прогресс отдельный и стирается при выключении — настоящий не трогаем
@@ -4941,6 +4981,138 @@ SCENES.adv4=function(alive){
 };
 
 STORIES[8].levels=EP8;
+
+/* ---- День 5. Снежки с Фиолетовым: он выглядывает из-за снежной крепости — нажми, и паук кинет снежок ---- */
+SCENES.adv5=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="fort far"><i></i><i></i><i></i></div><div class="fort near"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.2,y:s.height*.86});
+  const P=makeWalker('purple small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:'Фиолетовый паук'});
+  const PW=Math.min(s.width*.24,s.height*.15); P.wrap.style.width=PW+'px'; P.wrap.style.zIndex=2; P.wrap.style.opacity=0;
+  const HOLES=[.3,.55,.8];   // где он может выглянуть (доля ширины)
+  setHint('Фиолетовый выглядывает из-за крепости — нажми на него, и паук кинет снежок!');
+  talk2(S2,'Играем в снежки с Фиолетовым! Кидай, когда он выглянет!',2600);
+  let up=false, hidingT=0, hits=0;
+  const posP=(x,shown)=>{ P.wrap.style.transform=`translate(${(x*s.width-PW/2).toFixed(0)}px,${(s.height*(shown?.36:.48)-PW*.5).toFixed(0)}px)`; P.wrap.style.opacity=shown?1:0 };
+  posP(.55,false);
+  async function popup(){
+    if(!alive()||p2>=EPX[l2].goal) return;
+    const x=pick(HOLES); P.x=x; posP(x,false); await wait(60); posP(x,true); up=true; tone(700,.08,'sine',0,.03,900);
+    if(Math.random()<.35) say(P,pick(['<b>Попробуй попади!</b>','<b>Я тут!</b>','<b>Хи-хи!</b>']),900);
+    hidingT=setTimeout(()=>{ up=false; posP(x,false); setTimeout(popup,rand(500,1100)) },Math.max(1100,2100-hits*120));
+  }
+  setTimeout(popup,2600);
+  // снежок летит дугой от нашего паука к пальцу
+  function throwTo(tx,ty,hit){
+    const b=document.createElement('div'); b.className='snowball'; room.appendChild(b);
+    const a=anchor(S2.btn,.5,.3), t0=performance.now(), D=380;
+    sfx.whoosh();
+    (function fl(now){ const k=Math.min(1,(now-t0)/D), x=a.x+(tx-a.x)*k, y=a.y+(ty-a.y)*k-Math.sin(Math.PI*k)*s.height*.18;
+      b.style.transform=`translate(${x-9}px,${y-9}px)`; if(k<1) requestAnimationFrame(fl); else { b.remove(); hit() } })(t0);
+  }
+  handlers2={ down(e,p){
+    if(p2>=EPX[l2].goal) return; restart(S2.btn,'jump');
+    const pr=P.wrap.getBoundingClientRect(), st=rr(), inP=up&&p.x>pr.left-st.left-10&&p.x<pr.right-st.left+10&&p.y>pr.top-st.top-10&&p.y<pr.bottom-st.top+10;
+    throwTo(p.x,p.y,()=>{ if(!alive()) return;
+      burst(st.left+p.x,st.top+p.y,14,4,['#fff','#e6f6ff']); noise(.12,1500,500,.06);
+      if(inP&&up){ clearTimeout(hidingT); up=false; hits++; restart(P.btn,'shake'); say(P,pick(['<b>Ой!</b> Попал!','<b>Бух!</b>','<b>Холодно!</b>','<b>Ай-ай!</b>']),900);
+        setTimeout(()=>{ posP(P.x,false); setTimeout(popup,rand(700,1200)) },500); add2(1) } }) },
+    move(){}, up(){} };
+};
+
+/* ---- День 6. Гирлянда: лампочки мигают по очереди — повтори так же. Три раунда: 2, 3 и 4 лампочки ---- */
+SCENES.adv6=function(alive){
+  room.className='room adv';
+  const COLS=['#ff4d4d','#ffd23a','#4dd06a','#4da3ff','#c77dff'], NOTES=[523,659,784,880,1047];
+  room.innerHTML=`<div class="snowfall">${Array.from({length:14},()=>`<i style="left:${rand(0,100).toFixed(1)}%;animation-delay:${rand(-8,0).toFixed(1)}s;animation-duration:${rand(6,11).toFixed(1)}s;--s:${rand(3,6).toFixed(1)}px"></i>`).join('')}</div>
+    <svg class="garwire" viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M0 8 Q25 34 50 14 Q75 -4 100 22" fill="none" stroke="#2b5d2f" stroke-width="1.2"/></svg>
+    <div class="garland">${COLS.map((c,i)=>`<button class="bulb" data-i="${i}" style="--c:${c};left:${8+i*21}%;top:${[16,27,24,17,25][i]}%" aria-label="Лампочка"><i></i></button>`).join('')}</div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.82});
+  const bulbs=[...room.querySelectorAll('.bulb')];
+  const flash=(i,ms=420)=>{ const b=bulbs[i]; b.classList.add('on'); tone(NOTES[i],ms/1000*.9,'triangle',0,.06); tone(NOTES[i]*2,ms/1000*.6,'sine',0,.02); setTimeout(()=>b.classList.remove('on'),ms) };
+  let seq=[], pos=0, listening=false, round=0;
+  window._adv6={get seq(){return seq},get listening(){return listening}};   // для автопроверки
+  async function show(){
+    listening=false; setHint('Смотри и слушай, как мигают лампочки…'); await wait(700); if(!alive()) return;
+    for(const i of seq){ flash(i); await wait(650); if(!alive()) return }
+    listening=true; pos=0; setHint('Теперь ты! Нажимай лампочки в том же порядке');
+  }
+  async function next(){
+    round++; const n=round+1; seq=[]; while(seq.length<n){ const i=Math.floor(Math.random()*5); if(seq[seq.length-1]!==i) seq.push(i) }
+    talk2(S2,round===1?'Гирлянда мигает! Повтори за ней!':round===2?'Молодец! Теперь три лампочки!':'Последний раз — четыре!',2000); await wait(1600); if(alive()) show();
+  }
+  room.querySelector('.garland').addEventListener('pointerdown',async e=>{
+    const b=e.target.closest('.bulb'); if(!b||!listening) return; e.preventDefault(); const i=+b.dataset.i; flash(i,300);
+    if(i!==seq[pos]){ listening=false; restart(b,'shake'); tone(220,.25,'sawtooth',0,.03,160); talk2(S2,'Ой, не та! Давай посмотрим ещё раз!',1800); await wait(1500); if(alive()) show(); return }
+    if(++pos===seq.length){ listening=false; add2(1,false); await wait(400); if(!alive()) return;
+      bulbs.forEach((x,j)=>setTimeout(()=>flash(j,250),j*90));
+      if(round>=3){ await wait(700); if(!alive()) return; room.classList.add('twinkle'); add2(0); return }
+      await wait(700); if(alive()) next() }
+  });
+  setTimeout(()=>alive()&&next(),500);
+};
+
+/* ---- День 7. Горячий шоколад: положить в каждую кружку столько зефирок, сколько просят ---- */
+SCENES.adv7=function(alive){
+  room.className='room advkitchen';
+  room.innerHTML=`<div class="mug" id="r-mug"><div class="cocoa"><div class="mallows" id="r-ml"></div></div><i class="handle"></i><div class="steam"><i></i><i></i><i></i></div></div>
+    <div class="mlbag" id="r-bag" role="button" aria-label="Пакет с зефирками"><span>зефир</span></div>
+    <div class="mugnum" id="r-num"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.16,y:s.height*.84});
+  const ORDERS=[['Мне','паука',2],['Маме','маму',3],['Папе','папу',4]];
+  const NUM=['ноль','одна','две','три','четыре','пять','шесть'];
+  let o=0, n=0, lock=false;
+  function order(){ const [who,,want]=ORDERS[o]; n=0; $('r-ml').innerHTML=''; $('r-num').innerHTML=`${who}: <b>${want}</b> ${plural(want,'зефирка','зефирки','зефирок')}`;
+    restart($('r-mug'),'pop'); talk2(S2,`${who} ${want===2?'две':want===3?'три':'четыре'} ${plural(want,'зефирку','зефирки','зефирок')}, пожалуйста!`,2200);
+    setHint(`Нажимай на пакет — положи в кружку ${want} ${plural(want,'зефирку','зефирки','зефирок')}`); lock=false }
+  $('r-bag').addEventListener('pointerdown',async e=>{
+    e.preventDefault(); if(lock) return; const want=ORDERS[o][2]; restart($('r-bag'),'squish');
+    n++; const m=document.createElement('i'); m.style.left=(18+((n*37)%64))+'%'; m.style.top=(10+((n*23)%40))+'%'; m.style.rotate=rand(-30,30)+'deg'; $('r-ml').appendChild(m);
+    tone(400+n*80,.1,'sine',0,.05,300); noise(.05,1200,600,.03);
+    say(S2,`<b>${NUM[n]||n}!</b>`,700); speak(NUM[n]||String(n),S2.pitch,S2.rate,S2.who,S2.voice);
+    if(n===want){ lock=true; await wait(700); if(!alive()) return; sfx.magic(); talk2(S2,pick(['Спасибо! Вкуснятина!','Ровно сколько надо!','Ура, шоколад!']),1600); add2(1,false);
+      await wait(1700); if(!alive()) return; if(++o<ORDERS.length) order(); else { add2(0) } }
+    else if(n>want){ lock=true; await wait(500); if(!alive()) return; restart(S2.btn,'laugh'); sfx.laugh(); talk2(S2,`Ой, многовато! Нужно ${want}. Давай заново!`,2000); await wait(1800); if(alive()) order() }
+  });
+  setTimeout(()=>alive()&&order(),600);
+};
+
+/* ---- День 8. Каток: паук катается за пальцем, оставляет узор на льду и собирает звёздочки ---- */
+SCENES.adv8=function(alive){
+  room.className='room rink';
+  room.innerHTML=`<canvas class="cv" id="r-cv"></canvas>`;
+  S2=makeMain('small free'); wearAll(S2,['santa']); const s=rr();
+  const cv=$('r-cv'), g=cv.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); cv.width=s.width*dpr; cv.height=s.height*dpr; g.setTransform(dpr,0,0,dpr,0,0);
+  const sw=Math.min(s.width*.24,s.height*.15); S2.wrap.style.width=sw+'px';
+  const st={x:s.width*.5,y:s.height*.6,vx:0,vy:0,tx:null,ty:null,trail:[],stars:[],t:0};
+  const addStar=()=>{ let x,y; do{ x=rand(.12,.88)*s.width; y=rand(.18,.88)*s.height }while(Math.hypot(x-st.x,y-st.y)<s.width*.3); st.stars.push({x,y,k:0}) };
+  for(let i=0;i<3;i++) addStar();
+  setHint('Веди пальцем по льду — паук покатится за ним. Собери звёздочки!');
+  talk2(S2,'Ура, каток! Покатаемся? Веди меня пальцем!',2400);
+  handlers2={ down(e,p){ st.tx=p.x; st.ty=p.y }, move(e,p){ if(e.buttons&1){ st.tx=p.x; st.ty=p.y } }, up(){ st.tx=null } };
+  let last=performance.now(), got=0, swish=0;
+  (function frame(now){
+    if(!alive()) return; const dt=Math.min(.04,(now-last)/1000); last=now; st.t+=dt;
+    if(st.tx!==null){ st.vx+=(st.tx-st.x)*3.2*dt; st.vy+=(st.ty-st.y)*3.2*dt }
+    st.vx*=Math.pow(.35,dt); st.vy*=Math.pow(.35,dt); st.x+=st.vx*dt; st.y+=st.vy*dt;
+    st.x=Math.max(sw*.4,Math.min(s.width-sw*.4,st.x)); st.y=Math.max(sw*.4,Math.min(s.height-sw*.3,st.y));
+    const sp=Math.hypot(st.vx,st.vy); if(sp>40){ st.trail.push({x:st.x,y:st.y+sw*.25,a:1}); swish+=sp*dt; if(swish>90){ swish=0; noise(.12,5000,3000,.02,0,'bandpass',2) } }
+    // звёздочки
+    for(const z of st.stars){ z.k+=dt; if(!z.got&&Math.hypot(z.x-st.x,z.y-st.y)<sw*.55){ z.got=true; got++; const r=rr(); burst(r.left+z.x,r.top+z.y,22,5,['#ffe27a','#fff','#bfe6ff']); [1318,1568].forEach((f,i)=>tone(f,.12,'sine',i*.07,.04));
+        if(got%3===1) say(S2,pick(['<b>Вжух!</b>','<b>Звёздочка!</b>','<b>Ура!</b>']),700); add2(1); if(p2<EPX[l2].goal) setTimeout(()=>alive()&&addStar(),400) } }
+    st.stars=st.stars.filter(z=>!z.got);
+    // лёд, узор от коньков, звёзды
+    g.clearRect(0,0,s.width,s.height);
+    g.strokeStyle='rgb(255 255 255/.8)'; g.lineWidth=2; g.lineCap='round';
+    for(let i=1;i<st.trail.length;i++){ const a=st.trail[i-1], b=st.trail[i]; if(Math.hypot(a.x-b.x,a.y-b.y)>40) continue; g.globalAlpha=b.a*.9; g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(b.x,b.y); g.stroke() }
+    g.globalAlpha=1; if(st.trail.length>600) st.trail.splice(0,st.trail.length-600);
+    for(const z of st.stars){ const r=12+3*Math.sin(z.k*5); g.save(); g.translate(z.x,z.y); g.rotate(z.k); g.fillStyle='#ffd23a'; g.shadowColor='#fff3a0'; g.shadowBlur=14; g.beginPath();
+      for(let j=0;j<10;j++){ const rr2=j%2?r*.45:r, an=j*Math.PI/5-Math.PI/2; g.lineTo(Math.cos(an)*rr2,Math.sin(an)*rr2) } g.closePath(); g.fill(); g.restore() }
+    const tilt=Math.max(-20,Math.min(20,st.vx*.06));
+    S2.btn.style.rotate=tilt.toFixed(1)+'deg'; S2.wrap.style.transform=`translate(${(st.x-sw/2).toFixed(1)}px,${(st.y-sw*.5).toFixed(1)}px)`;
+    requestAnimationFrame(frame);
+  })(last);
+};
 
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
