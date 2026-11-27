@@ -667,7 +667,8 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
 .menu .sub{color:var(--muted);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
 .vnote{max-width:520px;margin:0;padding:10px 14px;border-radius:14px;background:var(--bubble);border:1.5px solid var(--web);color:var(--muted);font-size:14px;font-weight:600;line-height:1.35;text-wrap:pretty}
 .cards{display:grid;gap:14px;width:100%;max-width:560px;grid-template-columns:1fr}
-@media (min-width:560px){.cards{grid-template-columns:1fr 1fr}}
+@media (min-width:560px){.cards{grid-template-columns:1fr 1fr}}.card.season{position:relative;border-color:#c4302a;box-shadow:0 0 0 3px #f5c03a55,0 6px 18px #c4302a33;margin-top:8px}
+.card.season::before{content:attr(data-rib);position:absolute;right:16px;top:-11px;padding:3px 10px;border-radius:999px;background:#c4302a;color:#fff;font:800 11px var(--body);letter-spacing:.03em;box-shadow:0 2px 4px #0003;z-index:1;white-space:nowrap}
 .card{display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left;font:inherit;color:var(--fg);background:var(--bubble);
   border:2px solid var(--web);border-radius:22px;padding:14px;cursor:pointer;transition:transform .15s}
 .card:active{transform:scale(.97)} .card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -1950,6 +1951,9 @@ function showMenu(){
   const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
   $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал',spr7:'Спринт',sling7:'Рогатка',climb7:'Лазание'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||''):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
   $('m8s').textContent=advStatus();
+  // сезонный эпизод: с середины ноября до Рождества (и в волшебном режиме) — первым в меню, с лентой; иначе — в конце
+  { const c=$('m8'), box=c.parentElement, on=advSeason();
+    c.classList.toggle('season',on); c.dataset.rib='❄ Только в декабре ❄'; if(on){ if(box.firstElementChild!==c) box.prepend(c) } else if(box.lastElementChild!==c) box.append(c) }
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -4619,6 +4623,7 @@ const TREE_SVG=`<svg viewBox="0 0 200 230" aria-hidden="true"><rect x="88" y="19
   <path d="M60 100 Q100 120 140 100 M44 158 Q100 182 156 158" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="2 7" stroke-linecap="round" opacity=".7"/></svg>`;
 const STAR_SVG=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L25 15 L39 15 L28 24 L32 38 L20 29 L8 38 L12 24 L1 15 L15 15 Z" fill="var(--starc,#c9c9c9)" stroke="#a07a12" stroke-width="2" stroke-linejoin="round"/></svg>`;
 
+function advSeason(){ const d=new Date(), m=d.getMonth(), day=d.getDate(); return advMagic()||(m===10&&day>=15)||(m===11&&day<=26) }
 function advStatus(){
   const t=advToday(), dn=advDone().size;
   if(t===0&&!advMagic()) return `Откроется 1 декабря · ещё ${advDaysLeft()} ${plural(advDaysLeft(),'день','дня','дней')}`;
