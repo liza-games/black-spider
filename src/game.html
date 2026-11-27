@@ -364,6 +364,69 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 
 /* ================= эпизод 3: море ================= */
 :root{ --sky:#bfe6f5; --sea:#3d8fd1; --sea2:#2f78b8; --stone:#8d9499; --stone2:#6f777d; --sand:#ecd9a0; --sun:#f7d04a; --ok:#3fa652 }
+.room.adv{background:linear-gradient(#18264a,#2e4a80 62%,#5a78a8)}
+.room.advday{background:linear-gradient(#bfe3f5,#e8f4fb 70%)}
+.room.advkitchen{background:linear-gradient(#f6e3c8,#efd2ad);}
+.room.advkitchen::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(90deg,#d9b48a 0 40px,#cfa678 40px 80px);z-index:0}
+.snowfall{position:absolute;inset:0;pointer-events:none;z-index:0}
+.snowfall i{position:absolute;top:-10px;width:var(--s);height:var(--s);border-radius:50%;background:#fff;opacity:.85;animation:snowfall linear infinite}
+@keyframes snowfall{to{transform:translate(20px,110vh)}}
+.snowground{position:absolute;left:-5%;right:-5%;bottom:0;height:18%;background:#fff;border-radius:50% 50% 0 0/30% 30% 0 0;box-shadow:inset 0 6px 0 #e6f2fa;z-index:0}
+.advmoon{position:absolute;right:5%;top:3%;width:44px;height:44px;border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 35% 35%,#fffbe0,#f3e6a6);box-shadow:0 0 24px #fff6c880;z-index:2;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.advmoon.glint{animation:glint .3s}
+@keyframes glint{50%{box-shadow:0 0 40px #fff6c8}}
+.advtree{position:absolute;left:50%;top:2%;height:44%;aspect-ratio:200/230;translate:-50% 0;z-index:1}
+.advtree svg{width:100%;height:100%;display:block}
+.advstar{position:absolute;left:50%;top:0;width:18%;translate:-50% -30%;--starc:#c9c9c9}
+.advstar svg{width:100%;display:block}
+.advstar.lit{--starc:#ffd23a;filter:drop-shadow(0 0 10px #ffe27a);animation:starlit 1.6s ease-in-out infinite alternate}
+@keyframes starlit{to{filter:drop-shadow(0 0 18px #fff3a0)}}
+.orn{position:absolute;translate:-50% -50%;font-size:clamp(14px,4.4vw,22px);line-height:1;opacity:0;scale:.2;transition:opacity .3s,scale .4s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.orn.on{opacity:1;scale:1}
+.orn.fly{animation:ornfly 1.1s cubic-bezier(.3,.7,.4,1)}
+@keyframes ornfly{0%{transform:translate(var(--fx),var(--fy)) scale(3.2)}35%{transform:translate(var(--fx),var(--fy)) scale(3.6)}100%{transform:none}}
+.advgrid{position:absolute;left:3%;right:3%;bottom:2.5%;height:46%;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr);gap:6px;z-index:3}
+.advw{position:relative;border:0;border-radius:10px;padding:0;cursor:pointer;display:grid;place-items:center;font-family:var(--display);color:#fff;
+  background:linear-gradient(#c4302a,#a32420);box-shadow:inset 0 -3px 0 #0003,0 2px 6px #0004;transform-origin:left center;transition:transform .6s,opacity .3s}
+.advw:nth-child(3n+2){background:linear-gradient(#2f7de0,#2464b8)}.advw:nth-child(4n+3){background:linear-gradient(#3f9a52,#2f7a40)}.advw:nth-child(5n+4){background:linear-gradient(#e0a52a,#c98a12)}
+.advw b{font-size:clamp(14px,4.6vw,22px);text-shadow:0 2px 0 #0003}
+.advw i{position:absolute;right:3px;bottom:1px;font-style:normal;font-size:clamp(10px,3vw,14px)}
+.advw.locked{filter:saturate(.35) brightness(.75)}
+.advw.soon{filter:saturate(.6)}
+.advw.done{background:linear-gradient(#fff6dc,#f1e2b8)!important;color:#8a5a12}
+.advw.done b{text-shadow:none;font-size:clamp(11px,3.4vw,15px);position:absolute;left:5px;top:3px}
+.advw.done i{position:static;font-size:clamp(18px,6vw,28px)}
+.advw.today{animation:advtoday 1.2s ease-in-out infinite;z-index:1}
+@keyframes advtoday{50%{box-shadow:0 0 0 4px #ffe27a,0 0 22px #ffe27a}}
+.advw.opening{transform:perspective(400px) rotateY(-80deg);opacity:.4}
+.advw.shake{animation:shake .4s}
+.advmagic{position:absolute;left:3%;top:3%;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:14px;background:#fff3;color:#fff;font:800 13px var(--body);z-index:4}
+.advmagic button{width:28px;height:28px;border-radius:50%;border:0;background:#fff;color:#22335c;font:900 16px var(--body);cursor:pointer}
+.flake{position:absolute;border:0;background:none;padding:6px;color:#fff;text-shadow:0 0 6px #7fb8e8,0 0 2px #5a9fd6;cursor:pointer;z-index:4;animation:flakefall linear forwards;transition:left .4s ease-in,top .4s ease-in,scale .4s;line-height:1}
+@keyframes flakefall{to{transform:translate(var(--dx),calc(100vh));rotate:200deg}}
+.flake.eaten{scale:.3}
+.sball{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;z-index:3}
+.sball::after{content:"";position:absolute;left:30%;top:20%;width:14%;height:14%;border-radius:50%;background:#d6e6f2}
+.sman{position:absolute;left:70%;bottom:13%;width:34%;height:70%;translate:-50% 0;z-index:2}
+.sman .sb{position:absolute;left:50%;translate:-50% 0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
+@keyframes sbin{from{scale:.3;translate:-50% -60px}}
+.sman .sb.wob{animation:wob .5s}
+.sd{position:absolute;line-height:1;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
+.sd.eyes{left:50%;top:22%;translate:-50% 0;font-size:min(7vw,30px)}
+.sd.nose{left:56%;top:46%;font-size:min(6vw,26px);rotate:-80deg}
+.sd.hat{left:50%;top:-38%;translate:-50% 0;font-size:min(10vw,44px)}
+.sdecor,.candies{position:absolute;left:50%;top:4%;translate:-50% 0;display:flex;gap:10px;z-index:5}
+.sdecor button,.candies button{width:56px;height:56px;border-radius:16px;border:3px solid #fff;background:#ffffffc0;font-size:30px;cursor:pointer;box-shadow:0 3px 8px #0002;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
+.sdecor button.used,.candies button.used{opacity:.25;scale:.8}
+.mitts{position:absolute;left:4%;right:4%;top:6%;height:56%;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;z-index:3}
+.mitt{border:0;background:none;padding:0;cursor:pointer;rotate:var(--r);transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .7s,scale .2s}
+.mitt svg{width:100%;height:100%;max-height:120px}
+.mitt.flip svg{transform:scaleX(-1)}
+.mitt.sel{scale:1.15;filter:drop-shadow(0 0 8px #ffe27a)}
+.mitt.gone{transform:translate(var(--tx),var(--ty)) scale(.2);opacity:0;pointer-events:none}
+.mitt.shake{animation:shake .4s}
+.gbwrap{position:absolute;left:50%;top:12%;width:min(78%,52vh);aspect-ratio:1;translate:-50% 0;z-index:2;touch-action:none}
+.gbwrap svg{width:100%;height:100%;display:block}
 .room.sea{background:linear-gradient(var(--sky) 0 34%,var(--sea) 34% 70%,var(--sea2))}
 .sea .surf{position:absolute;left:0;right:0;top:calc(34% - 5px);height:10px;background:radial-gradient(circle at 10px -4px,var(--sky) 9px,transparent 10px) 0 0/20px 10px}
 .sea .ripple{position:absolute;left:0;right:0;height:8px;opacity:.3;background:radial-gradient(circle at 12px 12px,transparent 9px,#fff 10px,transparent 11px) 0 0/24px 8px;animation:ripple 3s linear infinite}
@@ -500,10 +563,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .score-stars{font-size:clamp(34px,10vw,48px);letter-spacing:.1em;color:var(--gold);text-align:center;line-height:1}
 
 /* ================= эпизод 6: бассейн ================= */
-.gear-cap,.gear-goggles,.gear-arm,.gear-medal,.gear-helmet,.gear-shoes,.gear-socks,.gear-boots{display:none}
+.gear-cap,.gear-goggles,.gear-arm,.gear-medal,.gear-helmet,.gear-shoes,.gear-socks,.gear-boots,.gear-santa{display:none}
 .silver .gear-medal circle{fill:#d3d9df;stroke:#8a96a3}
 .bronze .gear-medal circle{fill:#d08a4a;stroke:#9a5a24}
-.w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal,.w-helmet .gear-helmet,.w-shoes .gear-shoes,.w-socks .gear-socks,.w-boots .gear-boots{display:inline}
+.w-cap .gear-cap,.w-goggles .gear-goggles,.w-arms .gear-arm,.w-medal .gear-medal,.w-helmet .gear-helmet,.w-shoes .gear-shoes,.w-socks .gear-socks,.w-boots .gear-boots,.w-santa .gear-santa{display:inline}
 .w-boots .gear-shoes{display:none}   /* в сапожках кроссовки не видны */
 .room.locker .wall{background:linear-gradient(transparent 62%,#c99a6b 62% 64%,transparent 64%),#f1e7d6}
 .room.locker .floor{background:repeating-linear-gradient(90deg,#d9cdb5 0 36px,#cfc2a8 36px 72px)}
@@ -763,6 +826,23 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
       </svg>
       <span class="ep">Эпизод 7 · спорт</span><span class="nm">Паучья олимпиада</span><span class="st" id="m7s"></span>
     </button>
+    <button class="card" id="m8">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#22335c"/><circle cx="172" cy="20" r="11" fill="#fff6c8"/>
+        <g fill="#fff" opacity=".85"><circle cx="20" cy="14" r="2"/><circle cx="60" cy="30" r="1.6"/><circle cx="120" cy="10" r="1.8"/><circle cx="150" cy="44" r="1.5"/><circle cx="90" cy="48" r="1.6"/></g>
+        <rect y="92" width="200" height="18" fill="#eef6ff"/>
+        <path d="M44 14 L70 46 H58 L78 72 H64 L86 96 H2 L24 72 H10 L30 46 H18 Z" fill="#2f8f4a"/><path d="M44 6 l3 7 h7 l-6 4 l2 7 l-6 -4 l-6 4 l2 -7 l-6 -4 h7Z" fill="#f5c03a"/>
+        <g><circle cx="36" cy="56" r="4" fill="#e8483c"/><circle cx="52" cy="74" r="4" fill="#3d8fe0"/><circle cx="30" cy="84" r="4" fill="#f5c03a"/><circle cx="60" cy="88" r="4" fill="#e8483c"/></g>
+        <g font-family="Rubik Mono One, Arial Black, sans-serif" font-size="11" text-anchor="middle">
+          <rect x="100" y="34" width="22" height="22" rx="4" fill="#c4302a"/><text x="111" y="50" fill="#fff">1</text>
+          <rect x="126" y="34" width="22" height="22" rx="4" fill="#2f7de0"/><text x="137" y="50" fill="#fff">2</text>
+          <rect x="152" y="34" width="22" height="22" rx="4" fill="#4fae5a"/><text x="163" y="50" fill="#fff">3</text>
+          <rect x="100" y="60" width="22" height="22" rx="4" fill="#f5c03a"/><text x="111" y="76" fill="#8a5a12">4</text>
+          <rect x="126" y="60" width="22" height="22" rx="4" fill="#7a3cc9"/><text x="137" y="76" fill="#fff">5</text>
+          <rect x="152" y="60" width="22" height="22" rx="4" fill="#c4302a"/><text x="163" y="76" fill="#fff">6</text></g>
+      </svg>
+      <span class="ep">Эпизод 8 · декабрь</span><span class="nm">Адвент-календарь</span><span class="st" id="m8s"></span>
+    </button>
   </div>
 </div>
 
@@ -798,6 +878,7 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
         <path class="mouth" d="M92 98 Q100 104 108 98" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <path class="gear-cap" d="M73 84 A27 27 0 0 1 127 84 Q100 74 73 84Z" fill="#2f7de0"/><path class="gear-cap" d="M80 70 Q100 62 120 70" stroke="#fff" stroke-width="3" fill="none" opacity=".8"/>
         <g class="gear-goggles"><path d="M74 81 H80 M120 81 H126" stroke="#2f7de0" stroke-width="3"/><circle cx="90" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><circle cx="110" cy="82" r="10.5" fill="rgb(140 210 255/.45)" stroke="#2f7de0" stroke-width="3"/><path d="M100 82 h0" stroke="#2f7de0" stroke-width="3" stroke-linecap="round"/></g>
+        <g class="gear-santa"><path d="M70 81 Q72 54 100 50 Q126 47 146 68 Q134 64 126 66 Q131 72 130 81 Z" fill="#e8483c"/><rect x="66" y="74" width="68" height="11" rx="5.5" fill="#fff"/><circle cx="147" cy="69" r="7" fill="#fff"/></g>
         <g class="gear-helmet"><path d="M71 80 A29 29 0 0 1 129 80 Z" fill="#e8483c"/><rect x="64" y="77" width="72" height="7" rx="3.5" fill="#c4302a"/><path d="M100 57 v14 M93 64 h14" stroke="#fff" stroke-width="4"/><path d="M80 66 Q90 58 100 57" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/></g>
         <g class="gear-medal"><path d="M90 100 L100 118 L110 100" stroke="#3d6fe0" stroke-width="4" fill="none"/><circle cx="100" cy="124" r="10" fill="#f5c03a" stroke="#c98f12" stroke-width="2"/><path d="M100 118 l2 4 4 .5 -3 3 1 4 -4 -2 -4 2 1 -4 -3 -3 4 -.5z" fill="#fff6"/></g>
         <g class="teeth"><path class="tooth" d="M86 95 Q100 120 114 95 Z" stroke="#fff" stroke-width="1"/><path d="M93 96 v6 M100 96 v8 M107 96 v6" stroke="rgb(0 0 0/.25)" stroke-width="1.5"/></g>
@@ -1038,7 +1119,16 @@ const MUSIC={
      bass:[41,0,53,0,41,0,53,0, 43,0,55,0,48,0,55,0, 46,0,58,0,46,0,58,0, 48,0,55,0,41,0,0,0]},
   7:{bpm:140,wave:'triangle',vol:.03,
      mel:[67,0,71,74,79,0,74,0, 76,0,72,0,76,79,84,0, 83,0,79,0,76,0,74,0, 71,74,79,0,79,0,0,0],
-     bass:[43,43,0,43,50,0,50,0, 48,48,0,48,52,0,52,0, 47,47,0,47,50,0,50,0, 43,0,50,0,43,0,0,0]}
+     bass:[43,43,0,43,50,0,50,0, 48,48,0,48,52,0,52,0, 47,47,0,47,50,0,50,0, 43,0,50,0,43,0,0,0]},
+  8:{bpm:132,wave:'triangle',vol:.028,   // адвент-календарь: «Jingle Bells»
+     mel:[76,0,76,0,76,0,0,0, 76,0,76,0,76,0,0,0, 76,0,79,0,72,0,0,74, 76,0,0,0,0,0,0,0,
+          77,0,77,0,77,0,0,77, 77,0,76,0,76,0,76,76, 76,0,74,0,74,0,76,0, 74,0,0,0,79,0,0,0,
+          76,0,76,0,76,0,0,0, 76,0,76,0,76,0,0,0, 76,0,79,0,72,0,0,74, 76,0,0,0,0,0,0,0,
+          77,0,77,0,77,0,0,77, 77,0,76,0,76,0,76,76, 79,0,79,0,77,0,74,0, 72,0,0,0,0,0,0,0],
+     bass:[48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0,
+           53,0,57,0,53,0,57,0, 48,0,55,0,48,0,55,0, 50,0,55,0,50,0,55,0, 43,0,50,0,43,0,50,0,
+           48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0, 48,0,55,0,48,0,55,0,
+           53,0,57,0,53,0,57,0, 48,0,55,0,48,0,55,0, 43,0,50,0,43,0,50,0, 48,0,55,0,48,0,0,0]}
 };
 let musicOn=(()=>{try{return localStorage.getItem('spider-music')!=='off'}catch(e){return true}})();
 let musBus=null, musTimer=0, musTrack=null, musStep=0, musNext=0;
@@ -1856,6 +1946,7 @@ function showMenu(){
   $('m6s').textContent=f6>=EP6.length?`Пройден ✓${st6>=0?` · ⭐ ${st6}`:''}`:f6>0?`Этап ${f6+1} из ${EP6.length}`:'Начать';
   const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
   $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал',spr7:'Спринт',sling7:'Рогатка',climb7:'Лазание'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||''):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
+  $('m8s').textContent=advStatus();
   const e=lsGet('spider-ep5',0), best=lsGet('spider-quiz-best-pct',-1);
   $('m5s').textContent=e>=EP5.length?`Пройден ✓${best>=0?` · лучший результат ${best}%`:''}`:e===2?`Квиз${best>=0?` · лучший результат ${best}%`:''}`:e>0?'Глава 2 из 2':'Начать';
   const d=lsGet('spider-ep4',0), b4=lsGet('spider-ep4-best',-1); $('m4s').textContent=d>=EP4.length?`Прочитана ✓${b4>=0?` · ⭐ ${b4} из 18`:''}`:d>0?`Глава ${Math.min(d+1,3)} из 3`:'Начать';
@@ -1878,6 +1969,7 @@ $('m4').addEventListener('click',()=>{unlockAudio();startStory(4)});
 $('m5').addEventListener('click',()=>{unlockAudio();startStory(5)});
 $('m6').addEventListener('click',()=>{unlockAudio();startStory(6)});
 $('m7').addEventListener('click',()=>{unlockAudio();startStory(7)});
+$('m8').addEventListener('click',()=>{unlockAudio();startStory(8,0)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -1934,7 +2026,9 @@ const EP7=[
   {key:'run7d',  title:'Финал: барьерный бег с Серебристым',goal:60, unit:'м', done:''},
   {key:'cup7',   title:'Кубок чемпиона',              goal:1,  unit:'',  done:''}
 ];
+// (эпизод 8 — ниже, рядом со сценами)
 const STORIES={
+  8:{n:8,levels:null,store:'spider-ep8',hub:true,fin:['Ёлка наряжена!','']},
   7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион олимпиады!','']},
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
   6:{n:6,levels:EP6,store:'spider-ep6',fin:['Паук научился плавать!','']},
@@ -1997,6 +2091,8 @@ function render2(){
   const L=EPX[l2];
   $('eyebrow').textContent=`Эпизод ${EPS.n} · этап ${l2+1} из ${EPX.length}`;
   $('task').textContent=L.title; $('hint').textContent=hint2;
+  if(EPS.hub){ $('steps').innerHTML=''; $('eyebrow').textContent=l2===0?`Эпизод 8 · открыто ${advDone().size} из 24${advMagic()?' · 🪄':''}`:`Адвент-календарь · ${l2} декабря`;
+    if(l2===0){ $('bars').style.visibility=$('count').style.visibility='hidden' } }
   $('barMe').style.width=Math.min(100,p2/L.goal*100)+'%';
   $('count').innerHTML=`<b>${Math.min(p2,L.goal)}</b> / ${L.goal}${L.unit?' '+L.unit:''}`;
   if(onRender2) onRender2();
@@ -2013,7 +2109,7 @@ function celebrate2(){
   setTimeout(()=>{burst(innerWidth*.2,innerHeight*.35,40,8);burst(innerWidth*.8,innerHeight*.35,40,8)},250);
   sfx.fanfare(); banner(pick(['Отлично!','Супер!','Молодец!','Класс!','Ура!']));
   if(L.done) talk2(S2,L.done,2200);
-  const sid=sceneId; setTimeout(()=>{if(sid===sceneId){busy2=false;enter2(l2+1)}},2600);
+  const sid=sceneId; setTimeout(()=>{if(sid===sceneId){busy2=false; if(EPS.hub){advMark(l2);advJust=l2;enter2(0)} else enter2(l2+1)}},2600);
 }
 function leave2(){sceneId++;room.innerHTML='';talkers2=[];S2=null;handlers2={};busy2=false}
 function enter2(i){
@@ -2050,6 +2146,7 @@ function loop2(){
 loop2();
 
 /* ---- картинки ---- */
+
 const SVG={
   toilet:`<svg viewBox="0 0 120 150"><rect x="22" y="4" width="76" height="52" rx="8" fill="var(--porcelain)" stroke="var(--line)" stroke-width="2"/>
     <circle cx="60" cy="18" r="7" fill="#bcd3e6" stroke="var(--line)" stroke-width="2"/>
@@ -4482,6 +4579,213 @@ SCENES.cup7=function(alive){
   };
 };
 
+/* =====================================================================
+   ЭПИЗОД 8 — АДВЕНТ-КАЛЕНДАРЬ
+   24 окошка: открыть можно сегодняшнее и все прошедшие (пропущенные — позже), будущие на замочке.
+   За каждый день — игрушка на ёлку. Секрет для нас: 7 раз нажать на луну — «волшебный режим»
+   (все окошки открыты и можно подменить сегодняшнюю дату). Ещё 7 нажатий — выключить.
+   ===================================================================== */
+const ADV=[null,
+  {t:'Первый снег',        o:'❄️', goal:10, unit:'снежинок', done:'Ням! Холодненько и вкусно!'},
+  {t:'Слепи снеговика',    o:'⛄', goal:6,  unit:'',         done:'Привет, снеговик!'},
+  {t:'Найди пары варежкам',o:'🧤', goal:4,  unit:'пары',     done:'Все лапки в тепле!'},
+  {t:'Пряничный паук',     o:'🍪', goal:9,  unit:'',         done:'Какой красивый пряник!'},
+  ...Array.from({length:20},(_,i)=>({t:'Сюрприз',o:['☃️','💡','☕','⛸️','🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
+];
+var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done}))];
+const advDone=()=>{try{return new Set((localStorage.getItem('spider-adv-done')||'').split(',').filter(Boolean).map(Number))}catch(e){return new Set()}};
+const advMark=d=>{const s=advDone(); s.add(d); lsSet('spider-adv-done',[...s].join(','))};
+const advMagic=()=>lsGet('spider-adv-magic',0)===1;
+// какой сегодня день календаря: 0 — декабрь ещё не начался, 1…24 — декабрь, после праздников — все 24
+function advToday(){
+  const fake=lsGet('spider-adv-fake',-1); if(advMagic()&&fake>=0) return fake;
+  if(advMagic()) return 24;
+  const d=new Date(), m=d.getMonth(); if(m===11) return Math.min(24,d.getDate()); if(m===10) return 0; return 24;
+}
+const advDaysLeft=()=>{const d=new Date(), dec1=new Date(d.getFullYear(),11,1); return Math.max(1,Math.ceil((dec1-d)/864e5))};
+let advJust=0;
+// места игрушек на ёлке (в процентах контейнера ёлки), перемешаны, чтобы ёлка наряжалась равномерно
+const ORN_POS=(()=>{const rows=[2,3,4,4,5,6], out=[]; rows.forEach((n,r)=>{const y=27+r*11.2, hw=(y-6)/84*40*.82;
+  for(let i=0;i<n;i++) out.push({x:50-hw+(n===1?hw:2*hw*i/(n-1)),y:y+(i%2?2:0)})});
+  const order=[11,3,18,0,22,7,14,1,20,9,16,5,23,12,2,19,8,15,4,21,10,17,6,13]; return order.map(i=>out[i])})();
+const TREE_SVG=`<svg viewBox="0 0 200 230" aria-hidden="true"><rect x="88" y="198" width="24" height="26" rx="3" fill="#7a5230"/>
+  <path d="M100 18 L162 92 H136 L178 150 H148 L192 206 H8 L52 150 H22 L64 92 H38 Z" fill="#2f8f4a" stroke="#1f6e36" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M60 100 Q100 120 140 100 M44 158 Q100 182 156 158" stroke="#fff" stroke-width="3" fill="none" stroke-dasharray="2 7" stroke-linecap="round" opacity=".7"/></svg>`;
+const STAR_SVG=`<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L25 15 L39 15 L28 24 L32 38 L20 29 L8 38 L12 24 L1 15 L15 15 Z" fill="var(--starc,#c9c9c9)" stroke="#a07a12" stroke-width="2" stroke-linejoin="round"/></svg>`;
+
+function advStatus(){
+  const t=advToday(), dn=advDone().size;
+  if(t===0&&!advMagic()) return `Откроется 1 декабря · ещё ${advDaysLeft()} ${plural(advDaysLeft(),'день','дня','дней')}`;
+  return (advMagic()?'🪄 ':'')+(dn>=24?'Ёлка наряжена ✓':`Открыто ${dn} из 24`);
+}
+
+SCENES.cal=function(alive){
+  const done=advDone(), today=advToday(), magic=advMagic();
+  room.className='room adv';
+  room.innerHTML=`<div class="snowfall">${Array.from({length:22},()=>`<i style="left:${rand(0,100).toFixed(1)}%;animation-delay:${rand(-8,0).toFixed(1)}s;animation-duration:${rand(6,11).toFixed(1)}s;--s:${rand(3,7).toFixed(1)}px"></i>`).join('')}</div>
+    <button class="advmoon" id="r-moon" aria-label="Луна"></button>
+    <div class="advtree" id="r-tree">${TREE_SVG}<span class="advstar" id="r-star">${STAR_SVG}</span>
+      ${ORN_POS.map((p,i)=>`<span class="orn${done.has(i+1)?' on':''}" id="r-orn${i+1}" style="left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%">${ADV[i+1].o}</span>`).join('')}</div>
+    ${magic?`<div class="advmagic"><span>🪄</span><button id="r-fm" aria-label="Раньше">−</button><b id="r-fd"></b><button id="r-fp" aria-label="Позже">+</button></div>`:''}
+    <div class="advgrid" id="r-grid"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']);
+  const s=rr(); put(S2,{x:s.width*.14,y:s.height*.36});
+  const grid=$('r-grid');
+  function draw(){
+    const t=advToday();
+    grid.innerHTML=Array.from({length:24},(_,i)=>{const d=i+1, isDone=done.has(d), open=d<=t, soon=ADV[d].soon;
+      const cls=isDone?'done':!open?'locked':soon?'soon':d===t?'today':'open';
+      return `<button class="advw ${cls}" data-d="${d}" aria-label="${d} декабря"><b>${d}</b>${isDone?`<i>${ADV[d].o}</i>`:!open?'<i>🔒</i>':soon?'<i>🚧</i>':''}</button>`}).join('');
+    if(magic) $('r-fd').textContent=lsGet('spider-adv-fake',-1)<0?'все':`${t} дек`;
+    if(done.has(24)) $('r-star').classList.add('lit');
+  }
+  draw();
+  // окошко: открыть / сказать, когда откроется
+  grid.addEventListener('click',async e=>{
+    const b=e.target.closest('.advw'); if(!b||busy2) return; const d=+b.dataset.d, t=advToday();
+    if(d>t){ restart(b,'shake'); tone(300,.12,'triangle',0,.04,200);
+      if(t===0) talk2(S2,`Окошки откроются первого декабря! Ещё ${advDaysLeft()} ${plural(advDaysLeft(),'денёк','денька','деньков')}!`,2600);
+      else talk2(S2,`Это окошко откроется ${d} декабря. Ещё ${d-t} ${plural(d-t,'денёк','денька','деньков')}!`,2400); return }
+    if(ADV[d].soon){ restart(b,'shake'); talk2(S2,'Этот сюрприз ещё готовится!',1800); return }
+    busy2=true; b.classList.add('opening'); sfx.door(); stardust(.8,.02);
+    await wait(650); if(!alive()) return; busy2=false; enter2(d);
+  });
+  // секрет: 7 нажатий на луну
+  let moonN=0, moonT=0;
+  $('r-moon').addEventListener('pointerdown',e=>{ e.stopPropagation(); const now=performance.now(); if(now-moonT>1500) moonN=0; moonT=now;
+    tone(1200+moonN*120,.06,'sine',0,.02); restart($('r-moon'),'glint');
+    if(++moonN>=7){ moonN=0; lsSet('spider-adv-magic',magic?0:1); if(magic) lsSet('spider-adv-fake',-1); sfx.magic(); enter2(0) } });
+  if(magic){ const step=k=>{ let f=lsGet('spider-adv-fake',-1); f=f<0?(k<0?24:0):f+k; if(f>24) f=-1; if(f<0&&k<0) f=-1; lsSet('spider-adv-fake',Math.max(-1,Math.min(24,f))); draw() };
+    $('r-fm').onclick=()=>step(-1); $('r-fp').onclick=()=>step(1) }
+  setHint(today===0?'Окошки откроются 1 декабря':'Нажми на окошко с сегодняшним числом');
+  // вернулись из дня — игрушка летит на ёлку
+  (async()=>{
+    await wait(500); if(!alive()) return;
+    if(advJust){ const d=advJust; advJust=0; const o=$('r-orn'+d), tr=$('r-tree').getBoundingClientRect(), st=rr();
+      o.classList.add('fly'); o.style.setProperty('--fx',`${st.left+st.width/2-tr.left-tr.width*parseFloat(o.style.left)/100}px`); o.style.setProperty('--fy',`${st.top+st.height*.75-tr.top-tr.height*parseFloat(o.style.top)/100}px`);
+      o.classList.add('on'); [1046.5,1318.5,1568].forEach((f,i)=>tone(f,.3,'sine',.6+i*.08,.04));
+      await wait(1100); if(!alive()) return; const r=o.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,30,6,['#ffe27a','#fff','#ff9ab8']);
+      if(d===24&&!$('r-star').classList.contains('lit')){ await wait(400); $('r-star').classList.add('lit'); taDa(); const sr=$('r-star').getBoundingClientRect();
+        for(let k=0;k<4;k++) setTimeout(()=>burst(rand(.15,.85)*innerWidth,rand(.15,.4)*innerHeight,50,9),k*300); burst(sr.left+sr.width/2,sr.top+sr.height/2,80,10,['#ffe27a','#fff6c0']);
+        talk2(S2,'Ёлка наряжена! Звезда горит! С праздником!',3200); return }
+      talk2(S2,done.size>=24?'Ёлка наряжена!':pick(['Новая игрушка на ёлке!','Красота! Ёлка наряжается!','Ещё одна игрушка! Завтра будет новое окошко!']),2400); return }
+    if(today===0) talk2(S2,`Скоро декабрь! Окошки откроются через ${advDaysLeft()} ${plural(advDaysLeft(),'день','дня','дней')}.`,2800);
+    else if(today<=24&&!done.has(today)&&!ADV[today].soon){ talk2(S2,'Смотри, сегодняшнее окошко светится! Открой его!',2400); }
+    else talk2(S2,pick(['Какая красивая ёлка!','Хо-хо-хо! Я паук-Дед Мороз!','Скоро праздник!']),2000);
+  })();
+};
+
+/* ---- День 1. Первый снег: ловить снежинки — они летят пауку в рот ---- */
+SCENES.adv1=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.74});
+  setHint('Нажимай на снежинки — паук их поймает!');
+  talk2(S2,'Ура, первый снег! Давай ловить снежинки!',2400);
+  let caught=0;
+  (function spawn(){
+    if(!alive()||p2>=EPX[l2].goal) return;
+    const f=document.createElement('button'); f.className='flake'; f.setAttribute('aria-label','Снежинка'); f.textContent='❄';
+    const st=rr(), x0=rand(.08,.92)*st.width; f.style.left=x0+'px'; f.style.top='-30px'; f.style.fontSize=rand(30,44)+'px';
+    f.style.setProperty('--dx',rand(-40,40)+'px'); f.style.animationDuration=rand(5,8)+'s'; room.appendChild(f);
+    f.onpointerdown=e=>{ e.preventDefault(); e.stopPropagation(); if(f.dataset.got) return; f.dataset.got=1;
+      const fr=f.getBoundingClientRect(); f.style.animation='none'; f.style.left=fr.left-st.left+'px'; f.style.top=fr.top-st.top+'px';
+      requestAnimationFrame(()=>{ const m=anchor(S2.btn,.5,.62); f.classList.add('eaten'); f.style.left=m.x-fr.width/2+'px'; f.style.top=m.y-fr.height/2+'px' });
+      tone(rand(1500,2100),.08,'sine',0,.04);
+      setTimeout(()=>{ if(!alive())return; f.remove(); sfx.chomp(1.3); restart(S2.btn,'jump'); caught++;
+        if(caught%4===2) say(S2,pick(['<b>Ням!</b>','<b>Холодненько!</b>','<b>Вкусно!</b>','<b>Ещё!</b>']),800); add2(1) },420) };
+    setTimeout(()=>{ if(!f.dataset.got) f.remove() },9000);
+    setTimeout(spawn,rand(550,900));
+  })();
+};
+
+/* ---- День 2. Снеговик: катать снежный ком пальцем, потом нос, глазки и шляпа ---- */
+SCENES.adv2=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="sman" id="r-sman"></div><div class="sball" id="r-ball"></div>
+    <div class="sdecor" id="r-decor" hidden><button data-k="eyes" aria-label="Глазки">👀</button><button data-k="nose" aria-label="Нос-морковка">🥕</button><button data-k="hat" aria-label="Шляпа">🎩</button></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.14,y:s.height*.74});
+  const ball=$('r-ball'), man=$('r-sman'), SIZES=[.30,.23,.16];   // доли ширины сцены
+  let k=0, size=.06, rot=0, bx=.5, lastX=null, stage='roll';
+  const drawBall=()=>{ const st=rr(), px=size*st.width; ball.style.width=ball.style.height=px+'px'; ball.style.left=(bx*st.width-px/2)+'px'; ball.style.top=(st.height*.86-px)+'px'; ball.style.rotate=rot+'deg' };
+  drawBall();
+  setHint('Води пальцем влево-вправо — катай снежный ком, он будет расти!');
+  talk2(S2,'Слепим снеговика? Катай ком пальцем!',2400);
+  handlers2={
+    down(e,p){ lastX=p.x },
+    move(e,p){ if(stage!=='roll'||lastX===null||!(e.buttons&1)) return; const st=rr(), dx=p.x-lastX; lastX=p.x;
+      bx=Math.max(.38,Math.min(.92,bx+dx/st.width)); rot+=dx*1.6; size=Math.min(SIZES[k],size+Math.abs(dx)/st.width*.06); drawBall();
+      if(Math.random()<.2) noise(.06,900,500,.03,0,'lowpass',.8);
+      if(size>=SIZES[k]) placeBall() },
+    up(){ lastX=null }
+  };
+  async function placeBall(){
+    stage='busy'; const st=rr(), px=size*st.width;
+    const below=[...man.children].reduce((h,c)=>h+c.offsetHeight*.82,0);
+    const b=document.createElement('div'); b.className='sb'; b.style.width=b.style.height=px+'px'; b.style.bottom=below+'px'; man.appendChild(b);
+    ball.style.opacity=0; sfx.thud(); burst(st.left+st.width*.68,st.top+st.height*.8,20,5,['#fff','#e6f6ff']); add2(1,false); k++;
+    if(k<3){ talk2(S2,['Отличный ком! Теперь поменьше!','Ещё один, самый маленький — голова!'][k-1],2000); await wait(600); if(!alive())return; size=.06; bx=.5; rot=0; ball.style.opacity=1; drawBall(); stage='roll'; return }
+    talk2(S2,'Готово! Теперь глазки, нос и шляпа!',2200); setHint('Нажимай на глазки, морковку и шляпу'); $('r-decor').hidden=false;
+  }
+  $('r-decor').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; b.disabled=true; b.classList.add('used');
+    const head=man.lastElementChild, d=document.createElement('span'); d.className='sd '+b.dataset.k; d.textContent=b.textContent; head.appendChild(d);
+    sfx.pop(); restart(head,'wob'); add2(1) });
+};
+
+/* ---- День 3. Варежки: найти пары (одинаковый цвет и узор) ---- */
+const MITT=(c1,c2,pat)=>`<svg viewBox="0 0 60 80" aria-hidden="true"><path d="M14 72 V34 Q14 8 32 8 Q48 8 48 30 V72 Z" fill="${c1}" stroke="#0003" stroke-width="2"/>
+  <path d="M14 40 Q2 38 4 26 Q6 16 16 22" fill="${c1}" stroke="#0003" stroke-width="2"/><rect x="12" y="62" width="38" height="14" rx="4" fill="${c2}"/>
+  ${pat==='dots'?`<g fill="${c2}"><circle cx="26" cy="28" r="4"/><circle cx="38" cy="40" r="4"/><circle cx="26" cy="50" r="4"/></g>`:pat==='stripe'?`<path d="M14 36 H48 M14 46 H48" stroke="${c2}" stroke-width="5"/>`:pat==='heart'?`<path d="M31 50 C20 42 22 30 31 36 C40 30 42 42 31 50Z" fill="${c2}"/>`:`<path d="M31 26 l3 7 h7 l-6 5 l2 7 l-6 -4 l-6 4 l2 -7 l-6 -5 h7Z" fill="${c2}"/>`}</svg>`;
+SCENES.adv3=function(alive){
+  room.className='room advday';
+  const pairs=[['#e8483c','#fff','dots'],['#3d8fe0','#ffe27a','stripe'],['#4fae5a','#fff','star'],['#b56be0','#ff9ab8','heart']];
+  const items=pairs.flatMap((p,i)=>[{i,p,flip:false},{i,p,flip:true}]).sort(()=>Math.random()-.5);
+  room.innerHTML=`<div class="snowground"></div><div class="mitts" id="r-mitts">${items.map((m,j)=>`<button class="mitt${m.flip?' flip':''}" data-i="${m.i}" aria-label="Варежка" style="--r:${rand(-14,14).toFixed(0)}deg">${MITT(...m.p)}</button>`).join('')}</div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.8});
+  setHint('Нажми на варежку, а потом на такую же — это пара');
+  talk2(S2,'Ой, все варежки перепутались! Помоги найти пары!',2600);
+  let sel=null, lock=false;
+  $('r-mitts').addEventListener('click',async e=>{
+    const b=e.target.closest('.mitt'); if(!b||lock||b.classList.contains('gone')) return;
+    if(!sel){ sel=b; b.classList.add('sel'); tone(700,.06,'sine',0,.04); return }
+    if(sel===b){ b.classList.remove('sel'); sel=null; return }
+    if(sel.dataset.i===b.dataset.i){ lock=true; const a=sel; sel=null; b.classList.add('sel'); sfx.magic();
+      const m=anchor(S2.btn,.5,.5), st=rr();
+      [a,b].forEach(x=>{ const r=x.getBoundingClientRect(); x.style.setProperty('--tx',`${m.x+st.left-(r.left+r.width/2)}px`); x.style.setProperty('--ty',`${m.y+st.top-(r.top+r.height/2)}px`); x.classList.add('gone') });
+      await wait(700); if(!alive())return; restart(S2.btn,'jump'); lock=false; if(p2<3) say(S2,pick(['<b>Пара!</b>','<b>Тёпленько!</b>','<b>Ура!</b>']),900); add2(1) }
+    else { const a=sel; sel=null; [a,b].forEach(x=>{x.classList.remove('sel'); restart(x,'shake')}); tone(260,.15,'triangle',0,.04,200); say(S2,'<b>Не пара!</b>',900) }
+  });
+};
+
+/* ---- День 4. Пряничный паук: украсить глазурью (рисовать пальцем), потом конфетки ---- */
+SCENES.adv4=function(alive){
+  room.className='room advkitchen';
+  room.innerHTML=`<div class="gbwrap" id="r-gb"><svg viewBox="0 0 200 200" id="r-gbsvg"><g stroke="#b5702c" stroke-width="12" stroke-linecap="round">
+      <path d="M70 90 L30 60 M70 100 L22 100 M70 112 L28 140 M78 122 L48 170 M130 90 L170 60 M130 100 L178 100 M130 112 L172 140 M122 122 L152 170"/></g>
+      <circle cx="100" cy="105" r="46" fill="#c98a45" stroke="#a8692c" stroke-width="5"/><circle cx="100" cy="64" r="26" fill="#c98a45" stroke="#a8692c" stroke-width="5"/>
+      <circle cx="91" cy="60" r="5" fill="#3a2410"/><circle cx="109" cy="60" r="5" fill="#3a2410"/><path d="M90 72 Q100 80 110 72" stroke="#3a2410" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <g id="r-icing" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"></g><g id="r-candy"></g></svg></div>
+    <div class="candies" id="r-cand" hidden><button aria-label="Конфетка">🔴</button><button aria-label="Конфетка">🟢</button><button aria-label="Конфетка">🔵</button></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.13,y:s.height*.8});
+  setHint('Рисуй пальцем по прянику — это белая глазурь');
+  talk2(S2,'Я испёк пряник в виде паука! Давай украсим глазурью!',2600);
+  const svg=$('r-gbsvg'), icing=$('r-icing'); let path=null, len=0, last=null, stage='draw';
+  const toSvg=e=>{ const r=svg.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*200,y:(e.clientY-r.top)/r.height*200} };
+  handlers2={
+    down(e){ if(stage!=='draw') return; const q=toSvg(e); if(q.x<0||q.x>200||q.y<0||q.y>200) return; last=q; path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('d',`M${q.x.toFixed(1)} ${q.y.toFixed(1)}`); icing.appendChild(path) },
+    move(e){ if(stage!=='draw'||!path||!(e.buttons&1)) return; const q=toSvg(e), d=Math.hypot(q.x-last.x,q.y-last.y); if(d<3) return;
+      path.setAttribute('d',path.getAttribute('d')+` L${q.x.toFixed(1)} ${q.y.toFixed(1)}`); last=q; len+=d; if(Math.random()<.25) tone(rand(900,1300),.04,'sine',0,.02);
+      if(len>=110){ len=0; add2(1,false); if(p2>=6){ stage='candy'; path=null; talk2(S2,'Красиво! Теперь конфетки-пуговки!',2200); setHint('Нажимай на конфетки — они прилипнут к прянику'); $('r-cand').hidden=false } } },
+    up(){ path=null }
+  };
+  const SPOTS=[[100,92],[100,108],[100,124]];
+  $('r-cand').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b||b.disabled) return; b.disabled=true; b.classList.add('used');
+    const [x,y]=SPOTS[$('r-candy').children.length]; const t=document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x',x); t.setAttribute('y',y+6); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','18'); t.textContent=b.textContent; $('r-candy').appendChild(t);
+    sfx.pop(); add2(1) });
+};
+
+STORIES[8].levels=EP8;
+
 /* ---- старт ---- */
 const hot=window.claude?.hot?.data;
 if(hot?.episode===1) startEp1();
@@ -4498,4 +4802,5 @@ else{
     w.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open()}); w.addEventListener('pointerdown',e=>e.preventDefault()); w.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')open()});
   }
 }
+
 </script>
