@@ -418,7 +418,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .advmagic{position:absolute;left:3%;top:3%;display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:14px;background:#fff3;color:#fff;font:800 13px var(--body);z-index:4}
 .advmagic button{width:28px;height:28px;border-radius:50%;border:0;background:#fff;color:#22335c;font:900 16px var(--body);cursor:pointer}
 .flake{position:absolute;left:0;top:0;border:0;background:none;padding:6px;color:#fff;text-shadow:0 0 6px #7fb8e8,0 0 2px #5a9fd6;cursor:pointer;z-index:4;line-height:1;will-change:transform}
-.sball{position:absolute;border-radius:50%;z-index:4;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;z-index:3}
+.sball{position:absolute;left:0;top:0;will-change:transform;border-radius:50%;z-index:4;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;z-index:3}
 .sball::after{content:"";position:absolute;left:30%;top:20%;width:14%;height:14%;border-radius:50%;background:#d6e6f2}
 .sman{position:absolute;left:70%;bottom:13%;width:34%;height:70%;translate:-50% 0;z-index:2}
 .sman .sb{position:absolute;left:50%;translate:-50% 0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e3eef7);box-shadow:inset -4px -6px 0 #cfdfec;animation:sbin .4s cubic-bezier(.3,1.6,.5,1)}
@@ -445,10 +445,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .mitton{animation:mitton .45s cubic-bezier(.3,1.6,.5,1)}
 @keyframes mitton{from{opacity:0}}
 .gbstage{position:absolute;inset:0;z-index:2}
-.dough{--k:0;position:absolute;left:50%;top:44%;width:calc(34% + 52% * var(--k));height:calc(26% - 10% * var(--k));translate:-50% -50%;border-radius:calc(48% - 30% * var(--k));
-  background:radial-gradient(circle at 40% 35%,#f8e7c4,#ebcf98);box-shadow:inset 0 -6px 0 #d9b479,0 6px 14px #0002}
-.dough.flat{--k:1;border-radius:14px;width:86%;height:34%}
-.pin{position:absolute;top:44%;width:16%;height:40%;translate:-50% -50%;border-radius:12px;background:linear-gradient(90deg,#c48a50,#e3b27a 40%,#c48a50);box-shadow:0 4px 8px #0003;transition:left .05s}
+.dough{position:absolute;left:50%;top:44%;width:34%;height:26%;transform:translate(-50%,-50%);border-radius:40%;will-change:transform;
+  background:radial-gradient(circle at 40% 35%,#f8e7c4,#ebcf98);box-shadow:inset 0 -6px 0 #d9b479}
+.dough.flat{transform:translate(-50%,-50%);border-radius:14px;width:86%;height:34%;box-shadow:inset 0 -6px 0 #d9b479,0 6px 14px #0002}
+.pin{position:absolute;left:42%;top:44%;width:16%;height:40%;border-radius:12px;background:linear-gradient(90deg,#c48a50,#e3b27a 40%,#c48a50);will-change:transform}
 .pin i{position:absolute;left:50%;width:30%;height:22%;translate:-50% 0;border-radius:8px;background:#9c6232}
 .pin i{top:-18%}.pin::after{content:"";position:absolute;left:35%;bottom:-18%;width:30%;height:22%;border-radius:8px;background:#9c6232}
 .cutters{position:absolute;left:50%;top:6%;translate:-50% 0;display:flex;gap:14px}
@@ -4780,7 +4780,10 @@ SCENES.adv2=function(alive){
   { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.2+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
   const ball=$('r-ball'), man=$('r-sman'), SIZES=[.30,.23,.16];   // доли ширины сцены
   let k=0, size=.06, rot=0, bx=.5, lastX=null, stage='roll', roll=0;
-  const drawBall=()=>{ const st=rr(), px=size*st.width; ball.style.width=ball.style.height=px+'px'; ball.style.left=(bx*st.width-px/2)+'px'; ball.style.top=(st.height*.86-px)+'px'; ball.style.rotate=rot+'deg' };
+  // ком двигаем и растим через transform, раз в кадр, размеры сцены меряем один раз — чтобы не тормозило на телефоне
+  const S0=rr(), BW=S0.width*.3; ball.style.width=ball.style.height=BW+'px'; let bq=false;
+  const drawNow=()=>{ bq=false; const px=size*S0.width, sc=px/BW; ball.style.transform=`translate(${(bx*S0.width-BW/2).toFixed(1)}px,${(S0.height*.86-BW/2-px/2).toFixed(1)}px) scale(${sc.toFixed(3)}) rotate(${rot.toFixed(0)}deg)` };
+  const drawBall=()=>{ if(!bq){ bq=true; requestAnimationFrame(drawNow) } };
   drawBall();
   setHint('Води пальцем влево-вправо — катай снежный ком, он будет расти!');
   talk2(S2,'Слепим снеговика? Катай ком пальцем!',2400);
@@ -4794,7 +4797,7 @@ SCENES.adv2=function(alive){
     up(){ lastX=null }
   };
   async function placeBall(){
-    stage='busy'; const st=rr(), px=size*st.width;
+    stage='busy'; const st=S0, px=size*st.width;
     const below=[...man.children].reduce((h,c)=>h+c.offsetHeight*.82,0);
     const b=document.createElement('div'); b.className='sb'; b.style.width=b.style.height=px+'px'; b.style.bottom=below+'px'; man.appendChild(b);
     ball.style.opacity=0; sfx.thud(); burst(st.left+st.width*.68,st.top+st.height*.8,20,5,['#fff','#e6f6ff']); add2(1,false); k++;
@@ -4862,12 +4865,14 @@ SCENES.adv4=function(alive){
   function roll(){
     setHint('Води пальцем вправо-влево — раскатывай тесто скалкой');
     gs.innerHTML=`<div class="dough" id="r-dough"></div><div class="pin" id="r-pin"><i></i></div>`;
-    const dough=$('r-dough'), pin=$('r-pin'); let k=0, last=null, acc=0, px=.5;
-    const draw=()=>{ dough.style.setProperty('--k',k); pin.style.left=(14+px*72)+'%' }; draw();
+    // только transform (без пересчёта раскладки), рисуем раз в кадр, ширину сцены меряем один раз — иначе на телефоне тормозит
+    const dough=$('r-dough'), pin=$('r-pin'), W=rr().width; let k=0, last=null, acc=0, px=.5, queued=false;
+    const draw=()=>{ queued=false; dough.style.transform=`translate(-50%,-50%) scale(${1+1.5*k},${1-.38*k})`; pin.style.transform=`translate(${((px-.5)*.72*W).toFixed(1)}px,-50%)` };
+    const req=()=>{ if(!queued){ queued=true; requestAnimationFrame(draw) } }; draw();
     handlers2={ down(e,p){ last=p.x }, up(){ last=null },
-      move(e,p){ if(last===null||!(e.buttons&1)) return; const dx=p.x-last; last=p.x; const W=rr().width;
-        px=Math.max(0,Math.min(1,px+dx/W*1.4)); k=Math.min(1,k+Math.abs(dx)/W*.18); draw();
-        acc+=Math.abs(dx); if(acc>26){ acc=0; noise(.08,600,300,.04,0,'lowpass',.8); tone(180+k*60,.06,'sine',0,.015) }
+      move(e,p){ if(last===null||!(e.buttons&1)) return; const dx=p.x-last; last=p.x;
+        px=Math.max(0,Math.min(1,px+dx/W*1.4)); k=Math.min(1,k+Math.abs(dx)/W*.18); req();
+        acc+=Math.abs(dx); if(acc>70){ acc=0; noise(.1,600,300,.04,0,'lowpass',.8) }
         if(k>=1){ handlers2={}; add2(1,false); sfx.pop(); talk2(S2,'Ровненько! Теперь формочки!',1800); setTimeout(()=>go(cut),900) } } };
   }
 
