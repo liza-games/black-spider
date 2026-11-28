@@ -685,6 +685,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes smoke10{0%{translate:0 0;opacity:0;scale:.6}20%{opacity:.8}50%{translate:8px -70%}100%{translate:-6px -160%;opacity:0;scale:2}}
 .c-apple{left:60%;top:10%;font-size:16px;rotate:20deg;line-height:1}
 .c-needle{background:linear-gradient(#f4efe4 0 28%,#7a5c40 28%)}
+.c-porc{left:50%;top:-4%;translate:-50% 0;width:40%;height:26%;background:linear-gradient(#fff 0 18%,#222 18% 40%,#fff 40% 55%,#222 55% 75%,#f2f2f2 75%);clip-path:polygon(0 100%,6% 0,11% 100%,22% 8%,27% 100%,38% 0,43% 100%,54% 6%,59% 100%,70% 0,75% 100%,86% 10%,91% 100%,100% 30%,100% 100%)}
+.drift .in.porc{filter:grayscale(1) contrast(1.4) brightness(.8);scale:1.25}
 .c-fir{left:50%;top:13%;translate:-50% 0;width:36%;height:13%;background:#3f7d4a;clip-path:polygon(0 100%,6% 30%,12% 100%,18% 20%,24% 100%,30% 25%,36% 100%,42% 15%,48% 100%,54% 25%,60% 100%,66% 20%,72% 100%,78% 30%,84% 100%,90% 20%,96% 100%)}
 .c-grass{left:50%;top:10%;translate:-50% 0;width:28%;height:16%;background:#d4b25a;clip-path:polygon(0 100%,10% 0,14% 100%,30% 10%,34% 100%,48% 0,52% 100%,66% 5%,70% 100%,86% 0,90% 100%)}
 .c-track u{display:block;width:12px;height:12px;color:#7d98b3}
@@ -698,7 +700,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes help10{50%{scale:1.5}}
 .drift .in.jump10{animation:jump10 .5s cubic-bezier(.3,1.6,.5,1)}
 @keyframes jump10{from{translate:-50% 60%}}
-.q10{position:absolute;left:50%;bottom:105%;translate:-50% 0;padding:5px 9px;border-radius:12px;background:#fff;box-shadow:0 3px 8px #0002;font:700 13px var(--body);white-space:nowrap;z-index:5;animation:pop .3s}
+.q10{position:absolute;left:50%;bottom:105%;translate:-50% 0;padding:5px 9px;border-radius:12px;background:#fff;box-shadow:0 3px 8px #0002;font:700 13px var(--body);width:max-content;max-width:52vw;text-align:center;z-index:5;animation:pop .3s}
+.drift:nth-child(3n+1) .q10{left:0;translate:0 0}.drift:nth-child(3n) .q10{left:auto;right:0;translate:0 0}
 
 @keyframes wiggle{25%{rotate:-4deg}75%{rotate:4deg}}
 .paper11{position:absolute;left:50%;top:6%;width:min(70%,42vh);translate:-50% 0;z-index:2;transition:opacity .4s,scale .4s}
@@ -5564,33 +5567,35 @@ SCENES.adv10=function(alive){
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.2});
   { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.5+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
   // примета ёжика и обманки: ёлочные иголки, сухая травка, следы зайца и птички
-  const CLUES=[['needle','Из сугроба торчат колючки! Но у ёжика они коричневые с белыми кончиками.',['fir']],
-    ['track','Ищи следы ёжика! Маленькие лапки с пальчиками — вот такие.',['hare','bird']],
+  const CLUES=[['needle','Ищи колючки ёжика! Только не перепутай с кем-нибудь колючим…',['fir','porc']],
+    ['track','Ищи следы ёжика! Но тут гуляли и другие звери…',['hare','bird']],
     ['steam','Ёжик дышит тихонько: пых… пауза… пых. Маленький парок, а не облако!',['kettle','smoke']],
     ['apple','Ёжик утащил яблочко — оно торчит из сугроба!',['obj','obj']],
-    ['needle','Последний раз! Колючки ёжика — коричневые с белыми кончиками.',['fir','grass','hare']]];
+    ['needle','Последний раз! Снова колючки — смотри внимательно!',['fir','grass','porc']]];
   const TR={hog:'<svg viewBox="0 0 10 10"><ellipse cx="5" cy="6.6" rx="2.6" ry="2.2"/><circle cx="1.7" cy="3.1" r="1"/><circle cx="3.9" cy="1.7" r="1"/><circle cx="6.1" cy="1.7" r="1"/><circle cx="8.3" cy="3.1" r="1"/></svg>',
     hare:'<svg viewBox="0 0 10 14"><ellipse cx="2.8" cy="4" rx="1.7" ry="3.6"/><ellipse cx="7.2" cy="4" rx="1.7" ry="3.6"/><circle cx="5" cy="10" r="1.5"/><circle cx="5" cy="13" r="1.3"/></svg>',
     bird:'<svg viewBox="0 0 10 10"><path d="M5 10 V3.5 M5 5.5 L1.2 1 M5 5.5 L8.8 1 M5 5.5 V0.5" fill="none" stroke-width="1.3" stroke-linecap="round"/></svg>'};
   const steps=t=>`<b class="clue c-track"><u>${t}</u><u>${t}</u><u>${t}</u></b>`;
-  const DECOY=['🥕','🧤','🍂','🌰'], DOCC={kettle:'☕',smoke:'🚂'};
-  const OCC=[['🐇','Эй! Это мой сугроб!'],['🦉','Угу! Не мешай спать!'],['⛄','Привет! Я маленький снеговик!'],['🐻','Хррр… Тише, я сплю!'],['🦊','Ёжика ищешь? Он не тут!'],['🐦','Чик-чирик! Улетаю!'],['🧦','Ой, чей-то носок!'],['🐁','Пи-пи! Напугал!'],['☕','Ой-ой! Это горячий чай пыхтит!'],['🚂','Чух-чух! Это паровозик дымит!']];
+  const DECOY=['🥕','🧤','🍂','🌰'], PORC='🦔\u200b';
+  // у каждой обманки свой житель: под ёлочными иголками — ёлочка, под длинными чёрно-белыми иглами — дикобраз, под заячьими следами — заяц…
+  const DOCC={fir:'🌲',grass:'🌾',porc:PORC,hare:'🐇',bird:'🐦',kettle:'☕',smoke:'🚂'};
+  const OCC=[['🐇','Эй! Это мой сугроб!'],['🦉','Угу! Не мешай спать!'],['⛄','Привет! Я маленький снеговик!'],['🐻','Хррр… Тише, я сплю!'],['🦊','Ёжика ищешь? Он не тут!'],['🐦','Чик-чирик! Улетаю!'],['🧦','Ой, чей-то носок!'],['🐁','Пи-пи! Напугал!'],['☕','Ой-ой! Это горячий чай пыхтит!'],['🚂','Чух-чух! Это паровозик дымит!'],
+    ['🌲','Ай! Это ёлочка — она колется!'],['🌾','Это просто сухая травка!'],[PORC,'Я не ёжик, я дикобраз! У меня иглы длинные!'],
+    ['🥕','Это морковка — нос снеговика!'],['🧤','Чья-то варежка!'],['🍂','Просто листик!'],['🌰','Жёлудь! Белка спрятала!']];
+  const ANIM=OCC.slice(0,8);
   const box=$('r-drifts'); let round=0, lock=false, hog=0, miss=0, clue=null, pulseT=0;
   setHint('Ищи примету — где прячется ёжик? Не тыкай наугад: спугнёшь!');
   talk2(S2,'Ёжик спрятался в сугробе! Найдёшь его по примете?',2400);
   const clueHTML=t=>t==='track'?steps(TR.hog):t==='apple'?'<b class="clue c-apple">🍎</b>':`<b class="clue c-${t}"></b>`;
-  const decoyHTML=t=>t==='hare'||t==='bird'?steps(TR[t]).replace('clue c-track','clue c-decoy c-track'):t==='obj'?`<b class="clue c-decoy c-obj">${pick(DECOY)}</b>`:t==='kettle'||t==='smoke'?`<b class="clue c-decoy c-${t}"><s></s><s></s><s></s></b>`:`<b class="clue c-decoy c-${t}"></b>`;
+  const decoyHTML=t=>t==='hare'||t==='bird'?steps(TR[t]).replace('clue c-track','clue c-decoy c-track'):t.length<3?`<b class="clue c-decoy c-obj">${t}</b>`:t==='kettle'||t==='smoke'?`<b class="clue c-decoy c-${t}"><s></s><s></s><s></s></b>`:`<b class="clue c-decoy c-${t}"></b>`;
   function putClue(){ box.querySelectorAll('.clue:not(.c-decoy)').forEach(c=>c.remove()); box.querySelector(`.drift[data-k="${hog}"]`).insertAdjacentHTML('beforeend',clueHTML(clue[0])) }
   function start(){
     round++; miss=0; const n=Math.min(6,2+round); hog=Math.floor(Math.random()*n); clue=CLUES[round-1];
-    const occ=[...OCC].sort(()=>Math.random()-.5);
+    const occ=[...ANIM].sort(()=>Math.random()-.5);
     // обманки раскладываем по другим сугробам
-    const others=[...Array(n).keys()].filter(k=>k!==hog).sort(()=>Math.random()-.5), dec={}; clue[2].forEach((t,i)=>{ if(i<others.length) dec[others[i]]=t });
-    box.innerHTML=Array.from({length:n},(_,k)=>`<button class="drift" data-k="${k}" aria-label="Сугроб"><span class="in">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`).join('');
+    const others=[...Array(n).keys()].filter(k=>k!==hog).sort(()=>Math.random()-.5), dec={}; clue[2].forEach((t,i)=>{ if(i<others.length) dec[others[i]]=t==='obj'?pick(DECOY.filter(x=>!Object.values(dec).includes(x))):t });
+    box.innerHTML=Array.from({length:n},(_,k)=>`<button class="drift" data-k="${k}" aria-label="Сугроб"><span class="in${dec[k]==='porc'?' porc':''}">${k===hog?'🦔':DOCC[dec[k]]||(dec[k]&&dec[k].length<3?dec[k]:occ[k][0])}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`).join('');
     box.style.setProperty('--n',n); putClue(); lock=false; talk2(S2,clue[1],3200);
-    // образец: какие у ёжика колючки или следы
-    room.querySelector('.sample10')?.remove();
-    if(clue[0]==='needle'||clue[0]==='track') room.insertAdjacentHTML('beforeend',`<div class="sample10">🦔 ${clue[0]==='track'?`<span class="c-track"><u>${TR.hog}</u></span>`:'<span class="c-needle"></span>'}</div>`);
     // если совсем долго не находим — примета становится заметнее
     clearTimeout(pulseT); pulseT=setTimeout(()=>{ if(alive()&&!lock) box.classList.add('help10') },14000); box.classList.remove('help10');
   }

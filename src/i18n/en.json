@@ -1456,6 +1456,17 @@
 "'Ёжик дышит тихонько: пых… пауза… пых. Маленький парок, а не облако!'": "'The hedgehog breathes softly: puff… pause… puff. A tiny puff, not a cloud!'",
 "'Ой-ой! Это горячий чай пыхтит!'": "\"Oh! It's hot tea steaming!\"",
 "'Чух-чух! Это паровозик дымит!'": "\"Choo-choo! It's a little train puffing!\"",
-"`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Сугроб\"><span class=\"in\">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`": "`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Snowdrift\"><span class=\"in\">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`"
+"`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Сугроб\"><span class=\"in\">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`": "`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Snowdrift\"><span class=\"in\">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`",
+"'Ищи колючки ёжика! Только не перепутай с кем-нибудь колючим…'": "\"Look for the hedgehog's prickles! Don't mix him up with someone else prickly…\"",
+"'Ищи следы ёжика! Но тут гуляли и другие звери…'": "\"Look for the hedgehog's tracks! But other animals walked here too…\"",
+"'Последний раз! Снова колючки — смотри внимательно!'": "'Last time! Prickles again — look closely!'",
+"'Ай! Это ёлочка — она колется!'": "\"Ouch! It's a little fir tree — it's prickly!\"",
+"'Это просто сухая травка!'": "\"It's just dry grass!\"",
+"'Я не ёжик, я дикобраз! У меня иглы длинные!'": "\"I'm not a hedgehog, I'm a porcupine! My quills are long!\"",
+"'Это морковка — нос снеговика!'": "\"It's a carrot — a snowman's nose!\"",
+"'Чья-то варежка!'": "\"Someone's mitten!\"",
+"'Просто листик!'": "'Just a leaf!'",
+"'Жёлудь! Белка спрятала!'": "'An acorn! A squirrel hid it!'",
+"`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Сугроб\"><span class=\"in${dec[k]==='porc'?' porc':''}\">${k===hog?'🦔':DOCC[dec[k]]||(dec[k]&&dec[k].length<3?dec[k]:occ[k][0])}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`": "`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Snowdrift\"><span class=\"in${dec[k]==='porc'?' porc':''}\">${k===hog?'🦔':DOCC[dec[k]]||(dec[k]&&dec[k].length<3?dec[k]:occ[k][0])}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`"
 }
 }
