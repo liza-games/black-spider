@@ -733,6 +733,13 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes wiggle{25%{rotate:-4deg}75%{rotate:4deg}}
 .snow11 .bubble{bottom:4px;left:92%;transform-origin:0 100%;max-width:min(230px,58vw)}
 .snow11 .bubble::after{left:-9px;bottom:14px;border:9px solid transparent;border-right-color:var(--bubble);border-left:0}
+.gal11{position:absolute;z-index:4;touch-action:none;cursor:grab}
+.gal11.drag{cursor:grabbing;z-index:6}
+.gal11 img{display:block;width:100%;filter:drop-shadow(0 4px 8px #0002);animation:float11 4s ease-in-out infinite;pointer-events:none;user-select:none}
+.gal11 img.spin11{animation:spin11 1s cubic-bezier(.3,1.2,.5,1),float11 4s ease-in-out 1s infinite}
+@keyframes float11{0%,100%{translate:0 0;rotate:-4deg}50%{translate:0 -10px;rotate:4deg}}
+@keyframes spin11{from{rotate:0deg;scale:1}50%{scale:1.15}to{rotate:360deg;scale:1}}
+.done11{position:absolute;left:50%;bottom:6%;translate:-50% 0;z-index:7}
 .col11{position:absolute;left:0;right:0;top:2%;display:flex;flex-direction:column;align-items:center;gap:9px;z-index:2}
 .col11 .hid{visibility:hidden}
 .pap11{width:min(62%,31vh);aspect-ratio:1;transition:opacity .35s,scale .35s}
@@ -5003,7 +5010,7 @@ const ADV=[null,
   {t:'Каток',              o:'⛸️', goal:21, unit:'',          done:'Чемпион катка!'},
   {t:'Кормушка',           o:'🐦', goal:6,  unit:'птичек',   done:'Все птички сыты!'},
   {t:'Ёжик в сугробе',     o:'🦔', goal:5,  unit:'раз',      done:'Ёжик нашёлся!'},
-  {t:'Снежинки из бумаги', o:'❄️', goal:2,  unit:'снежинки',         done:'Красивая снежинка!'},
+  {t:'Снежинки из бумаги', o:'❄️', goal:3,  unit:'снежинки',         done:'Какие красивые снежинки!'},
   {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
   {t:'С горки на санках',  o:'🛷', goal:10, unit:'',         done:'Ух, как здорово прокатились!'},
   {t:'Шарики по коробкам', o:'🔴', goal:9,  unit:'шариков',  done:'Всё по порядку!'},
@@ -5665,17 +5672,23 @@ SCENES.adv11=function(alive){
   room.className='room advday snow11';
   const NS='http://www.w3.org/2000/svg', D2R=Math.PI/180, R=90;
   const P=(r,deg)=>`${(r*Math.cos(deg*D2R)).toFixed(2)} ${(r*Math.sin(deg*D2R)).toFixed(2)}`;
-  const FL=[{col:'#ffffff',edge:'#9fc4e0',m:6,folds:[180,60,30],vb:[-8,-8,106,62]},
-            {col:'#e2382c',edge:'#a8231a',m:4,folds:[180,90,45],vb:[-8,-8,106,80]}];
+  // три снежинки: у каждой свой цвет, своё число лучей и свой набор формочек
+  const FL=[{col:'#ffffff',edge:'#9fc4e0',m:6,folds:[180,60,30],vb:[-8,-8,106,62],forms:['circle','diamond','tri']},
+            {col:'#e2382c',edge:'#a8231a',m:8,folds:[180,90,45,22.5],vb:[-8,-8,106,48],forms:['heart','star','circle']},
+            {col:'#ffd23a',edge:'#c99a12',m:5,folds:[180,72,36],vb:[-8,-8,106,70],forms:['moon','plus','drop'],notch:.5}];
   // формы дырочек: точки многоугольника в единицах радиуса (круг — отдельно)
   const SH={
     circle:null,
     diamond:[[0,-1.4],[1,0],[0,1.4],[-1,0]],
     tri:[[0,-1.3],[1.2,.9],[-1.2,.9]],
     star:Array.from({length:10},(_,k)=>{ const a=-Math.PI/2+k*Math.PI/5, r=k%2?.55:1.35; return [Math.cos(a)*r,Math.sin(a)*r] }),
+    plus:[[-.4,-1.3],[.4,-1.3],[.4,-.4],[1.3,-.4],[1.3,.4],[.4,.4],[.4,1.3],[-.4,1.3],[-.4,.4],[-1.3,.4],[-1.3,-.4],[-.4,-.4]],
+    moon:[...Array.from({length:13},(_,k)=>{ const a=(-100+k*200/12)*Math.PI/180; return [1.3*Math.cos(a),1.3*Math.sin(a)] }),
+          ...Array.from({length:11},(_,k)=>{ const b=(90-k*18)*Math.PI/180; return [-.2+Math.cos(b),1.2*Math.sin(b)] })],
+    drop:[[0,-1.55],...Array.from({length:14},(_,k)=>{ const a=(-40+k*260/13)*Math.PI/180; return [.95*Math.cos(a),.35+.95*Math.sin(a)] })],
     heart:Array.from({length:24},(_,k)=>{ const t=k/24*Math.PI*2; return [16*Math.sin(t)**3/14, -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/14] })};
   const ICON={circle:'<circle cx="0" cy="0" r="1"/>'};
-  const wedgeD=th=>`M0 0 L${P(R,0)} L${P(R*.8,th)} Z`;
+  const wedgeD=th=>`M0 0 L${P(R,0)} L${P(R*(FL[f]?.notch||.8),th)} Z`;
   const sector=th=>th>=359.9?`M${R} 0 A${R} ${R} 0 1 1 ${-R} 0 A${R} ${R} 0 1 1 ${R} 0 Z`:`M0 0 L${P(R,0)} A${R} ${R} 0 ${th>180?1:0} 1 ${P(R,th)} Z`;
   room.innerHTML=`<div class="col11"><div class="pap11" id="r-papw"><svg viewBox="-100 -100 200 200" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-120" y="-120" width="240" height="240"><rect x="-120" y="-120" width="240" height="240" fill="#fff"/><g id="r-holes"></g></mask></defs>
       <g id="r-g"><path id="r-shape" stroke-width="1" mask="url(#cut11)"/></g></svg></div>
@@ -5691,8 +5704,9 @@ SCENES.adv11=function(alive){
   tools.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ pick11(b.dataset.k); tone(900,.05,'sine',0,.03) } });
   function begin(){
     const F=FL[f]; stage='fold'; th=360; fi=0; H=[]; holes.innerHTML=''; shape.setAttribute('fill',F.col); shape.setAttribute('stroke',F.edge); shape.setAttribute('d',sector(360));
-    pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); papw.classList.remove('gone'); flk.hidden=true; tools.classList.add('hid'); openB.classList.add('hid'); pick11('circle');
-    talk2(S2,f===0?'Вот круглый листок! Нажимай на него — сложим.':'А теперь красная! Её сложим по-другому — будет восемь лучиков!',2600);
+    pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); papw.classList.remove('gone'); flk.hidden=true; tools.classList.add('hid'); openB.classList.add('hid');
+    tools.querySelectorAll('button').forEach(b=>b.style.display=F.forms.includes(b.dataset.k)?'':'none'); pick11(F.forms[0]);
+    talk2(S2,['Вот круглый листок! Нажимай на него — сложим.','А теперь красная! Её сложим по-другому — будет восемь лучиков!','И последняя — жёлтая! У неё будет пять лучиков, как у звёздочки!'][f],2600);
     setHint('Нажимай на бумагу — она сложится');
     // на низких экранах уменьшаем лист, чтобы кнопки не заезжали под облачко паука (оно внизу, ~110px)
     requestAnimationFrame(()=>{ const rm=rr(), col=room.querySelector('.col11').getBoundingClientRect(), over=col.bottom-(rm.bottom-118);
@@ -5743,8 +5757,28 @@ SCENES.adv11=function(alive){
     flk.hidden=false; flk.style.filter=`drop-shadow(0 0 .6px ${FL[f].edge}) drop-shadow(0 3px 5px #0002)`; draw(); restart(flk,'unf11'); taDa(); const r=flk.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#9fd0f5','#ffe27a']);
     talk2(S2,pick(['Ух ты! Какая красивая снежинка!','Красота! Ни одной такой больше нет!','Вот это узор!']),2000); add2(1,false);
     await wait(2600); if(!alive()) return;
-    const mini=document.createElement('img'); mini.src=flk.toDataURL(); $('r-shelf').appendChild(mini);
-    if(++f<FL.length) begin(); else add2(0);
+    const mini=document.createElement('img'); mini.src=flk.toDataURL(); $('r-shelf').appendChild(mini); IMGS.push(mini.src);
+    if(++f<FL.length) begin(); else gallery();
+  };
+  // в конце — любуемся: снежинки парят, их можно двигать пальцем и крутить тапом
+  const IMGS=[];
+  function gallery(){
+    flk.hidden=true; room.querySelector('.col11').style.display='none'; $('r-shelf').style.display='none'; handlers2={};
+    const s=rr(), Wf=Math.min(s.width*.46,s.height*.3), pos=[[.3,.2],[.7,.32],[.38,.52]];
+    IMGS.forEach((src,i)=>{ const d=document.createElement('div'); d.className='gal11'; d.style.width=Wf+'px'; d.style.left=(s.width*pos[i][0]-Wf/2)+'px'; d.style.top=(s.height*pos[i][1]-Wf/2)+'px';
+      d.innerHTML=`<img src="${src}" alt="" draggable="false" style="animation-delay:${-i*1.3}s">`; room.appendChild(d); restart(d,'pop');
+      let sx=0, sy=0, ox=0, oy=0, moved=false;
+      d.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); d.setPointerCapture(e.pointerId); sx=e.clientX; sy=e.clientY; ox=d.offsetLeft; oy=d.offsetTop; moved=false; d.classList.add('drag'); room.appendChild(d) });
+      d.addEventListener('pointermove',e=>{ if(!d.classList.contains('drag')) return; const dx=e.clientX-sx, dy=e.clientY-sy; if(Math.hypot(dx,dy)>6) moved=true;
+        d.style.left=Math.max(-Wf*.3,Math.min(s.width-Wf*.7,ox+dx))+'px'; d.style.top=Math.max(-Wf*.3,Math.min(s.height-Wf*.7,oy+dy))+'px' });
+      d.addEventListener('pointerup',e=>{ d.classList.remove('drag'); if(moved) { tone(700,.08,'sine',0,.03); return }
+        const im=d.querySelector('img'); im.classList.remove('spin11'); void im.offsetWidth; im.classList.add('spin11');
+        [1318,1568,2093].forEach((f,k)=>tone(f,.15,'sine',k*.07,.03)); const r=d.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,18,4,['#fff','#ffe27a','#9fd0f5']) });
+    });
+    talk2(S2,'Какие красивые! Потрогай их: можно двигать и крутить!',2800);
+    setHint('Двигай снежинки пальцем и крути их тапом. Налюбуешься — нажми «Готово!»');
+    const done=document.createElement('button'); done.className='open11 done11'; done.textContent='Готово!'; setTimeout(()=>{ if(alive()){ room.appendChild(done); restart(done,'pop') } },3200);
+    done.onclick=()=>{ done.remove(); talk2(S2,'Повесим их на окошко!',1600); room.querySelectorAll('.gal11').forEach((d,i)=>{ d.style.transition='left .8s,top .8s,width .8s'; d.style.top=(s.height*.04)+'px'; d.style.left=(s.width*(.08+i*.3))+'px'; d.style.width=(s.width*.26)+'px' }); setTimeout(()=>alive()&&add2(0),1400) };
   };
   begin();
 };
