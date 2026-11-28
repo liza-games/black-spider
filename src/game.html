@@ -497,6 +497,54 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .mugnum{position:absolute;left:50%;bottom:24%;translate:-50% 0;padding:6px 14px;border-radius:999px;background:#fff;font:800 16px var(--body);color:var(--fg);box-shadow:0 3px 8px #0002;white-space:nowrap;z-index:3}
 .mugnum b{font-family:var(--display);color:#c4302a;font-weight:400}
 .room.rink{background:radial-gradient(ellipse at 50% 40%,#f2fbff,#cfe9f7 60%,#a9d3ec);box-shadow:inset 0 0 0 8px #e9f5fc,inset 0 0 0 12px #7fb8e0}
+.branch9{position:absolute;left:-5%;right:30%;top:14%;height:12px;border-radius:6px;background:#7a5230;rotate:-4deg;z-index:1}
+.feeder{position:absolute;left:46%;top:22%;width:34%;height:20%;translate:-50% 0;z-index:2}
+.feeder .roof{position:absolute;left:-8%;right:-8%;top:0;height:30%;background:#c4302a;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.feeder .tray{position:absolute;left:0;right:0;bottom:0;height:22%;border-radius:4px;background:#a8774f;box-shadow:inset 0 -4px 0 #0002}
+.feeder::before,.feeder::after{content:"";position:absolute;top:28%;bottom:20%;width:6%;background:#8a5a32}.feeder::before{left:6%}.feeder::after{right:6%}
+.bird9{position:absolute;left:46%;top:27%;width:min(26%,15vh);translate:-50% 0;z-index:3;opacity:0}
+.bird9 svg{display:block;width:100%}
+.bird9.in{animation:birdin .9s cubic-bezier(.3,1.2,.5,1) forwards}
+@keyframes birdin{from{opacity:1;transform:translate(160%,-160%) rotate(-20deg)}to{opacity:1;transform:none}}
+.bird9.peck{opacity:1;animation:peck .3s 3}
+@keyframes peck{50%{rotate:14deg;translate:-50% 4px}}
+.bird9.out{animation:birdout .8s ease-in forwards}
+@keyframes birdout{from{opacity:1}to{opacity:0;transform:translate(-200%,-180%) rotate(20deg)}}
+.want9{position:absolute;left:66%;top:12%;padding:6px 12px;border-radius:16px;background:#fff;box-shadow:0 3px 8px #0002;font-size:30px;line-height:1;z-index:4;opacity:0;scale:.4;transition:opacity .25s,scale .3s cubic-bezier(.3,1.6,.5,1)}
+.want9.show{opacity:1;scale:1}
+.want9::after{content:"";position:absolute;left:10px;bottom:-8px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+.crumb9{position:absolute;left:46%;top:36%;font-size:26px;font-style:normal;translate:-50% 0;z-index:4;animation:crumb .5s ease-in forwards}
+@keyframes crumb{from{translate:-50% 220%;scale:1.4}to{translate:-50% 0;scale:.7}}
+.foods{position:absolute;left:50%;bottom:22%;translate:-50% 0;display:flex;gap:12px;z-index:5}
+.foods button{width:64px;height:64px;border-radius:18px;border:3px solid #fff;background:#ffffffd0;font-size:34px;cursor:pointer;box-shadow:0 3px 8px #0002}
+.foods button.shake{animation:shake .4s}
+.drifts{position:absolute;left:4%;right:4%;top:30%;bottom:16%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:end;z-index:2}
+.drift{position:relative;height:100%;max-height:130px;border:0;padding:0;background:none;cursor:pointer}
+.drift i{position:absolute;inset:20% 0 0;border-radius:50% 50% 12px 12px/70% 70% 12px 12px;background:radial-gradient(circle at 40% 30%,#fff,#e3eef7);box-shadow:inset 0 -6px 0 #cfdfec,0 4px 8px #0001;transition:transform .5s cubic-bezier(.5,0,.3,1),opacity .5s}
+.drift .in{position:absolute;left:50%;bottom:16%;translate:-50% 0;font-size:40px;line-height:1;opacity:0;transition:opacity .2s .2s}
+.drift.dug i{transform:translateY(40%) scaleY(.35);opacity:.8}
+.drift.dug .in{opacity:1}
+.drift.wiggle i{animation:wiggle .6s}
+@keyframes wiggle{25%{rotate:-4deg}75%{rotate:4deg}}
+.paper11{position:absolute;left:50%;top:10%;width:min(80%,50vh);translate:-50% 0;z-index:2;transition:opacity .4s,scale .4s}
+.paper11 svg{width:100%;display:block;filter:drop-shadow(0 4px 6px #0002);touch-action:none}
+.paper11.gone{opacity:0;scale:.5}
+.unfold{position:absolute;left:50%;bottom:24%;translate:-50% 0;border:0;border-radius:999px;padding:12px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer;z-index:5}
+.flake11{position:absolute;left:50%;top:6%;width:min(84%,52vh);aspect-ratio:1;translate:-50% 0;z-index:3;animation:unfold .9s cubic-bezier(.3,1.4,.5,1)}
+.flake11 svg{width:100%;height:100%;filter:drop-shadow(0 0 2px #7fb8e0) drop-shadow(0 4px 8px #0002)}
+@keyframes unfold{from{scale:.1;rotate:-200deg;opacity:0}}
+.bells{position:absolute;left:3%;right:3%;top:8%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}
+.bells .bell:nth-child(n+5){translate:50% 0}
+.bell{border:0;padding:4px;background:none;cursor:pointer;transform-origin:50% 8%}
+.bell svg{width:100%;display:block}
+.bell.next{filter:drop-shadow(0 0 10px #fff3a0) drop-shadow(0 0 4px #fff)}
+.bell.next svg{animation:bellnext .8s ease-in-out infinite}
+@keyframes bellnext{50%{scale:1.1}}
+.bell.ding{animation:ding .5s}
+@keyframes ding{25%{rotate:-14deg}60%{rotate:10deg}}
+.lyric{position:absolute;left:4%;right:4%;top:52%;text-align:center;font:800 clamp(16px,5vw,24px)/1.4 var(--body);color:#fff9;z-index:2}
+.lyric span.sung{color:#ffe27a}.lyric span.now{color:#fff;text-decoration:underline;text-underline-offset:4px}
+.lyric i{font-style:normal;opacity:.5}
 .gbstage{position:absolute;inset:0;z-index:2}
 .dough{position:absolute;left:50%;top:44%;width:34%;height:26%;transform:translate(-50%,-50%);border-radius:40%;will-change:transform;
   background:radial-gradient(circle at 40% 35%,#f8e7c4,#ebcf98);box-shadow:inset 0 -6px 0 #d9b479}
@@ -1016,19 +1064,19 @@ document.addEventListener('contextmenu',e=>e.preventDefault());
 /* Речь идёт по очереди: фраза не обрывает другую. У каждого паука в очереди
    не больше одной ждущей фразы, а устаревшие (старше 3 с) пропускаются. */
 const sq=[]; let speaking=false, spId=0, spTimer=0;
-function speak(text,pitch=.4,rate=1,who='B',voiceIdx=0){
+function speak(text,pitch=.4,rate=1,who='B',voiceIdx=0,hooks=null){
   if(!soundOn||!('speechSynthesis' in window)) return;
   for(let i=sq.length-1;i>=0;i--) if(sq[i].who===who) sq.splice(i,1);
   // вслух: без кавычек и тире, иначе некоторые голоса произносят сами знаки («бэкслэш»)
   text=text.replace(/[«»„“”"\\]/g,'').replace(/\s+[—–]\s+/g,', ').replace(/,\s*,/g,',').replace(/([!?.…]),/g,'$1').trim();
-  sq.push({text,pitch,rate,who,voiceIdx,t:performance.now()});
+  sq.push({text,pitch,rate,who,voiceIdx,hooks,t:performance.now()});
   if(!speaking) nextSpeech();
 }
 function nextSpeech(){
   clearTimeout(spTimer);
   let it; while((it=sq.shift())&&performance.now()-it.t>3000);
   if(!it){speaking=false;return}
-  speaking=true; const id=++spId, done=()=>{if(id===spId)nextSpeech()};
+  speaking=true; const id=++spId, done=()=>{ it.hooks&&it.hooks.end&&it.hooks.end(); if(id===spId)nextSpeech() };
   const u=new SpeechSynthesisUtterance(it.text);
   u.lang=LANG==='en'?'en-GB':'ru-RU'; u.pitch=pitchFor(it.pitch); u.rate=it.rate;
   // Говорим только русским голосом. Если на устройстве его нет, лучше молчать:
@@ -1039,7 +1087,7 @@ function nextSpeech(){
   if(!all.length){ it.tries=(it.tries||0)+1; if(it.tries<8){ sq.unshift(it); it.t=performance.now(); spTimer=setTimeout(nextSpeech,250); return } speaking=false; return }
   if(!ru.length){noRuVoice(true);speaking=false;sq.length=0;return}
   {const v=it.voiceIdx==='male'?maleVoice(ru):ru[Math.min(it.voiceIdx,ru.length-1)];u.voice=v;u.lang=v.lang.replace('_','-');noRuVoice(false)}
-  u.onend=done; u.onerror=done;
+  u.onend=done; u.onerror=done; if(it.hooks&&it.hooks.start) u.onstart=it.hooks.start;
   spTimer=setTimeout(done,1200+it.text.length*120); // на случай, если onend не придёт
   speechSynthesis.resume();
   speechSynthesis.speak(u);
@@ -1309,8 +1357,9 @@ const B=makeSpider('',.5,'Чёрный паук');
 const H=()=>B.wrap.offsetWidth*170/200;
 function home(s){const r=rect();return{x:r.width*s.anchor,y:Math.max(H()*.35+54,r.height*.2)}}
 function restart(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
-function say(s,html,ms=1800){
-  // в сценах, где пауки быстро ездят (каток), вместо текста — облачко с бегущими точками: текст на ходу дрожит, а голос всё равно слышно
+function say(s,html,ms=1800,force=false){
+  // в сценах, где пауки быстро ездят (каток), вместо текста — облачко с бегущими точками, и только пока реально звучит голос
+  if(s.dots&&!force) return;
   s.bubble.innerHTML=s.dots?'<span class="tdots"><i></i><i></i><i></i></span>':html;
   s.bubble.classList.toggle('dotty',!!s.dots);
   if(s.stageEl){ // эпизод 2: позиция из разметки
@@ -2149,7 +2198,9 @@ function anchor(el,fx,fy){const r=el.getBoundingClientRect(),s=rr();return{x:r.l
 function put(t,p){t.wrap.style.left=p.x+'px';t.wrap.style.top=p.y+'px'}
 function walk(t,p,ms=950){t.btn.classList.add('crawl');put(t,p);return wait(ms).then(()=>t.btn.classList.remove('crawl'))}
 function standPos(fx,t){const s=rr(),h=t.wrap.offsetWidth*.85;return{x:s.width*fx,y:s.height*.8-h*.5}}
-function talk2(t,text,ms){say(t,bold(text),ms);speak(text,t.pitch,t.rate,t.who,t.voice)}
+function talk2(t,text,ms){
+  if(t.dots){ speak(text,t.pitch,t.rate,t.who,t.voice,{start:()=>say(t,'',60000,true),end:()=>{ clearTimeout(t.hideT); t.bubble.classList.remove('show') }}); return }
+  say(t,bold(text),ms);speak(text,t.pitch,t.rate,t.who,t.voice)}
 function tapme(el,on){if(el)el.classList.toggle('tapme',on)}
 function mix(a,b,t){t=Math.max(0,Math.min(1,t));const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);
   return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
@@ -4705,7 +4756,11 @@ const ADV=[null,
   {t:'Волшебная гирлянда', o:'💡', goal:7,  unit:'',         done:'Гирлянда сияет!'},
   {t:'Горячий шоколад',    o:'☕', goal:3,  unit:'кружки',   done:'Всем хватило шоколада!'},
   {t:'Каток',              o:'⛸️', goal:21, unit:'',          done:'Чемпион катка!'},
-  ...Array.from({length:16},(_,i)=>({t:'Сюрприз',o:['🐦','🦔','❄️','🔔','🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
+  {t:'Кормушка',           o:'🐦', goal:6,  unit:'птичек',   done:'Все птички сыты!'},
+  {t:'Ёжик в сугробе',     o:'🦔', goal:5,  unit:'раз',      done:'Ёжик нашёлся!'},
+  {t:'Снежинка из бумаги', o:'❄️', goal:7,  unit:'',         done:'Красивая снежинка!'},
+  {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
+  ...Array.from({length:12},(_,i)=>({t:'Сюрприз',o:['🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
 ];
 var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done,ownBar:d.ownBar}))];
 // в волшебном режиме прогресс отдельный и стирается при выключении — настоящий не трогаем
@@ -5223,6 +5278,133 @@ SCENES.adv8=function(alive){
     S2.btn.style.rotate=tilt.toFixed(1)+'deg'; S2.wrap.style.transform=`translate(${(st.x-sw/2).toFixed(1)}px,${(st.y-sw*.5).toFixed(1)}px)`;
     requestAnimationFrame(frame);
   })(last);
+};
+
+/* ---- День 9. Кормушка: прилетает птичка и показывает, что хочет, — дай нужный корм ---- */
+const BIRDS={
+  snegir:{name:'Снегирь',belly:'#e8483c',back:'#5a6270',cap:'#1d1d1b',food:'berry',say:'Снегирь любит ягоды рябины!'},
+  sinica:{name:'Синичка',belly:'#ffd23a',back:'#6e8f5a',cap:'#1d1d1b',food:'seed',say:'Синичка любит семечки!'},
+  vorob:{name:'Воробей',belly:'#d9c4a0',back:'#8a6a48',cap:'#6b4c30',food:'bread',say:'Воробей любит хлебные крошки!'}
+};
+const FOOD={berry:'🍒',seed:'🌻',bread:'🍞'};
+const birdSVG=b=>`<svg viewBox="0 0 80 64" aria-hidden="true"><path d="M8 34 L0 26 L4 40 Z" fill="${b.back}"/><ellipse cx="34" cy="36" rx="26" ry="20" fill="${b.back}"/>
+  <ellipse cx="38" cy="42" rx="18" ry="14" fill="${b.belly}"/><circle cx="54" cy="24" r="14" fill="${b.back}"/><path d="M44 16 Q54 8 66 18 Q58 14 48 20Z" fill="${b.cap}"/>
+  <circle cx="58" cy="23" r="3" fill="#111"/><circle cx="59" cy="22" r="1" fill="#fff"/><path d="M66 26 L76 28 L66 31 Z" fill="#e0a52a"/>
+  <path d="M22 34 Q32 28 44 36 Q32 40 22 34Z" fill="#0002"/><path d="M30 55 v7 M40 55 v7" stroke="#c8812a" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+SCENES.adv9=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="branch9"></div><div class="feeder"><i class="roof"></i><i class="tray"></i></div><div class="bird9" id="r-bird"></div><div class="want9" id="r-want"></div>
+    <div class="foods">${Object.entries(FOOD).map(([k,e])=>`<button data-f="${k}" aria-label="Корм">${e}</button>`).join('')}</div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.16,y:s.height*.86});
+  setHint('Посмотри, что хочет птичка, и нажми на этот корм');
+  talk2(S2,'Повесим кормушку! Птички прилетят — покормим их!',2400);
+  const order=['snegir','sinica','vorob','sinica','snegir','vorob'];
+  let i=0, cur=null, lock=true;
+  const bird=$('r-bird'), want=$('r-want');
+  async function arrive(){
+    if(!alive()) return; cur=order[i]; const b=BIRDS[cur];
+    bird.innerHTML=birdSVG(b); bird.className='bird9 in'; want.innerHTML=''; tone(2200,.06,'sine',0,.03); tone(2600,.06,'sine',.1,.03);
+    await wait(900); if(!alive()) return; want.innerHTML=`<span>${FOOD[b.food]}</span>`; want.className='want9 show';
+    if(i<3) talk2(S2,b.say,1800); lock=false;
+  }
+  room.querySelector('.foods').addEventListener('click',async e=>{
+    const btn=e.target.closest('button'); if(!btn||lock) return; const b=BIRDS[cur];
+    if(btn.dataset.f!==b.food){ restart(btn,'shake'); restart(bird,'shake'); tone(260,.15,'triangle',0,.04,200); say(S2,'<b>Не то!</b> Посмотри в облачко',1000); return }
+    lock=true; want.className='want9'; const f=document.createElement('i'); f.className='crumb9'; f.textContent=FOOD[b.food]; room.appendChild(f);
+    await wait(500); if(!alive()) return; f.remove(); bird.classList.add('peck'); [2400,2900,2600].forEach((h,k)=>tone(h,.07,'sine',k*.12,.035)); await wait(900); if(!alive()) return;
+    say(S2,pick(['<b>Чик-чирик!</b>','<b>Спасибо!</b>','<b>Ням!</b>']),800); bird.className='bird9 out'; add2(1,false); i++;
+    await wait(800); if(!alive()) return; if(i<order.length) arrive(); else add2(0);
+  });
+  setTimeout(arrive,2400);
+};
+
+/* ---- День 10. Прятки: ёжик прячется в одном из сугробов — найди его ---- */
+SCENES.adv10=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="drifts" id="r-drifts"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.2});
+  { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.5+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
+  const JUNK=['🧤','🥕','🌰','🧦','🍂','🪵'];
+  const box=$('r-drifts'); let round=0, lock=false, hintT=0;
+  setHint('Нажимай на сугробы — где-то там спрятался ёжик');
+  talk2(S2,'Ёжик спрятался в сугробе! Найдёшь его?',2400);
+  function start(){
+    round++; const n=Math.min(6,2+round); const hog=Math.floor(Math.random()*n);
+    box.innerHTML=Array.from({length:n},(_,k)=>`<button class="drift" data-k="${k}" aria-label="Сугроб"><span class="in">${k===hog?'🦔':pick(JUNK)}</span><i></i></button>`).join('');
+    box.style.setProperty('--n',n); lock=false;
+    // если долго ищем — сугроб с ёжиком шевелится и шуршит
+    clearTimeout(hintT); hintT=setTimeout(function wig(){ if(!alive()||lock) return; const d=box.querySelector(`.drift[data-k="${hog}"]`); restart(d,'wiggle'); noise(.25,3000,1500,.03,0,'bandpass',2); hintT=setTimeout(wig,2600) },3500);
+  }
+  box.addEventListener('click',async e=>{
+    const d=e.target.closest('.drift'); if(!d||lock||d.classList.contains('dug')) return;
+    d.classList.add('dug'); noise(.2,1800,600,.06); const r=d.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height*.4,14,4,['#fff','#e6f6ff']);
+    if(d.querySelector('.in').textContent==='🦔'){ lock=true; clearTimeout(hintT); tone(880,.1,'sine',.1,.05); tone(1175,.15,'sine',.22,.05);
+      say(S2,'<b>Ку-ку!</b> Нашёлся!',1100); add2(1,false); await wait(1600); if(!alive()) return; if(round<5) start(); else add2(0) }
+    else { const what=d.querySelector('.in').textContent; say(S2,{'🧤':'Варежка!','🥕':'Морковка!','🌰':'Жёлудь!','🧦':'Носочек!','🍂':'Листик!','🪵':'Палочка!'}[what]||'Не тут!',900) }
+  });
+  setTimeout(()=>alive()&&start(),1200);
+};
+
+/* ---- День 11. Снежинка из бумаги: сложенный листок — нажимаешь, вырезаешь дырочки, потом разворачиваешь ---- */
+SCENES.adv11=function(alive){
+  room.className='room advday';
+  // клин 30° (бумага сложена в 12 слоёв); вырезы — кружки в этом клине; при развороте клин повторяется с отражением 12 раз
+  // край у сложенной бумаги уже фигурный — после разворота получается звезда с 12 лучами, а не блин
+  const R=90, A=Math.PI/6, P=(r,deg)=>`${(r*Math.cos(deg*Math.PI/180)).toFixed(2)} ${(r*Math.sin(deg*Math.PI/180)).toFixed(2)}`;
+  const wedge=`M0 0 L${P(R,0)} L${P(R*.8,6)} L${P(R*.84,12)} L${P(R*.62,18)} L${P(R*.66,24)} L${P(R*.5,30)} Z`;
+  room.innerHTML=`<div class="paper11"><svg viewBox="-10 -10 110 70" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="120"><rect x="-10" y="-10" width="120" height="120" fill="#fff"/><g id="r-holes"></g></mask></defs>
+      <path d="${wedge}" fill="#fff" stroke="#9fc4e0" stroke-width="1" mask="url(#cut11)"/></svg></div>
+    <button class="unfold" id="r-unf" hidden>Развернуть!</button>
+    <div class="flake11" id="r-flake" hidden><svg viewBox="-100 -100 200 200"><defs><path id="w11" d="${wedge}" fill="#fff" mask="url(#cut11)"/></defs>
+      ${Array.from({length:6},(_,k)=>`<use href="#w11" transform="rotate(${k*60})"/><use href="#w11" transform="rotate(${k*60}) scale(1,-1)"/>`).join('')}</svg></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.16,y:s.height*.86});
+  setHint('Нажимай на бумагу — ножницы вырежут дырочку');
+  talk2(S2,'Сделаем снежинку! Бумага сложена — вырезай дырочки!',2600);
+  const pap=$('r-pap'), holes=$('r-holes'); let n=0;
+  pap.addEventListener('pointerdown',e=>{
+    if(n>=6) return; const r=pap.getBoundingClientRect(), x=-10+(e.clientX-r.left)/r.width*110, y=-10+(e.clientY-r.top)/r.height*70;
+    const rad=Math.hypot(x,y), ang=Math.atan2(y,x); if(rad>R+6||ang<-.15||ang>A+.15) return;
+    // вырез: кружок, ромбик или треугольничек — так узор интереснее
+    const r0=3+Math.random()*3.5+rad/90*2, kind=n%3; let c;
+    if(kind===0){ c=document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1)); c.setAttribute('r',r0.toFixed(1)) }
+    else { c=document.createElementNS('http://www.w3.org/2000/svg','polygon'); const pts=kind===1?[[0,-1.4],[1,0],[0,1.4],[-1,0]]:[[0,-1.3],[1.2,.9],[-1.2,.9]];
+      c.setAttribute('points',pts.map(([a,b])=>`${(x+a*r0).toFixed(1)},${(y+b*r0).toFixed(1)}`).join(' ')) }
+    c.setAttribute('fill','#000'); holes.appendChild(c);
+    noise(.07,5000,3000,.05); tone(1500,.04,'square',0,.015); n++; add2(1,false);
+    if(n===6){ $('r-unf').hidden=false; setHint('Нажми «Развернуть!»'); talk2(S2,'Готово! Разворачивай!',1600) }
+  });
+  $('r-unf').onclick=async()=>{ $('r-unf').hidden=true; room.querySelector('.paper11').classList.add('gone'); await wait(400); if(!alive()) return;
+    $('r-flake').hidden=false; taDa(); const r=$('r-flake').getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#bfe6ff','#ffe27a']);
+    talk2(S2,'Ух ты! Какая красивая снежинка!',2000); await wait(1800); if(alive()) add2(1) };
+};
+
+/* ---- День 12. Колокольчики: сыграть «В лесу родилась ёлочка» — нажимать на тот, что светится ---- */
+SCENES.adv12=function(alive){
+  room.className='room adv';
+  const NOTES={C:523.25,D:587.33,F:698.46,G:783.99,A:880,B:932.33,c:1046.5}, ORDER=['C','D','F','G','A','B','c'];
+  const COLS=['#ff5a5a','#ff9a3a','#ffd23a','#4dd06a','#4da3ff','#7a6bff','#c77dff'];
+  const SONG=[['C','A','A','G','A','F','C','C','C'],['C','A','A','B','G','c','c'],['c','D','D','B','B','A','G','F'],['C','A','A','G','A','F']];
+  const WORDS=[['В','ле','су','ро','ди','лась','ё','лоч','ка'],['В','ле','су','о','на','рос','ла'],['Зи','мой','и','ле','том','строй','на','я'],['Зе','лё','на','я','бы','ла']];
+  room.innerHTML=`<div class="snowfall">${Array.from({length:14},()=>`<i style="left:${rand(0,100).toFixed(1)}%;animation-delay:${rand(-8,0).toFixed(1)}s;animation-duration:${rand(6,11).toFixed(1)}s;--s:${rand(3,6).toFixed(1)}px"></i>`).join('')}</div>
+    <div class="bells">${ORDER.map((n,i)=>`<button class="bell" data-n="${n}" style="--c:${COLS[i]}" aria-label="Колокольчик"><svg viewBox="0 0 60 70"><path d="M30 6 Q14 8 12 30 L8 52 H52 L48 30 Q46 8 30 6Z" fill="var(--c)" stroke="#0003" stroke-width="2"/><rect x="6" y="50" width="48" height="7" rx="3.5" fill="var(--c)" stroke="#0003" stroke-width="2"/><circle cx="30" cy="61" r="5" fill="#d9b54a"/><circle cx="30" cy="5" r="4" fill="none" stroke="#d9b54a" stroke-width="2"/></svg></button>`).join('')}</div>
+    <div class="lyric" id="r-lyr"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.84});
+  const ring=(n,ms=380)=>{ const f=NOTES[n]; tone(f,ms/1000*1.6,'sine',0,.07); tone(f*2,ms/1000,'sine',0,.025); tone(f*3.01,ms/1000*.5,'sine',0,.012) };
+  let ph=0, k=0, lock=true;
+  const bells=[...room.querySelectorAll('.bell')];
+  function mark(){ bells.forEach(b=>b.classList.toggle('next',!lock&&b.dataset.n===SONG[ph][k]));
+    $('r-lyr').innerHTML=WORDS[ph].map((w,i)=>`<span class="${i<k?'sung':i===k?'now':''}">${w}</span>`).join('<i>-</i>') }
+  setHint('Нажимай на колокольчик, который светится — получится песенка');
+  talk2(S2,'Сыграем на колокольчиках «В лесу родилась ёлочка»!',2600);
+  setTimeout(()=>{ if(!alive()) return; lock=false; mark() },2600);
+  room.querySelector('.bells').addEventListener('pointerdown',async e=>{
+    const b=e.target.closest('.bell'); if(!b) return; e.preventDefault(); ring(b.dataset.n); restart(b,'ding');
+    if(lock||b.dataset.n!==SONG[ph][k]) return;
+    k++; if(k<SONG[ph].length){ mark(); return }
+    lock=true; mark(); add2(1,false); await wait(500); if(!alive()) return;
+    if(++ph<SONG.length){ say(S2,pick(['<b>Красиво!</b>','<b>Дальше!</b>','<b>Ля-ля-ля!</b>']),900); k=0; await wait(700); if(!alive()) return; lock=false; mark() }
+    else { bells.forEach((x,i)=>setTimeout(()=>{ ring(x.dataset.n,200); restart(x,'ding') },i*110)); talk2(S2,'Какая песенка! Ура!',1800); await wait(1500); if(alive()) add2(0) }
+  });
 };
 
 /* ---- старт ---- */
