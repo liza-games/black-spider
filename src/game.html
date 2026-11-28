@@ -388,6 +388,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .toy9{width:46px;height:50px;padding:4px 7px;border:0;border-radius:14px;background:#fff9;box-shadow:0 2px 6px #0002;cursor:pointer;transition:opacity .2s,scale .2s;--ow:36px}
 .toy9 svg{display:block;width:100%;height:100%}
 .toy9.big{width:84px;height:84px;padding:8px;animation:bellnext .9s ease-in-out infinite}
+.toy9.want9r{box-shadow:0 0 0 3px #d62a1e,0 0 16px #ff7a6a;animation:shake .3s infinite}
 .toy9.want9p{box-shadow:0 0 0 3px #7a3cc9,0 0 16px #b07aff;animation:shake .4s infinite}
 .toy9.gone{opacity:0;scale:.4;pointer-events:none}
 .star9{position:absolute;width:calc(var(--ow,36px)*1.9);translate:-50% -50%;z-index:4;pointer-events:none}
@@ -5506,8 +5507,8 @@ const TREE9=`<svg viewBox="0 0 200 240" class="tree9svg" aria-hidden="true">
 // места для игрушек на ёлке (в единицах viewBox 200×240) — в таком порядке они и вешаются
 const SPOTS9=[[100,50],[78,120],[124,116],[60,180],[100,168],[142,178],[82,78],[100,146],[34,198],[164,196],[118,78],[56,140],[146,138],[100,104],[80,196],[122,196]];
 const TOYS9=[
-  {c:'#e8483c'},{c:'#3d8fe0'},{c:'#9b4fe0',p:1},{c:'#f5c03a'},{e:'🔔'},{c:'#7a3cc9',p:1},{c:'#ff7ab0'},{e:'🍭'},
-  {c:'#4fae5a'},{c:'#b07aff',p:1},{e:'🧸'},{c:'#ffffff'},{c:'#e8483c'},{c:'#6a2cb8',p:1},{e:'🍬'},{c:'#3d8fe0'}
+  {c:'#e8483c',r:1},{c:'#3d8fe0'},{c:'#9b4fe0',p:1},{c:'#f5c03a'},{e:'🔔'},{c:'#7a3cc9',p:1},{c:'#d62a1e',r:1},{e:'🍭'},
+  {c:'#4fae5a'},{c:'#b07aff',p:1},{e:'🧸'},{c:'#ff5a4a',r:1},{c:'#ffffff'},{c:'#6a2cb8',p:1},{e:'🍬'},{c:'#e8483c',r:1}
 ];
 function ball9(c){ return `<svg viewBox="0 0 40 48"><rect x="15" y="0" width="10" height="7" rx="2" fill="#c9a24a"/><circle cx="20" cy="27" r="18" fill="${c}" stroke="#0002" stroke-width="1.5"/>
   <path d="M5 24 Q20 32 35 24" stroke="#fff8" stroke-width="3" fill="none"/><ellipse cx="13" cy="19" rx="5" ry="3.5" fill="#fff" opacity=".7" transform="rotate(-30 13 19)"/></svg>` }
@@ -5545,18 +5546,29 @@ function jingle9(k){ const sc=[72,74,76,77,79,81,83,84,86,88]; const f=440*2**((
 // Фиолетовый паук хочет сам повесить все фиолетовые игрушки: если не успеть нажать на фиолетовую, он её утащит
 SCENES.toys9=function(alive){
   tree9Scene(0,false); spider9();
-  const s0=rr(), P=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'});
-  put(P,{x:s0.width*.14,y:s0.height*.2});
-  { const th=document.createElement('div'); th.className='thread'; th.style.left=s0.width*.14+'px'; th.style.height=s0.height*.2+'px'; room.prepend(th) }
+  const s0=rr();
+  // соперники: Фиолетовый охотится за фиолетовыми игрушками, Красный — за красными, и он быстрее
+  const RIV=[
+    {k:'p',cls:'purple',label:'Фиолетовый паук',pitch:1.7,x:.14,y:.2,wait:1900,gap:[1800,3200],
+     hi:'А все фиолетовые игрушки повешу я!',laugh:['Ха-ха-ха! Не успел!','Ха-ха! Моя!','Ха-ха-ха! Опять не успел!','Хи-хи! Фиолетовая — моя!'],
+     more:'Ха-ха! Фиолетовых у меня больше!',less:'Эх, ты быстрый! Ладно, вешай остальные!'},
+    {k:'r',cls:'red',label:'Красный паук',pitch:1.05,x:.1,y:.5,wait:1300,gap:[1300,2400],
+     hi:'А я самый быстрый! Все красные — мои!',laugh:['Ха-ха-ха, догоняй!','Ха-ха! Догоняй!','Ха-ха-ха! Я быстрее!'],
+     more:'Ха-ха! Красных у меня больше! Догоняй!',less:'Ого! Ты меня догнал!'}];
+  for(const R of RIV){
+    R.P=makeWalker(R.cls+' small',{pitch:R.pitch,rate:1.15,who:R.cls,voice:1,label:R.label}); put(R.P,{x:s0.width*R.x,y:s0.height*R.y});
+    const th=document.createElement('div'); th.className='thread'; th.style.left=s0.width*R.x+'px'; th.style.height=s0.height*R.y+'px'; room.prepend(th);
+    R.mine=0; R.his=0; R.target=null; R.T=0;
+  }
   const tray=$('r-tray');
   tray.innerHTML=TOYS9.map((t,i)=>`<button class="toy9" data-i="${i}" aria-label="Игрушка">${toy9(t)}</button>`).join('');
-  setHint('Нажимай на игрушки! Фиолетовые — быстрее, а то их утащит Фиолетовый!');
+  setHint('Нажимай на игрушки! Фиолетовые и красные хватай быстрее — за ними охотятся пауки!');
   talk2(S2,'Давай нарядим ёлку! Нажимай на игрушки!',2400);
-  setTimeout(()=>{ if(alive()) talk2(P,'А все фиолетовые игрушки повешу я!',2200) },2600);
-  let n=0, mine=0, his=0, target=null, grabT=0;
-  const LAUGH=['Ха-ха-ха! Не успел!','Ха-ха! Моя!','Ха-ха-ха! Опять не успел!','Хи-хи! Фиолетовая — моя!'];
-  function fly(b,who){
-    b.disabled=true; b.classList.remove('want9p'); b.classList.add('gone');
+  setTimeout(()=>{ if(alive()) talk2(RIV[0].P,RIV[0].hi,2200) },2600);
+  setTimeout(()=>{ if(alive()) talk2(RIV[1].P,RIV[1].hi,2200) },5000);
+  let n=0;
+  function fly(b){
+    b.disabled=true; b.classList.remove('want9p','want9r'); b.classList.add('gone');
     const i=n++, t=TOYS9[+b.dataset.i], from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
     const f=document.createElement('div'); f.className='orn9 fly'; f.innerHTML=b.innerHTML; room.appendChild(f);
     const x0=from.left-s.left+from.width/2, y0=from.top-s.top+from.height*.2, t0=performance.now(), T=650;
@@ -5570,21 +5582,25 @@ SCENES.toys9=function(alive){
   }
   tray.addEventListener('click',e=>{
     const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2) return;
-    if(b===target){ clearTimeout(grabT); target=null; mine++; talk2(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),1200); restart(P.btn,'shake'); schedule() }
-    else if(TOYS9[+b.dataset.i].p) mine++;
-    fly(b,'me');
+    const t=TOYS9[+b.dataset.i];
+    for(const R of RIV){
+      if(b===R.target){ clearTimeout(R.T); R.target=null; R.mine++; talk2(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),1200); restart(R.P.btn,'shake'); schedule(R) }
+      else if(t[R.k]) R.mine++;
+    }
+    fly(b);
   });
-  // Фиолетовый присматривает фиолетовую игрушку (она мигает), и если её не нажать — забирает
-  function schedule(){ clearTimeout(grabT); grabT=setTimeout(aim,rand(1800,3200)) }
-  function aim(){
-    if(!alive()||busy2) return;
-    const left=[...tray.querySelectorAll('.toy9:not(.gone)')].filter(b=>TOYS9[+b.dataset.i].p);
-    if(!left.length){ if(his>0||mine>0) talk2(P,his>mine?'Ха-ха! Фиолетовых у меня больше!':'Эх, ты быстрый! Ладно, вешай остальные!',2000); return }
-    target=pick(left); target.classList.add('want9p'); tone(700,.15,'triangle',0,.03,900);
-    grabT=setTimeout(()=>{ if(!alive()||!target) return; const b=target; target=null; his++;
-      restart(P.btn,'jump'); fly(b,'purple'); talk2(P,pick(LAUGH),1500); sfx.laugh(); schedule() },1900);
+  // паук присматривает «свою» игрушку (она дрожит и светится), и если её не нажать — забирает
+  function schedule(R){ clearTimeout(R.T); R.T=setTimeout(()=>aim(R),rand(...R.gap)) }
+  function aim(R){
+    if(!alive()) return; if(busy2) return schedule(R);
+    const left=[...tray.querySelectorAll('.toy9:not(.gone)')].filter(b=>TOYS9[+b.dataset.i][R.k]);
+    if(!left.length){ if(R.his>0||R.mine>0) talk2(R.P,R.his>R.mine?R.more:R.less,2000); return }
+    R.target=pick(left); R.target.classList.add(R.k==='p'?'want9p':'want9r'); tone(R.k==='p'?700:900,.15,'triangle',0,.03,R.k==='p'?900:1300);
+    R.T=setTimeout(()=>{ if(!alive()||!R.target) return; const b=R.target; R.target=null; R.his++;
+      restart(R.P.btn,'jump'); fly(b); talk2(R.P,pick(R.laugh),1500); sfx.laugh(); schedule(R) },R.wait);
   }
-  setTimeout(()=>{ if(alive()) schedule() },4200);
+  setTimeout(()=>{ if(alive()) schedule(RIV[0]) },4200);
+  setTimeout(()=>{ if(alive()) schedule(RIV[1]) },6800);
 };
 
 // 2. Звезда на макушку: паук спускается за звездой и ставит её наверх
