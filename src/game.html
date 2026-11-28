@@ -674,10 +674,26 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .c-track u:nth-child(2){translate:-8px 0;rotate:-15deg}.c-track u:nth-child(3){translate:4px 0;rotate:10deg}
 .c-steam{left:50%;top:-12%;width:22%;height:34%;translate:-50% 0}
 .c-steam::before,.c-steam::after{content:"";position:absolute;left:20%;bottom:0;width:60%;aspect-ratio:1;border-radius:50%;background:#a9c4da;filter:blur(1.5px);opacity:0;animation:steam10 2.2s ease-out infinite}
-.c-steam::after{animation-delay:1.1s;left:30%}
-@keyframes steam10{0%{translate:0 0;opacity:0;scale:.5}30%{opacity:.9}100%{translate:4px -160%;opacity:0;scale:1.3}}
+
+@keyframes steam10{0%{translate:0 0;opacity:0;scale:.5}12%{opacity:.85}40%{translate:3px -130%;opacity:0;scale:1.1}100%{opacity:0}}
+.c-steam::before{animation-duration:2.6s}.c-steam::after{display:none}
+.c-kettle,.c-smoke{left:50%;top:-30%;width:40%;height:50%;translate:-50% 0}
+.c-kettle s,.c-smoke s{position:absolute;left:30%;bottom:0;width:44%;aspect-ratio:1;border-radius:50%;background:#fff;filter:blur(2px);opacity:0;animation:cloud10 1.2s ease-out infinite}
+.c-kettle s:nth-child(2),.c-smoke s:nth-child(2){animation-delay:.4s;left:18%}.c-kettle s:nth-child(3),.c-smoke s:nth-child(3){animation-delay:.8s;left:40%}
+.c-smoke s{background:#8f98a3;animation-name:smoke10;animation-duration:1.6s}
+@keyframes cloud10{0%{translate:0 0;opacity:0;scale:.6}20%{opacity:.95}100%{translate:-6px -150%;opacity:0;scale:1.8}}
+@keyframes smoke10{0%{translate:0 0;opacity:0;scale:.6}20%{opacity:.8}50%{translate:8px -70%}100%{translate:-6px -160%;opacity:0;scale:2}}
 .c-apple{left:60%;top:10%;font-size:16px;rotate:20deg;line-height:1}
-.c-decoy{left:36%;top:11%;font-size:16px;rotate:-25deg;line-height:1}
+.c-needle{background:linear-gradient(#f4efe4 0 28%,#7a5c40 28%)}
+.c-fir{left:50%;top:13%;translate:-50% 0;width:36%;height:13%;background:#3f7d4a;clip-path:polygon(0 100%,6% 30%,12% 100%,18% 20%,24% 100%,30% 25%,36% 100%,42% 15%,48% 100%,54% 25%,60% 100%,66% 20%,72% 100%,78% 30%,84% 100%,90% 20%,96% 100%)}
+.c-grass{left:50%;top:10%;translate:-50% 0;width:28%;height:16%;background:#d4b25a;clip-path:polygon(0 100%,10% 0,14% 100%,30% 10%,34% 100%,48% 0,52% 100%,66% 5%,70% 100%,86% 0,90% 100%)}
+.c-track u{display:block;width:12px;height:12px;color:#7d98b3}
+.c-track svg{display:block;width:100%;height:100%;fill:currentColor;stroke:currentColor}
+.c-obj{left:36%;top:11%;font-size:16px;rotate:-25deg;line-height:1}
+.sample10{position:absolute;left:3%;top:3%;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:12px;background:#fff;box-shadow:0 3px 8px #0002;font-size:20px;z-index:4;animation:pop .4s}
+.sample10 .c-needle{display:block;width:30px;height:14px;clip-path:polygon(0 100%,8% 10%,16% 100%,26% 0,36% 100%,46% 15%,56% 100%,66% 0,76% 100%,86% 12%,94% 100%)}
+.sample10 .c-track u{width:20px;height:20px}
+.sample10 .c-track,.sample10 .c-needle{position:static;translate:none;opacity:.9}
 .help10 .clue:not(.c-decoy){animation:help10 1s ease-in-out infinite}
 @keyframes help10{50%{scale:1.5}}
 .drift .in.jump10{animation:jump10 .5s cubic-bezier(.3,1.6,.5,1)}
@@ -685,12 +701,16 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .q10{position:absolute;left:50%;bottom:105%;translate:-50% 0;padding:5px 9px;border-radius:12px;background:#fff;box-shadow:0 3px 8px #0002;font:700 13px var(--body);white-space:nowrap;z-index:5;animation:pop .3s}
 
 @keyframes wiggle{25%{rotate:-4deg}75%{rotate:4deg}}
-.paper11{position:absolute;left:50%;top:10%;width:min(80%,50vh);translate:-50% 0;z-index:2;transition:opacity .4s,scale .4s}
+.paper11{position:absolute;left:50%;top:6%;width:min(70%,42vh);translate:-50% 0;z-index:2;transition:opacity .4s,scale .4s}
 .paper11 svg{width:100%;display:block;filter:drop-shadow(0 4px 6px #0002);touch-action:none}
 .paper11.gone{opacity:0;scale:.5}
-.unfold{position:absolute;left:50%;bottom:24%;translate:-50% 0;border:0;border-radius:999px;padding:12px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer;z-index:5}
-.flake11{position:absolute;left:50%;top:6%;width:min(84%,52vh);aspect-ratio:1;translate:-50% 0;z-index:3;animation:unfold .9s cubic-bezier(.3,1.4,.5,1)}
-.flake11 svg{width:100%;height:100%;filter:drop-shadow(0 0 2px #7fb8e0) drop-shadow(0 4px 8px #0002)}
+.unfold{position:absolute;left:50%;bottom:30%;translate:-50% 0;border:0;border-radius:999px;padding:12px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer;z-index:5}
+.flake11{position:absolute;left:50%;top:6%;width:min(84%,52vh);aspect-ratio:1;translate:-50% 0;z-index:3}
+.flake11 svg{width:100%;height:100%;filter:drop-shadow(0 0 2px var(--glow,#7fb8e0)) drop-shadow(0 4px 8px #0002)}
+.flake11.open11{animation:unfold .9s cubic-bezier(.3,1.4,.5,1)}
+.shelf11{position:absolute;right:4%;bottom:4%;display:flex;gap:6px;z-index:3}
+.shelf11 i{width:clamp(40px,12vw,60px);aspect-ratio:1;animation:pop .4s}
+.shelf11 svg{width:100%;height:100%;filter:drop-shadow(0 0 1px var(--glow)) drop-shadow(0 2px 3px #0002)}
 @keyframes unfold{from{scale:.1;rotate:-200deg;opacity:0}}
 .bells{position:absolute;left:3%;right:3%;top:8%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}
 .bells .bell:nth-child(n+5){translate:50% 0}
@@ -4943,7 +4963,7 @@ const ADV=[null,
   {t:'Каток',              o:'⛸️', goal:21, unit:'',          done:'Чемпион катка!'},
   {t:'Кормушка',           o:'🐦', goal:6,  unit:'птичек',   done:'Все птички сыты!'},
   {t:'Ёжик в сугробе',     o:'🦔', goal:5,  unit:'раз',      done:'Ёжик нашёлся!'},
-  {t:'Снежинка из бумаги', o:'❄️', goal:7,  unit:'',         done:'Красивая снежинка!'},
+  {t:'Снежинки из бумаги', o:'❄️', goal:3,  unit:'снежинки',         done:'Красивая снежинка!'},
   {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
   {t:'С горки на санках',  o:'🛷', goal:10, unit:'',         done:'Ух, как здорово прокатились!'},
   {t:'Шарики по коробкам', o:'🔴', goal:9,  unit:'шариков',  done:'Всё по порядку!'},
@@ -5543,21 +5563,34 @@ SCENES.adv10=function(alive){
   room.innerHTML=`<div class="snowground"></div><div class="drifts" id="r-drifts"></div>`;
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.5,y:s.height*.2});
   { const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.5+'px'; th.style.height=s.height*.2+'px'; room.prepend(th) }
-  const CLUES=[['needle','Смотри внимательно: из сугроба торчат колючки!'],['track','Ищи следы ёжика на снегу!'],['steam','Ёжик дышит — видишь тёплый парок?'],['apple','Ёжик утащил яблочко — оно торчит из сугроба!'],['needle','Последний раз! Снова ищи колючки!']];
-  const DECOY=['🥕','🧤','🌿','🍂'];
-  const OCC=[['🐇','Эй! Это мой сугроб!'],['🦉','Угу! Не мешай спать!'],['⛄','Привет! Я маленький снеговик!'],['🐻','Хррр… Тише, я сплю!'],['🦊','Ёжика ищешь? Он не тут!'],['🐦','Чик-чирик! Улетаю!'],['🧦','Ой, чей-то носок!'],['🐁','Пи-пи! Напугал!']];
+  // примета ёжика и обманки: ёлочные иголки, сухая травка, следы зайца и птички
+  const CLUES=[['needle','Из сугроба торчат колючки! Но у ёжика они коричневые с белыми кончиками.',['fir']],
+    ['track','Ищи следы ёжика! Маленькие лапки с пальчиками — вот такие.',['hare','bird']],
+    ['steam','Ёжик дышит тихонько: пых… пауза… пых. Маленький парок, а не облако!',['kettle','smoke']],
+    ['apple','Ёжик утащил яблочко — оно торчит из сугроба!',['obj','obj']],
+    ['needle','Последний раз! Колючки ёжика — коричневые с белыми кончиками.',['fir','grass','hare']]];
+  const TR={hog:'<svg viewBox="0 0 10 10"><ellipse cx="5" cy="6.6" rx="2.6" ry="2.2"/><circle cx="1.7" cy="3.1" r="1"/><circle cx="3.9" cy="1.7" r="1"/><circle cx="6.1" cy="1.7" r="1"/><circle cx="8.3" cy="3.1" r="1"/></svg>',
+    hare:'<svg viewBox="0 0 10 14"><ellipse cx="2.8" cy="4" rx="1.7" ry="3.6"/><ellipse cx="7.2" cy="4" rx="1.7" ry="3.6"/><circle cx="5" cy="10" r="1.5"/><circle cx="5" cy="13" r="1.3"/></svg>',
+    bird:'<svg viewBox="0 0 10 10"><path d="M5 10 V3.5 M5 5.5 L1.2 1 M5 5.5 L8.8 1 M5 5.5 V0.5" fill="none" stroke-width="1.3" stroke-linecap="round"/></svg>'};
+  const steps=t=>`<b class="clue c-track"><u>${t}</u><u>${t}</u><u>${t}</u></b>`;
+  const DECOY=['🥕','🧤','🍂','🌰'], DOCC={kettle:'☕',smoke:'🚂'};
+  const OCC=[['🐇','Эй! Это мой сугроб!'],['🦉','Угу! Не мешай спать!'],['⛄','Привет! Я маленький снеговик!'],['🐻','Хррр… Тише, я сплю!'],['🦊','Ёжика ищешь? Он не тут!'],['🐦','Чик-чирик! Улетаю!'],['🧦','Ой, чей-то носок!'],['🐁','Пи-пи! Напугал!'],['☕','Ой-ой! Это горячий чай пыхтит!'],['🚂','Чух-чух! Это паровозик дымит!']];
   const box=$('r-drifts'); let round=0, lock=false, hog=0, miss=0, clue=null, pulseT=0;
   setHint('Ищи примету — где прячется ёжик? Не тыкай наугад: спугнёшь!');
   talk2(S2,'Ёжик спрятался в сугробе! Найдёшь его по примете?',2400);
-  const clueHTML=t=>t==='track'?'<b class="clue c-track"><u>🐾</u><u>🐾</u><u>🐾</u></b>':t==='apple'?'<b class="clue c-apple">🍎</b>':`<b class="clue c-${t}"></b>`;
+  const clueHTML=t=>t==='track'?steps(TR.hog):t==='apple'?'<b class="clue c-apple">🍎</b>':`<b class="clue c-${t}"></b>`;
+  const decoyHTML=t=>t==='hare'||t==='bird'?steps(TR[t]).replace('clue c-track','clue c-decoy c-track'):t==='obj'?`<b class="clue c-decoy c-obj">${pick(DECOY)}</b>`:t==='kettle'||t==='smoke'?`<b class="clue c-decoy c-${t}"><s></s><s></s><s></s></b>`:`<b class="clue c-decoy c-${t}"></b>`;
   function putClue(){ box.querySelectorAll('.clue:not(.c-decoy)').forEach(c=>c.remove()); box.querySelector(`.drift[data-k="${hog}"]`).insertAdjacentHTML('beforeend',clueHTML(clue[0])) }
   function start(){
     round++; miss=0; const n=Math.min(6,2+round); hog=Math.floor(Math.random()*n); clue=CLUES[round-1];
     const occ=[...OCC].sort(()=>Math.random()-.5);
-    // начиная с 3-го раунда в одном из пустых сугробов тоже что-то торчит — для обмана
-    const decoy=round>=3?(hog+1+Math.floor(Math.random()*(n-1)))%n:-1;
-    box.innerHTML=Array.from({length:n},(_,k)=>`<button class="drift" data-k="${k}" aria-label="Сугроб"><span class="in">${k===hog?'🦔':occ[k][0]}</span><i></i>${k===decoy?`<b class="clue c-decoy">${pick(DECOY)}</b>`:''}</button>`).join('');
-    box.style.setProperty('--n',n); putClue(); lock=false; talk2(S2,clue[1],2400);
+    // обманки раскладываем по другим сугробам
+    const others=[...Array(n).keys()].filter(k=>k!==hog).sort(()=>Math.random()-.5), dec={}; clue[2].forEach((t,i)=>{ if(i<others.length) dec[others[i]]=t });
+    box.innerHTML=Array.from({length:n},(_,k)=>`<button class="drift" data-k="${k}" aria-label="Сугроб"><span class="in">${k===hog?'🦔':DOCC[dec[k]]||occ.filter(o=>!['☕','🚂'].includes(o[0]))[k][0]}</span><i></i>${dec[k]?decoyHTML(dec[k]):''}</button>`).join('');
+    box.style.setProperty('--n',n); putClue(); lock=false; talk2(S2,clue[1],3200);
+    // образец: какие у ёжика колючки или следы
+    room.querySelector('.sample10')?.remove();
+    if(clue[0]==='needle'||clue[0]==='track') room.insertAdjacentHTML('beforeend',`<div class="sample10">🦔 ${clue[0]==='track'?`<span class="c-track"><u>${TR.hog}</u></span>`:'<span class="c-needle"></span>'}</div>`);
     // если совсем долго не находим — примета становится заметнее
     clearTimeout(pulseT); pulseT=setTimeout(()=>{ if(alive()&&!lock) box.classList.add('help10') },14000); box.classList.remove('help10');
   }
@@ -5582,37 +5615,79 @@ SCENES.adv10=function(alive){
   setTimeout(()=>alive()&&start(),1200);
 };
 
-/* ---- День 11. Снежинка из бумаги: сложенный листок — нажимаешь, вырезаешь дырочки, потом разворачиваешь ---- */
+/* ---- День 11. Снежинки из бумаги (3 штуки, разного цвета): сложить круг втрое-вчетверо, подрезать край,
+   вырезать дырочки и развернуть. Снежинка рисуется отдельным SVG со своей маской — так она чёткая на любом экране ---- */
 SCENES.adv11=function(alive){
   room.className='room advday';
-  // клин 30° (бумага сложена в 12 слоёв); вырезы — кружки в этом клине; при развороте клин повторяется с отражением 12 раз
-  // край у сложенной бумаги уже фигурный — после разворота получается звезда с 12 лучами, а не блин
-  const R=90, A=Math.PI/6, P=(r,deg)=>`${(r*Math.cos(deg*Math.PI/180)).toFixed(2)} ${(r*Math.sin(deg*Math.PI/180)).toFixed(2)}`;
-  const wedge=`M0 0 L${P(R,0)} L${P(R*.8,6)} L${P(R*.84,12)} L${P(R*.62,18)} L${P(R*.66,24)} L${P(R*.5,30)} Z`;
-  room.innerHTML=`<div class="paper11"><svg viewBox="-10 -10 110 70" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="120"><rect x="-10" y="-10" width="120" height="120" fill="#fff"/><g id="r-holes"></g></mask></defs>
-      <path d="${wedge}" fill="#fff" stroke="#9fc4e0" stroke-width="1" mask="url(#cut11)"/></svg></div>
-    <button class="unfold" id="r-unf" hidden>Развернуть!</button>
-    <div class="flake11" id="r-flake" hidden><svg viewBox="-100 -100 200 200"><defs><path id="w11" d="${wedge}" fill="#fff" mask="url(#cut11)"/></defs>
-      ${Array.from({length:6},(_,k)=>`<use href="#w11" transform="rotate(${k*60})"/><use href="#w11" transform="rotate(${k*60}) scale(1,-1)"/>`).join('')}</svg></div>`;
+  const NS='http://www.w3.org/2000/svg', D2R=Math.PI/180;
+  const P=(r,deg)=>`${(r*Math.cos(deg*D2R)).toFixed(2)} ${(r*Math.sin(deg*D2R)).toFixed(2)}`;
+  const R=90;
+  const FL=[
+    {col:'#ffffff',glow:'#7fb8e0',edge:[[1,0],[.8,6],[.84,12],[.62,18],[.66,24],[.5,30]]},
+    {col:'#cfe7ff',glow:'#3d8fe0',edge:[[1,0],[.7,4],[.9,10],[.72,16],[.78,22],[.6,26],[.64,30]]},
+    {col:'#ffd3ea',glow:'#e0679f',edge:[[.9,0],[1,5],[.72,9],[.82,15],[.56,20],[.7,25],[.58,30]]}];
+  // сектор круга от 0 до th градусов (360 — целый круг)
+  const sector=th=>th>=359.9?`M${R} 0 A${R} ${R} 0 1 1 ${-R} 0 A${R} ${R} 0 1 1 ${R} 0 Z`:`M0 0 L${P(R,0)} A${R} ${R} 0 ${th>180?1:0} 1 ${P(R,th)} Z`;
+  room.innerHTML=`<div class="shelf11" id="r-shelf"></div>
+    <div class="paper11"><svg viewBox="-100 -100 200 200" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-120" y="-120" width="240" height="240"><rect x="-120" y="-120" width="240" height="240" fill="#fff"/><g id="r-holes"></g></mask></defs>
+      <g id="r-g"><path id="r-shape" stroke="#9fc4e0" stroke-width="1" mask="url(#cut11)"/></g></svg></div>
+    <button class="unfold" id="r-btn" hidden></button><div class="flake11" id="r-flake" hidden></div>`;
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.16,y:s.height*.86});
-  setHint('Нажимай на бумагу — ножницы вырежут дырочку');
-  talk2(S2,'Сделаем снежинку! Бумага сложена — вырезай дырочки!',2600);
-  const pap=$('r-pap'), holes=$('r-holes'); let n=0;
+  const pap=$('r-pap'), shape=$('r-shape'), g=$('r-g'), holes=$('r-holes'), btn=$('r-btn'), flake=$('r-flake');
+  let f=0, stage='', n=0, th=360, busy=false;
+  const vb=(a,ms)=>{ const from=pap.getAttribute('viewBox').split(' ').map(Number), t0=performance.now();
+    return new Promise(res=>(function st(){ const k=Math.min(1,(performance.now()-t0)/ms), q=k<.5?2*k*k:1-(-2*k+2)**2/2;
+      pap.setAttribute('viewBox',from.map((v,i)=>(v+(a[i]-v)*q).toFixed(2)).join(' ')); k<1?requestAnimationFrame(st):res() })()) };
+  const showBtn=t=>{ btn.textContent=t; btn.hidden=false; restart(btn,'pop') };
+  function begin(){
+    const F=FL[f]; stage='fold'; n=0; th=360; holes.innerHTML=''; shape.setAttribute('fill',F.col); shape.setAttribute('d',sector(360));
+    pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); room.querySelector('.paper11').classList.remove('gone'); flake.hidden=true;
+    talk2(S2,f===0?'Вот круглый листок бумаги! Сначала сложим его.':f===1?'Теперь голубая снежинка!':'И последняя — розовая!',2400);
+    setHint('Нажми «Сложить!» — три раза'); showBtn('Сложить!');
+  }
+  async function fold(){
+    const next=th===360?180:th===180?60:30, from=th, t0=performance.now(); busy=true; sfx.page();
+    await new Promise(res=>(function st(){ const k=Math.min(1,(performance.now()-t0)/450), q=1-(1-k)**2; const a=from+(next-from)*q;
+      shape.setAttribute('d',sector(a)); g.setAttribute('transform',`rotate(${(-a/2).toFixed(1)})`); k<1?requestAnimationFrame(st):res() })());
+    th=next; busy=false;
+    if(th===30){ stage='trim'; setHint('Нажми «Подрезать!» — ножницы сделают край фигурным'); showBtn('Подрезать!'); talk2(S2,'Сложили! Теперь подрежем край.',1800) }
+  }
+  async function trim(){
+    busy=true; const F=FL[f]; noise(.25,5000,2500,.06); tone(1400,.05,'square',0,.02); tone(1500,.05,'square',.12,.02);
+    g.removeAttribute('transform');
+    shape.setAttribute('d',`M0 0 ${F.edge.map(([r,a])=>'L'+P(R*r,a)).join(' ')} Z`);
+    await vb([-8,-10,106,66],600); busy=false; stage='cut';
+    setHint('Нажимай на бумагу — вырежи 6 дырочек (и по краям тоже!)'); talk2(S2,'Теперь вырезай дырочки — где хочешь!',2000);
+  }
   pap.addEventListener('pointerdown',e=>{
-    if(n>=6) return; const r=pap.getBoundingClientRect(), x=-10+(e.clientX-r.left)/r.width*110, y=-10+(e.clientY-r.top)/r.height*70;
-    const rad=Math.hypot(x,y), ang=Math.atan2(y,x); if(rad>R+6||ang<-.15||ang>A+.15) return;
-    // вырез: кружок, ромбик или треугольничек — так узор интереснее
-    const r0=3+Math.random()*3.5+rad/90*2, kind=n%3; let c;
-    if(kind===0){ c=document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1)); c.setAttribute('r',r0.toFixed(1)) }
-    else { c=document.createElementNS('http://www.w3.org/2000/svg','polygon'); const pts=kind===1?[[0,-1.4],[1,0],[0,1.4],[-1,0]]:[[0,-1.3],[1.2,.9],[-1.2,.9]];
+    if(stage!=='cut'||n>=6) return; const pt=pap.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(pap.getScreenCTM().inverse()), x=q.x, y=q.y;
+    const rad=Math.hypot(x,y), ang=Math.atan2(y,x); if(rad>R+6||ang<-.15||ang>Math.PI/6+.15) return;
+    const r0=3+Math.random()*3.5+rad/90*2, kind=(n+f)%3; let c;
+    if(kind===0){ c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1)); c.setAttribute('r',r0.toFixed(1)) }
+    else { c=document.createElementNS(NS,'polygon'); const pts=kind===1?[[0,-1.4],[1,0],[0,1.4],[-1,0]]:[[0,-1.3],[1.2,.9],[-1.2,.9]];
       c.setAttribute('points',pts.map(([a,b])=>`${(x+a*r0).toFixed(1)},${(y+b*r0).toFixed(1)}`).join(' ')) }
     c.setAttribute('fill','#000'); holes.appendChild(c);
-    noise(.07,5000,3000,.05); tone(1500,.04,'square',0,.015); n++; add2(1,false);
-    if(n===6){ $('r-unf').hidden=false; setHint('Нажми «Развернуть!»'); talk2(S2,'Готово! Разворачивай!',1600) }
+    noise(.07,5000,3000,.05); tone(1500,.04,'square',0,.015); n++;
+    if(n===6){ stage='open'; setHint('Нажми «Развернуть!»'); showBtn('Развернуть!'); talk2(S2,'Готово! Разворачивай!',1600) }
   });
-  $('r-unf').onclick=async()=>{ $('r-unf').hidden=true; room.querySelector('.paper11').classList.add('gone'); await wait(400); if(!alive()) return;
-    $('r-flake').hidden=false; taDa(); const r=$('r-flake').getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#bfe6ff','#ffe27a']);
-    talk2(S2,'Ух ты! Какая красивая снежинка!',2000); await wait(1800); if(alive()) add2(1) };
+  async function unfold(){
+    const F=FL[f], d=shape.getAttribute('d'), id='m11-'+f;
+    // своя маска внутри большой снежинки: копия дырочек в тех же координатах
+    flake.innerHTML=`<svg viewBox="-100 -100 200 200" style="--glow:${F.glow}"><defs><mask id="${id}" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="70"><rect x="-10" y="-10" width="120" height="70" fill="#fff"/>${holes.innerHTML}</mask>
+      <path id="w${id}" d="${d}" fill="${F.col}" stroke="${F.col}" stroke-width=".6" mask="url(#${id})"/></defs>
+      ${Array.from({length:6},(_,k)=>`<use href="#w${id}" transform="rotate(${k*60})"/><use href="#w${id}" transform="rotate(${k*60}) scale(1,-1)"/>`).join('')}</svg>`;
+    room.querySelector('.paper11').classList.add('gone'); await wait(400); if(!alive()) return;
+    flake.hidden=false; restart(flake,'open11'); taDa(); const r=flake.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff',F.glow,'#ffe27a']);
+    talk2(S2,pick(['Ух ты! Какая красивая снежинка!','Красота! Ни одной такой больше нет!','Вот это узор!']),2000); add2(1,false);
+    await wait(2600); if(!alive()) return;
+    const mini=document.createElement('i'); mini.innerHTML=flake.innerHTML.replace(new RegExp(id,'g'),id+'s'); $('r-shelf').appendChild(mini);
+    if(++f<FL.length) begin(); else { flake.classList.add('toshelf'); add2(0) }
+  }
+  btn.onclick=()=>{ if(busy) return; btn.hidden=true;
+    if(stage==='fold'){ fold().then(()=>{ if(alive()&&stage==='fold') showBtn('Сложить!') }) }
+    else if(stage==='trim') trim();
+    else if(stage==='open') unfold() };
+  begin();
 };
 
 /* ---- День 12. Колокольчики: сыграть «В лесу родилась ёлочка» — нажимать на тот, что светится ---- */
