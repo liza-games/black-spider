@@ -5210,8 +5210,9 @@ SCENES.adv8=function(alive){
   const cv=$('r-cv'), g=cv.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); cv.width=s.width*dpr; cv.height=s.height*dpr; g.setTransform(dpr,0,0,dpr,0,0);
   const sw=Math.min(s.width*.24,s.height*.15); S2.wrap.style.width=sw+'px';
   const st={x:s.width*.5,y:s.height*.6,vx:0,vy:0,tx:null,ty:null,trail:[],stars:[],t:0,part:'stars',got:0};
-  const addStar=()=>{ let x,y; do{ x=rand(.12,.88)*s.width; y=rand(.18,.88)*s.height }while(Math.hypot(x-st.x,y-st.y)<s.width*.3); st.stars.push({x,y,k:0}) };
-  for(let i=0;i<3;i++) addStar();
+  // звёздочка всегда одна и подальше от паука — за каждой надо прокатиться
+  const addStar=()=>{ if(st.part!=='stars') return; let x,y,n=0; do{ x=rand(.12,.88)*s.width; y=rand(.18,.88)*s.height }while(Math.hypot(x-st.x,y-st.y)<s.width*.45&&++n<40); st.stars.push({x,y,k:0}) };
+  addStar();
   // сердечко из 10 точек — проехать по порядку, следующая мигает
   const HEART=Array.from({length:10},(_,i)=>{ const t=i/10*Math.PI*2+Math.PI, x=16*Math.sin(t)**3, y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
     return {x:s.width*.5+x/17*s.width*.36, y:s.height*.5+y/17*s.height*.3, on:false} });
@@ -5249,7 +5250,7 @@ SCENES.adv8=function(alive){
     // 1) звёздочки
     if(st.part==='stars'){ for(const z of st.stars){ z.k+=dt; if(!z.got&&Math.hypot(z.x-st.x,z.y-st.y)<sw*.55){ z.got=true; st.got++; sparkle(z.x,z.y); [1318,1568].forEach((f,i)=>tone(f,.12,'sine',i*.07,.04));
           if(st.got%3===1) say(S2,pick(['<b>Вжух!</b>','<b>Звёздочка!</b>','<b>Ура!</b>']),700); add2(1,false);
-          if(st.got<8) setTimeout(()=>alive()&&addStar(),400); else { st.part='wait'; st.stars.forEach(z=>{ if(!z.got){ z.got=true; sparkle(z.x,z.y,10) } }); setTimeout(()=>alive()&&nextPart('heart'),900) } } }
+          if(st.got<8) setTimeout(()=>alive()&&addStar(),350); else { st.part='wait'; st.stars.forEach(z=>{ if(!z.got){ z.got=true; sparkle(z.x,z.y,10) } }); setTimeout(()=>alive()&&nextPart('heart'),900) } } }
       st.stars=st.stars.filter(z=>!z.got) }
     // 2) сердечко
     if(st.part==='heart'&&hi<HEART.length){ const h=HEART[hi]; if(Math.hypot(h.x-st.x,h.y-st.y)<sw*.75){ h.on=true; hi++; tone(660+hi*60,.12,'sine',0,.04); add2(1,false);
@@ -5284,7 +5285,7 @@ SCENES.adv8=function(alive){
         // надели — мигает и сразу удирает, пару секунд его не поймать
         pv.tired=false; pv.stun=.25; pv.immune=1.8; pv.slipT=2.5; pv.vx=(pv.x-st.x)*6; pv.vy=(pv.y-st.y)*6;
         sparkle(pv.x,pv.y,26); restart(P.btn,'shake'); sfx.pop();
-        S2.wrap.querySelector('.carry')?.remove(); const w=document.createElement('span'); w.className='worn '+carry.k; w.textContent=carry.e; P.wrap.appendChild(w);
+        S2.wrap.querySelector('.carry')?.remove(); { const r=rr(); burst(r.left+pv.x,r.top+pv.y,30,6,['#ff9ab8','#ffe27a','#fff','#c77dff']) }
         const said=carry.say; carry=null; wornN++; add2(1,false);
         if(p2<EPX[l2].goal){ talk2(P,said,1600); setTimeout(()=>alive()&&spawnItem(),1200) }
         else { talk2(P,'Я самый нарядный на катке! Сдаюсь, ты победил!',2200); st.part='done'; P.dots=false; setTimeout(()=>alive()&&add2(0),1800) } }
@@ -5295,6 +5296,7 @@ SCENES.adv8=function(alive){
     g.strokeStyle='rgb(255 255 255/.85)'; g.lineWidth=2; g.lineCap='round';
     for(let i=1;i<st.trail.length;i++){ const a=st.trail[i-1], b=st.trail[i]; if(Math.hypot(a.x-b.x,a.y-b.y)>40) continue; g.beginPath(); g.moveTo(a.x,a.y); g.lineTo(b.x,b.y); g.stroke() }
     if(st.trail.length>700) st.trail.splice(0,st.trail.length-700);
+    if(st.part!=='stars') st.stars.length=0;
     for(const z of st.stars){ const r=12+3*Math.sin(z.k*5); g.save(); g.translate(z.x,z.y); g.rotate(z.k); g.fillStyle='#ffd23a'; g.shadowColor='#fff3a0'; g.shadowBlur=14; g.beginPath();
       for(let j=0;j<10;j++){ const r2=j%2?r*.45:r, an=j*Math.PI/5-Math.PI/2; g.lineTo(Math.cos(an)*r2,Math.sin(an)*r2) } g.closePath(); g.fill(); g.restore() }
     if(st.part==='heart'||(st.part!=='stars'&&hi>=HEART.length)){
