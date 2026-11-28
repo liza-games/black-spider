@@ -369,9 +369,9 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .ep9room .win9{position:absolute;left:5%;top:7%;width:22%;aspect-ratio:3/4;border:5px solid #fff;border-radius:8px;background:linear-gradient(#22335c,#3d5a8c);box-shadow:0 2px 6px #0002;z-index:0}
 .ep9room .win9::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#fff 0 2px,transparent 3px),radial-gradient(circle at 70% 55%,#fff 0 2px,transparent 3px),radial-gradient(circle at 45% 80%,#fff 0 1.5px,transparent 2.5px),linear-gradient(90deg,transparent 47%,#fff 47% 53%,transparent 53%),linear-gradient(transparent 47%,#fff 47% 53%,transparent 53%)}
 .ep9room .floor9{position:absolute;left:0;right:0;bottom:0;height:20%;background:repeating-linear-gradient(90deg,#c99a6b 0 60px,#bf8f60 60px 62px);z-index:0}
-.glass9{position:absolute;left:72%;bottom:20%;translate:-50% 0;border:3px solid #9fc4e0;border-top:0;border-radius:0 0 8px 8px;background:#ffffff66;z-index:3;opacity:0;scale:.3;transition:opacity .3s,scale .4s,rotate .5s,bottom 1.2s;transform-origin:50% 100%}
+.glass9{position:absolute;left:86%;bottom:20%;translate:-50% 0;border:3px solid #9fc4e0;border-top:0;border-radius:0 0 8px 8px;background:#ffffff66;z-index:3;opacity:0;scale:.3;transition:opacity .3s,scale .4s,rotate .5s,bottom 1.2s;transform-origin:50% 100%}
 .glass9 i{position:absolute;left:0;right:0;bottom:0;height:0;background:#7cc3f0;border-radius:0 0 5px 5px;transition:height 1s}
-.glass9.in{opacity:1;scale:1}.glass9.tip{rotate:100deg}.glass9.float{bottom:24%;rotate:70deg;animation:bob9 2s ease-in-out infinite}
+.glass9.in{opacity:1;scale:1}.glass9.tip{rotate:-100deg}.glass9.float{bottom:24%;rotate:-70deg;animation:bob9 2s ease-in-out infinite}
 .sea9{position:absolute;left:0;right:0;bottom:0;height:0;z-index:4;background:linear-gradient(#5fb4e8cc,#2a7fc4ee);transition:height 1.6s ease-out;pointer-events:none}
 .sea9::before{content:"";position:absolute;left:0;right:0;top:-10px;height:12px;background:radial-gradient(12px 8px at 12px 10px,#5fb4e8cc 98%,transparent) 0 0/24px 12px repeat-x;animation:wave9 1.6s linear infinite}
 @keyframes wave9{to{background-position:24px 0}}
@@ -6257,20 +6257,22 @@ SCENES.star9=function(alive){
     glass.classList.add('in'); await go(500); if(!alive()) return;
     // наливаем
     sfx.water(); gw.style.height='85%'; bsay('Налью себе водички!',1500); await go(1600); if(!alive()) return;
-    await slide(S2,th0,.86,.16,.58,900); if(!alive()) return;
+    // спускаемся ровно к стакану: пьём, только когда доехали
+    const gTop=(glass.getBoundingClientRect().top-rr().top)/s.height, yDrink=gTop-S2.wrap.offsetHeight*.3/s.height;
+    await slide(S2,th0,.86,.16,yDrink,1100); if(!alive()) return; await go(250); if(!alive()) return;
     for(let k=0;k<3;k++){ tone(320-k*30,.12,'sine',k*.28,.05,200); } gw.style.height='45%'; bsay('Глык-глык…',1200); await go(1300); if(!alive()) return;
     bsay('Уф, больше не хочу. Поставлю тут.',1800); await go(1900); if(!alive()) return;
-    await slide(S2,th0,.86,.58,.16,900); if(!alive()) return;
+    await slide(S2,th0,.86,yDrink,.16,900); if(!alive()) return;
     // приходит Фиолетовый и опрокидывает стакан
-    const Pp=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}), th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.62+'px'; room.prepend(th);
-    talkers2.push(Pp); await slide(Pp,th,.62,-.1,.6,1100); if(!alive()) return;
+    const Pp=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}), th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.7+'px'; th.style.zIndex=4; Pp.wrap.style.zIndex=5; room.prepend(th);
+    talkers2.push(Pp); await slide(Pp,th,.7,-.1,yDrink,1300); if(!alive()) return;
     talk2(Pp,'О, водичка! Можно мне?',1500); await go(1600); if(!alive()) return;
     glass.classList.add('tip'); sfx.splash(); noise(1.2,900,200,.08,0,'lowpass',.7); talk2(Pp,'Ой-ой! Я её уронил!',1500); await go(700); if(!alive()) return;
     gw.style.height='0';
     sea.classList.add('rise1'); await go(1600); if(!alive()) return;
     bsay('Воды всё больше и больше!',1600); noise(2,600,200,.06,0,'lowpass',.6); sea.classList.add('rise2'); await go(1800); if(!alive()) return;
     glass.classList.add('float'); bsay('Это же целое море!',1500); sfx.splash(); await go(1200); if(!alive()) return;
-    await slide(Pp,th,.62,.6,-.15,900); Pp.wrap.remove(); th.remove(); if(!alive()) return;
+    await slide(Pp,th,.7,yDrink,-.15,900); Pp.wrap.remove(); th.remove(); if(!alive()) return;
     // из моря выползает морская звезда
     sf.classList.add('up'); [0,.15,.3].forEach((t,i)=>tone(600+i*200,.15,'sine',t,.04)); await go(900); if(!alive()) return;
     bsay('Ой! Кто это?',1200); await go(1300); if(!alive()) return;
