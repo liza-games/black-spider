@@ -1506,9 +1506,12 @@ function musicTick(){
 function playMusic(ep){
   stopMusic(); if(!musicOn||!soundOn||!MUSIC[ep]) return;
   try{ bus(); if(!musBus){ musBus=ac.createGain(); musBus.gain.value=1; musBus.connect(sfxBus.comp) } }catch(e){return}
+  musBus.gain.cancelScheduledValues(ac.currentTime); musBus.gain.value=1;
   musTrack=MUSIC[ep]; musStep=0; musNext=ac.currentTime+.15; musTimer=setInterval(musicTick,90);
 }
 function stopMusic(){ clearInterval(musTimer); musTrack=null }
+// в музыкальных играх (гирлянда-повторялка, колокольчики) фоновая мелодия плавно затихает, чтобы не мешать слушать
+function musicQuiet(on){ if(!musBus||!ac) return; const g=musBus.gain, t=ac.currentTime; g.cancelScheduledValues(t); g.setValueAtTime(g.value,t); g.linearRampToValueAtTime(on?0:1,t+(on?.6:1)) }
 function musicBtn(){ const b=$('music'); b.textContent=musicOn?'🎵':'🎵̸'; b.setAttribute('aria-pressed',musicOn); b.classList.toggle('off',!musicOn) }
 $('music').addEventListener('click',()=>{ musicOn=!musicOn; try{localStorage.setItem('spider-music',musicOn?'on':'off')}catch(e){} musicBtn(); musicOn?playMusic(episode):stopMusic() });
 musicBtn();
@@ -2484,7 +2487,7 @@ function celebrate2(){
 }
 function leave2(){sceneId++;room.innerHTML='';talkers2=[];S2=null;handlers2={};busy2=false}
 function enter2(i){
-  l2=i; p2=0; busy2=false; lsSet(EPS.store,i);
+  l2=i; p2=0; busy2=false; lsSet(EPS.store,i); musicQuiet(false);
   restart($('stage2'),'enter');
   sceneId++; talkers2=[]; handlers2={}; onRender2=null; room.innerHTML=''; room.className='room';
   $('steps').innerHTML='';
@@ -5363,6 +5366,7 @@ SCENES.adv5=function(alive){
 
 /* ---- День 6. Гирлянда: лампочки мигают по очереди — повтори так же. Три раунда: 2, 3 и 4 лампочки ---- */
 SCENES.adv6=function(alive){
+  musicQuiet(true);
   room.className='room adv';
   const COLS=['#ff4d4d','#ffd23a','#4dd06a','#4da3ff','#c77dff'], NOTES=[523,659,784,880,1047];
   room.innerHTML=`<div class="snowfall">${Array.from({length:14},()=>`<i style="left:${rand(0,100).toFixed(1)}%;animation-delay:${rand(-8,0).toFixed(1)}s;animation-duration:${rand(6,11).toFixed(1)}s;--s:${rand(3,6).toFixed(1)}px"></i>`).join('')}</div>
@@ -5720,6 +5724,7 @@ SCENES.adv11=function(alive){
 
 /* ---- День 12. Колокольчики: сыграть «В лесу родилась ёлочка» — нажимать на тот, что светится ---- */
 SCENES.adv12=function(alive){
+  musicQuiet(true);
   room.className='room adv';
   const NOTES={C:523.25,D:587.33,F:698.46,G:783.99,A:880,B:932.33,c:1046.5}, ORDER=['C','D','F','G','A','B','c'];
   const COLS=['#ff5a5a','#ff9a3a','#ffd23a','#4dd06a','#4da3ff','#7a6bff','#c77dff'];
