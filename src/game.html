@@ -395,6 +395,109 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .star9 svg{display:block;width:100%}
 .star9.land{filter:drop-shadow(0 0 10px #ffe27a) drop-shadow(0 0 4px #fff);animation:starglow9 1.6s ease-in-out infinite}
 @keyframes starglow9{50%{scale:1.1}}
+.room.advnight{background:linear-gradient(#141c3a,#2a3a6c 75%)}
+.advnight .snowground{background:#dfe8f5;box-shadow:inset 0 6px 0 #c8d6ea}
+.hills13{position:absolute;left:0;right:0;bottom:12%;height:30%;background:radial-gradient(60% 100% at 20% 100%,#fff 60%,transparent 61%),radial-gradient(50% 90% at 75% 100%,#f3f9fd 60%,transparent 61%);z-index:0}
+.sled13e{position:absolute;font-size:clamp(44px,13vw,70px);translate:-50% -50%;z-index:2;line-height:1;pointer-events:none}
+.obs13{position:absolute;left:0;top:79%;z-index:2;pointer-events:none}
+.obs13 i{position:absolute;left:0;top:0;font-style:normal;font-size:clamp(34px,10vw,52px);translate:-50% -50%;line-height:1}
+.ball14{position:absolute;left:50%;top:30%;width:clamp(70px,22vw,110px);translate:-50% -50%;transition:transform .45s ease-in,scale .45s;z-index:2}
+.ball14 svg{display:block;width:100%}
+.ball14.in{transform:translate(var(--tx),var(--ty));scale:.4}
+.boxes14{position:absolute;left:0;right:0;bottom:6%;display:flex;justify-content:center;gap:4%;z-index:1}
+.boxes14 button{width:27%;aspect-ratio:1.1;border:0;border-radius:12px;background:var(--c);box-shadow:inset 0 -10px 0 #0002,0 6px 12px #0002;cursor:pointer;position:relative}
+.boxes14 button::before{content:"";position:absolute;left:-4%;right:-4%;top:-8%;height:22%;border-radius:8px;background:var(--c);filter:brightness(.85)}
+.boxes14 button i{position:absolute;inset:30% 12% 12%;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-end;justify-content:center}
+.boxes14 button i b{width:26%;aspect-ratio:1;border-radius:50%;background:#fff8}
+.win15{position:absolute;z-index:2;left:50%;top:8%;width:min(74%,46vh);aspect-ratio:4/5;translate:-50% 0;border:10px solid #fff;border-radius:16px;box-shadow:0 8px 20px #0003;overflow:hidden;background:#fff}
+.view15{position:absolute;inset:0;font-size:clamp(18px,5vw,28px)}
+.view15 span{position:absolute;translate:-50% -50%;line-height:1}
+.win15 canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;transition:opacity .8s}
+.win15::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:8px;translate:-50% 0;background:#fff;pointer-events:none}
+.letter16{position:absolute;z-index:2;left:50%;top:6%;width:min(70%,300px);translate:-50% 0;padding:16px 18px;border-radius:10px;background:#fffdf5;box-shadow:0 8px 20px #0002;font:700 18px var(--body);color:#3a3a3a;display:flex;flex-direction:column;gap:8px;transition:scale .6s,rotate .6s,opacity .6s}
+.letter16 b{font-family:var(--display,inherit);color:#c0392b;font-size:20px}
+.letter16 em{align-self:flex-end;font-style:normal}
+.slots16{display:flex;gap:10px;justify-content:center}
+.slots16 i{width:28%;aspect-ratio:1;border:3px dashed #d9cfae;border-radius:12px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:clamp(30px,9vw,46px)}
+.slots16 i.stamp{animation:stamp .35s ease-out}
+.letter16.fold{scale:.4;rotate:-8deg;opacity:.3}
+.letter16.env{scale:1;rotate:0deg;opacity:1;background:none;box-shadow:none;cursor:pointer;align-items:center;top:16%;animation:bellnext .9s ease-in-out infinite}
+.env16{font-size:clamp(90px,28vw,140px);line-height:1}
+.letter16.fly{transition:translate 1.2s ease-in,opacity 1.2s;translate:40% -160%;opacity:0;animation:none}
+.wishes16{position:absolute;z-index:2;left:4%;right:4%;bottom:5%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;transition:opacity .4s}
+.wishes16.gone{opacity:0;pointer-events:none}
+.wishes16 button{aspect-ratio:1.3;border:0;border-radius:16px;background:#fff;box-shadow:0 4px 10px #0002;font-size:clamp(30px,9vw,44px);cursor:pointer}
+.wishes16 button:disabled{opacity:.3}
+.mand17{position:absolute;z-index:2;left:50%;top:6%;width:min(78%,52vh);translate:-50% 0;overflow:visible}
+.sl17{fill:#ffb347;stroke:#fff3d6;stroke-width:3;cursor:pointer;transition:opacity .3s,scale .3s;transform-origin:100px 100px}
+.sl17.off{opacity:0;scale:.6;pointer-events:none}
+.pe17{fill:#ff8c1a;stroke:#e8740a;stroke-width:2;cursor:pointer;transition:translate .6s ease-in,opacity .6s,rotate .6s;transform-box:fill-box;transform-origin:center}
+.pe17.off{translate:var(--dx) 260px;rotate:90deg;opacity:0;pointer-events:none}
+.gift18{position:absolute;z-index:2;left:50%;top:14%;width:min(46%,26vh);aspect-ratio:1;translate:-50% 0;border-radius:12px;background:#f1e4cc;box-shadow:inset 0 -10px 0 #0001,0 8px 16px #0002;display:flex;align-items:center;justify-content:center}
+.gift18 span{font-size:clamp(50px,16vw,90px);transition:opacity .3s}
+.gift18.wrapped{background:repeating-linear-gradient(45deg,var(--a) 0 14px,var(--b) 14px 22px)}
+.gift18.wrapped span{opacity:0}
+.gift18.wrapped::before,.gift18.wrapped::after{content:"";position:absolute;background:#ffd84a;opacity:0;transition:opacity .3s}
+.gift18.wrapped::before{left:44%;width:12%;top:0;bottom:0}.gift18.wrapped::after{top:44%;height:12%;left:0;right:0}
+.gift18.tied::before,.gift18.tied::after{opacity:1}
+.bow18{position:absolute;left:50%;top:-18%;translate:-50% 0;font-size:clamp(40px,12vw,64px);font-style:normal;opacity:0;scale:.3;transition:opacity .3s,scale .4s cubic-bezier(.3,1.8,.5,1)}
+.bow18::before{content:"🎀"}
+.gift18.tied .bow18{opacity:1;scale:1}
+.pile18{position:absolute;left:4%;bottom:26%;display:flex;gap:6px}
+.pile18 i{width:38px;aspect-ratio:1;border-radius:6px;box-shadow:0 3px 6px #0002}
+.papers18{position:absolute;z-index:2;left:0;right:0;bottom:6%;display:flex;justify-content:center;gap:12px}
+.papers18 button{width:20%;aspect-ratio:1;border:4px solid #fff;border-radius:14px;background:repeating-linear-gradient(45deg,var(--a) 0 10px,var(--b) 10px 16px);box-shadow:0 4px 10px #0002;cursor:pointer}
+.papers18 .rib18{background:#fff;font-size:clamp(30px,9vw,44px)}
+.blk19{position:absolute;translate:-50% 0;border-radius:6px;background:linear-gradient(#fff,#e3eef6);box-shadow:inset 0 -4px 0 #cfe0ec,0 2px 4px #0002;z-index:2}
+.blk19.mv{z-index:3;box-shadow:inset 0 -4px 0 #cfe0ec,0 0 0 3px #8fc6e8}
+.blk19.fall{animation:fall19 .9s ease-in forwards}
+@keyframes fall19{to{translate:-50% 300px;rotate:40deg;opacity:0}}
+.flag19{position:absolute;translate:-50% 0;font-style:normal;font-size:40px;z-index:3;animation:pop .4s}
+.trees20{position:absolute;z-index:2;left:2%;right:2%;top:30%;height:50%}
+.t20{position:absolute;width:30%;height:42%;cursor:pointer}
+.t20:nth-child(1){left:0;top:0}.t20:nth-child(2){left:35%;top:6%}.t20:nth-child(3){left:70%;top:0}.t20:nth-child(4){left:16%;top:52%}.t20:nth-child(5){left:54%;top:54%}
+.t20 b{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;font-size:clamp(60px,20vw,100px);line-height:1;z-index:1;pointer-events:none}
+.deer20{position:absolute;left:50%;bottom:20%;translate:-50% 0;font-size:clamp(40px,12vw,60px);line-height:1;transition:translate .2s,opacity .2s;opacity:0}
+.t20.up .deer20{translate:10% -60%;opacity:1;z-index:2}
+.t20.rudy .deer20::after,.team20 .rudy::after{content:"";position:absolute;left:10%;top:52%;width:16%;aspect-ratio:1;border-radius:50%;background:#ff2a1a;box-shadow:0 0 8px #ff2a1a}
+.team20{position:absolute;left:4%;right:4%;bottom:4%;display:flex;justify-content:center;align-items:flex-end;font-size:clamp(26px,8vw,40px);z-index:2}
+.team20 span{position:relative;margin-right:-6px;animation:pop .4s}
+.lan21{position:absolute;z-index:2;width:clamp(48px,14vw,64px);aspect-ratio:.7;translate:-50% -50%;border:0;background:none;cursor:pointer;padding:0}
+.lan21 i{position:absolute;inset:14% 14% 0;border-radius:10px 10px 6px 6px;background:#3a3f55;border:3px solid #22263a;transition:background .3s,box-shadow .3s}
+.lan21 i::before{content:"";position:absolute;left:30%;right:30%;top:-22%;height:22%;border:3px solid #22263a;border-bottom:0;border-radius:8px 8px 0 0}
+.lan21 b{position:absolute;inset:14% 14% 0;display:flex;align-items:center;justify-content:center;font:800 20px var(--body);color:#fff}
+.lan21.on i{background:radial-gradient(#fff6c2,#ffc83a);box-shadow:0 0 24px #ffd84a,0 0 60px #ffb84a88}
+.lan21.on b{color:#8a5a12}
+.lit21{background:linear-gradient(#22305e,#3d4e8a 75%)}
+.mem22{position:absolute;z-index:2;left:5%;right:5%;top:5%;bottom:28%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:8px}
+.c22{border:0;border-radius:14px;background:linear-gradient(135deg,#c0392b,#e8483c);box-shadow:0 4px 10px #0002;cursor:pointer;font-size:clamp(30px,9vw,46px);position:relative;transition:rotate .25s,background .25s}
+.c22::before{content:"❄";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff8;font-size:.8em}
+.c22 span{opacity:0;transition:opacity .2s}
+.c22.up{background:#fff;rotate:y 180deg}
+.c22.up::before{opacity:0}
+.c22.up span{opacity:1;display:inline-block;transform:scaleX(-1)}
+.c22.ok{box-shadow:0 0 0 3px #4fae5a,0 4px 10px #0002}
+.crk23{position:absolute;z-index:2;left:6%;right:6%;top:6%;bottom:24%;display:flex;flex-direction:column;justify-content:space-around;align-items:center}
+.cr23{position:relative;width:70%;height:13%;border:0;background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:width .25s}
+.cr23 i{width:22%;height:70%;background:var(--c);clip-path:polygon(0 0,100% 20%,100% 80%,0 100%);transition:translate .3s,opacity .4s}
+.cr23 i:last-child{clip-path:polygon(0 20%,100% 0,100% 100%,0 80%)}
+.cr23 b{flex:1;height:100%;border-radius:8px;background:repeating-linear-gradient(90deg,var(--c) 0 12px,#fff6 12px 16px),var(--c);font-weight:400;font-size:clamp(26px,8vw,40px);display:flex;align-items:center;justify-content:center;line-height:1}
+.cr23.pull{width:82%;animation:shake .1s 3}
+.cr23.bang i:first-child{translate:-60px 0;opacity:0}.cr23.bang i:last-child{translate:60px 0;opacity:0}
+.cr23.bang b{background:#fff;box-shadow:0 0 0 3px var(--c)}
+.star24{position:absolute;z-index:2;left:50%;top:0;width:min(90%,60vh);translate:-50% 0;overflow:visible}
+.star24 #r-fill{fill:#ffd84a;opacity:0;transition:opacity 1s}
+.star24 polyline{fill:none;stroke:#ffe27a;stroke-width:1.4;stroke-linejoin:round;stroke-linecap:round}
+.pt24{cursor:pointer}
+.pt24 circle{fill:#fff3;stroke:#fff;stroke-width:.8}
+.pt24 text{font:800 5px var(--body);fill:#fff;text-anchor:middle;pointer-events:none}
+.pt24.on circle{fill:#ffd84a}
+.pt24.on text{fill:#7a5a12}
+.pt24.shake{animation:none}
+.shine24 #r-fill{opacity:1;filter:drop-shadow(0 0 4px #ffe27a)}
+.shine24 .star24{animation:bellnext 1.6s ease-in-out infinite}
+.sleigh24{position:absolute;left:-30%;top:66%;font-size:clamp(30px,9vw,48px);white-space:nowrap;transform:scaleX(-1);z-index:3}
+.sleigh24.go{transition:left 3s linear,top 3s ease-out;left:110%;top:58%}
 .room.advday{background:linear-gradient(#bfe3f5,#e8f4fb 70%)}
 .room.advkitchen{background:linear-gradient(#f6e3c8,#efd2ad);}
 .room.advkitchen::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(90deg,#d9b48a 0 40px,#cfa678 40px 80px);z-index:0}
@@ -4825,7 +4928,18 @@ const ADV=[null,
   {t:'Ёжик в сугробе',     o:'🦔', goal:5,  unit:'раз',      done:'Ёжик нашёлся!'},
   {t:'Снежинка из бумаги', o:'❄️', goal:7,  unit:'',         done:'Красивая снежинка!'},
   {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
-  ...Array.from({length:12},(_,i)=>({t:'Сюрприз',o:['🛷','🔴','🌬️','✉️','🍊','🎁','🏰','🦌','🏮','🍪','🎉','⭐'][i],goal:1,unit:'',done:'',soon:true}))
+  {t:'С горки на санках',  o:'🛷', goal:10, unit:'',         done:'Ух, как здорово прокатились!'},
+  {t:'Шарики по коробкам', o:'🔴', goal:9,  unit:'шариков',  done:'Всё по порядку!'},
+  {t:'Морозные узоры',     o:'🌬️', goal:3,  unit:'окошка',   done:'Какие чудеса за окном!'},
+  {t:'Письмо Деду Морозу', o:'✉️', goal:4,  unit:'',         done:'Письмо улетело!'},
+  {t:'Мандаринка',         o:'🍊', goal:14, unit:'',         done:'Вкусно пахнет Новым годом!'},
+  {t:'Упакуй подарки',     o:'🎁', goal:6,  unit:'',         done:'Подарки готовы!'},
+  {t:'Снежная крепость',   o:'🏰', goal:8,  unit:'кирпичей', done:'Неприступная крепость!'},
+  {t:'Олени Деда Мороза',  o:'🦌', goal:8,  unit:'оленей',   done:'Упряжка готова!'},
+  {t:'Фонарики',           o:'🏮', goal:10, unit:'',         done:'Как светло и красиво!'},
+  {t:'Угощение для Деда Мороза',o:'🍪',goal:6,unit:'пар',     done:'Дед Мороз будет рад!'},
+  {t:'Хлопушки',           o:'🎉', goal:5,  unit:'',         done:'Бах! Бах! Ура!'},
+  {t:'Рождественская звезда',o:'⭐',goal:10, unit:'',         done:'С Новым годом!'}
 ];
 var EP8=[{key:'cal',title:'Адвент-календарь',goal:1,unit:'',done:''},...ADV.slice(1).map((d,i)=>({key:'adv'+(i+1),title:d.t,goal:d.goal,unit:d.unit,done:d.done,ownBar:d.ownBar}))];
 // в волшебном режиме прогресс отдельный и стирается при выключении — настоящий не трогаем
@@ -5491,6 +5605,280 @@ SCENES.adv12=function(alive){
     lock=true; mark(); add2(1,false); await wait(500); if(!alive()) return;
     if(++ph<SONG.length){ say(S2,pick(['<b>Красиво!</b>','<b>Дальше!</b>','<b>Ля-ля-ля!</b>']),900); k=0; await wait(700); if(!alive()) return; lock=false; mark() }
     else { bells.forEach((x,i)=>setTimeout(()=>{ ring(x.dataset.n,200); restart(x,'ding') },i*110)); talk2(S2,'Какая песенка! Ура!',1800); await wait(1500); if(alive()) add2(0) }
+  });
+};
+
+/* ---- Дни 13–24 ---- */
+function advSpider(fx,fy,hang){
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*fx,y:s.height*fy});
+  if(hang){ const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*fx+'px'; th.style.height=s.height*fy+'px'; room.prepend(th) }
+  return s;
+}
+function flyEl(el,x1,y1,ms=600,arc=60){
+  const x0=parseFloat(el.style.left), y0=parseFloat(el.style.top), t0=performance.now();
+  return new Promise(res=>(function step(){ const k=Math.min(1,(performance.now()-t0)/ms), q=1-(1-k)**2;
+    el.style.left=(x0+(x1-x0)*q)+'px'; el.style.top=(y0+(y1-y0)*q-Math.sin(k*Math.PI)*arc)+'px';
+    k<1?requestAnimationFrame(step):res() })());
+}
+function elAt(html,cls,x,y){ const e=document.createElement('div'); e.className=cls; e.innerHTML=html; e.style.left=x+'px'; e.style.top=y+'px'; room.appendChild(e); return e }
+function center(el){ const r=el.getBoundingClientRect(), s=rr(); return {x:r.left-s.left+r.width/2,y:r.top-s.top+r.height/2,cx:r.left+r.width/2,cy:r.top+r.height/2} }
+
+/* ---- День 13. Санки: паук мчится с горки, нажимай — подпрыгивает над пеньками и снеговиками ---- */
+SCENES.adv13=function(alive){
+  room.className='room advday sled13';
+  room.innerHTML=`<div class="hills13"></div><div class="snowground"></div><div class="obs13" id="r-obs"></div><div class="sled13e" id="r-sled">🛷</div>`;
+  const s=advSpider(.24,.74,false), sled=$('r-sled'), obsBox=$('r-obs');
+  sled.style.left=s.width*.24+'px'; sled.style.top=s.height*.8+'px';
+  setHint('Нажимай, чтобы паук перепрыгнул пенёк');
+  talk2(S2,'Поехали с горки! Нажимай — я буду прыгать!',2200);
+  let y=0, vy=0, obs=[], last=performance.now(), next=performance.now()+2600, speed=s.width*.42, hurt=0;
+  const KINDS=['🪵','⛄','🪵','🌲'];
+  handlers2={down(){ if(y===0&&!hurt){ vy=s.height*1.25; sfx.jump() } }};
+  (function tick(){
+    if(!alive()) return; const now=performance.now(), dt=Math.min(.05,(now-last)/1000); last=now;
+    if(y>0||vy>0){ vy-=s.height*3.2*dt; y=Math.max(0,y+vy*dt); if(y===0) vy=0 }
+    S2.wrap.style.transform=`translateY(${-y}px)`; sled.style.transform=`translateY(${-y}px)`;
+    if(now>next&&!busy2){ const k=pick(KINDS), o=document.createElement('i'); o.textContent=k; obsBox.appendChild(o); obs.push({el:o,x:s.width+30,done:false}); next=now+rand(1500,2600)-Math.min(600,p2*50) }
+    for(const o of obs){ o.x-=speed*(1+p2*.04)*dt; o.el.style.transform=`translateX(${o.x}px)`;
+      const dx=Math.abs(o.x-s.width*.24);
+      if(!o.done&&dx<s.width*.07&&y<s.height*.07&&!hurt){ o.done=true; hurt=now+900; restart(S2.btn,'laugh'); sfx.boing(); noise(.3,1200,300,.06);
+        talk2(S2,pick(['Ой! Бух в сугроб!','Ай! Не успел!','Ух! Снег за шиворот!']),1400) }
+      if(!o.done&&o.x<s.width*.24-s.width*.08){ o.done=true; add2(1); tone(880,.08,'sine',0,.04) }
+    }
+    obs=obs.filter(o=>{ if(o.x<-40){ o.el.remove(); return false } return true });
+    if(hurt&&now>hurt) hurt=0;
+    requestAnimationFrame(tick);
+  })();
+};
+
+/* ---- День 14. Шары по коробкам: какой шарик — в коробку того же цвета ---- */
+SCENES.adv14=function(alive){
+  room.className='room advkitchen';
+  const C={red:'#e8483c',blue:'#3d8fe0',gold:'#f5c03a'};
+  room.innerHTML=`<div class="ball14" id="r-ball"></div><div class="boxes14">${Object.entries(C).map(([k,c])=>`<button data-k="${k}" style="--c:${c}" aria-label="Коробка"><i></i></button>`).join('')}</div>`;
+  advSpider(.86,.16,true);
+  setHint('Нажми на коробку такого же цвета, как шарик');
+  talk2(S2,'Разложим шарики по коробкам! Каждый — в свою!',2200);
+  const order=['red','blue','gold','blue','red','gold','gold','red','blue'];
+  let i=0, lock=true; const ball=$('r-ball');
+  function show(){ const c=C[order[i]]; ball.innerHTML=ball9(c); ball.className='ball14'; restart(ball,'pop'); lock=false }
+  room.querySelector('.boxes14').addEventListener('click',async e=>{
+    const b=e.target.closest('button'); if(!b||lock) return;
+    if(b.dataset.k!==order[i]){ restart(b,'shake'); tone(260,.15,'triangle',0,.04,200); say(S2,'<b>Не та коробка!</b>',900); return }
+    lock=true; const r=center(b), s=rr(); ball.classList.add('in'); ball.style.setProperty('--tx',(r.cx-(s.left+s.width/2))+'px'); ball.style.setProperty('--ty',(r.cy-(s.top+s.height*.3))+'px');
+    await wait(450); if(!alive()) return; restart(b,'shake'); jingle9(i); b.querySelector('i').insertAdjacentHTML('beforeend','<b></b>');
+    i++; add2(1); if(i<order.length){ if(i%3===0) talk2(S2,pick(['Как аккуратно!','Порядок!','Здорово!']),1200); await wait(300); if(alive()) show() }
+  });
+  setTimeout(()=>alive()&&show(),900);
+};
+
+/* ---- День 15. Морозные узоры: окно замёрзло — потри пальцем и посмотри, что там ---- */
+SCENES.adv15=function(alive){
+  room.className='room advkitchen';
+  room.innerHTML=`<div class="win15"><div class="view15" id="r-view"></div><canvas id="r-frost" width="240" height="300"></canvas></div>`;
+  advSpider(.14,.84,false);
+  const VIEWS=[{h:'<span style="left:22%;top:18%;font-size:2.4em">🌙</span><span style="left:62%;top:40%;font-size:2.6em">🛷</span><span style="left:40%;top:44%;font-size:2em">🦌</span><span style="left:20%;top:48%;font-size:2em">🦌</span>',bg:'linear-gradient(#1d2b55,#3d5a8c)',say:'Ой! Это Дед Мороз летит на санях!'},
+    {h:'<span style="left:30%;top:58%;font-size:3.4em">⛄</span><span style="left:70%;top:72%;font-size:2em">🐇</span><span style="left:72%;top:22%;font-size:2em">☀️</span>',bg:'linear-gradient(#bfe3f5,#fff 70%)',say:'Там снеговик и зайчик!'},
+    {h:'<span style="left:50%;top:50%;font-size:3.6em">🎄</span><span style="left:20%;top:70%;font-size:2em">🎁</span><span style="left:80%;top:72%;font-size:2em">🎁</span><span style="left:30%;top:18%;font-size:1.4em">✨</span><span style="left:72%;top:20%;font-size:1.4em">⭐</span>',bg:'linear-gradient(#22335c,#4a3d7c)',say:'Там большая ёлка с подарками!'}];
+  const cv=$('r-frost'), g=cv.getContext('2d',{willReadFrequently:true}), view=$('r-view');
+  let w=0, cleared=false, last=null, cnt=0;
+  function frost(){
+    const V=VIEWS[w]; view.innerHTML=V.h; view.style.background=V.bg; cleared=false; cv.style.opacity=1;
+    g.globalCompositeOperation='source-over'; g.fillStyle='#e9f4fb'; g.fillRect(0,0,240,300);
+    g.strokeStyle='#ffffff'; g.lineWidth=2;
+    for(let k=0;k<26;k++){ const x=rand(0,240), y=rand(0,300), L=rand(14,40); for(let a=0;a<6;a++){ const an=a*Math.PI/3; g.beginPath(); g.moveTo(x,y); g.lineTo(x+Math.cos(an)*L,y+Math.sin(an)*L); g.stroke();
+      g.beginPath(); g.moveTo(x+Math.cos(an)*L*.55,y+Math.sin(an)*L*.55); g.lineTo(x+Math.cos(an+.5)*L*.8,y+Math.sin(an+.5)*L*.8); g.stroke() } }
+    g.globalCompositeOperation='destination-out';
+  }
+  const toC=e=>{ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*240,y:(e.clientY-r.top)/r.height*300} };
+  function rub(e){ const q=toC(e); g.lineCap='round'; g.lineWidth=34; g.beginPath(); g.moveTo((last||q).x,(last||q).y); g.lineTo(q.x,q.y); g.stroke(); last=q;
+    if(Math.random()<.3) noise(.06,4000,2500,.02,0,'highpass',.8);
+    if(++cnt%8===0) check() }
+  function check(){ if(cleared) return; const d=g.getImageData(0,0,240,300).data; let c=0; for(let k=3;k<d.length;k+=64) if(d[k]<40) c++;
+    if(c/(d.length/64)>.6) done() }
+  async function done(){ cleared=true; cv.style.opacity=0; sfx.magic(); talk2(S2,VIEWS[w].say,2000); add2(1,false);
+    await wait(2600); if(!alive()) return; if(++w<VIEWS.length) frost(); else add2(0) }
+  handlers2={down(e){ last=null; if(!cleared) rub(e) }, move(e){ if(!cleared&&(e.buttons&1)) rub(e) }, up(){ last=null }};
+  setHint('Три пальцем по замёрзшему окну');
+  talk2(S2,'Окошко замёрзло! Потри — что там за окном?',2400);
+  frost();
+};
+
+/* ---- День 16. Письмо Деду Морозу: выбери три желания, запечатай и отправь ---- */
+SCENES.adv16=function(alive){
+  room.className='room advkitchen';
+  const W={'🧸':'мишку','🚂':'паровозик','🎨':'краски','🛷':'санки','📚':'книжку','⚽':'мячик'};
+  room.innerHTML=`<div class="letter16" id="r-letter"><b>Дедушка Мороз!</b><span>Я хочу:</span><div class="slots16"><i></i><i></i><i></i></div><em>Паук 🕷️</em></div>
+    <div class="wishes16">${Object.keys(W).map(k=>`<button aria-label="Подарок">${k}</button>`).join('')}</div>`;
+  advSpider(.88,.5,true);
+  setHint('Выбери три подарка для письма');
+  talk2(S2,'Напишем письмо Деду Морозу! Что попросим?',2400);
+  let n=0; const slots=room.querySelectorAll('.slots16 i'), letter=$('r-letter');
+  room.querySelector('.wishes16').addEventListener('click',async e=>{
+    const b=e.target.closest('button'); if(!b||b.disabled||n>=3) return; b.disabled=true;
+    const em=b.textContent, sl=slots[n++]; sl.textContent=em; restart(sl,'stamp'); sfx.page(); talk2(S2,'Хочу '+W[em]+'!',1200); add2(1,false);
+    if(n===3){ room.querySelector('.wishes16').classList.add('gone'); await wait(1300); if(!alive()) return;
+      letter.classList.add('fold'); sfx.page(); await wait(700); if(!alive()) return;
+      letter.innerHTML='<span class="env16">✉️</span>'; letter.classList.add('env'); setHint('Нажми на конверт — отправим письмо!'); talk2(S2,'Готово! Отправляем!',1400);
+      letter.addEventListener('click',async ()=>{ if(letter.classList.contains('fly')) return; letter.classList.add('fly'); sfx.whoosh();
+        await wait(1200); if(!alive()) return; talk2(S2,'Полетело к Деду Морозу!',1600); add2(1) },{once:true}) }
+  });
+};
+
+/* ---- День 17. Мандарин: почисти кожуру и съешь дольки, считая их ---- */
+SCENES.adv17=function(alive){
+  room.className='room advkitchen';
+  const seg=(a0,a1,r)=>{ const p=a=>[100+Math.cos(a)*r,100+Math.sin(a)*r]; const [x0,y0]=p(a0),[x1,y1]=p(a1); return `M100 100 L${x0.toFixed(1)} ${y0.toFixed(1)} A${r} ${r} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z` };
+  const TAU=Math.PI*2;
+  room.innerHTML=`<svg class="mand17" viewBox="0 0 200 200" id="r-mand">
+    <g id="r-sl">${Array.from({length:8},(_,k)=>`<path class="sl17" d="${seg(k*TAU/8+.03,(k+1)*TAU/8-.03,74)}"/>`).join('')}</g>
+    <g id="r-peel">${Array.from({length:6},(_,k)=>`<path class="pe17" d="${seg(k*TAU/6,(k+1)*TAU/6+.01,82)}"/>`).join('')}</g>
+    <path d="M100 18 q8 -14 22 -12 q-8 12 -22 12" fill="#4fae5a"/></svg>`;
+  advSpider(.86,.84,false);
+  setHint('Нажимай на кожуру — чисти мандарин');
+  talk2(S2,'Мандаринка! Сначала почистим!',2000);
+  let peel=6, eaten=0; const NUM=['раз','два','три','четыре','пять','шесть','семь','восемь'];
+  $('r-mand').addEventListener('pointerdown',e=>{
+    const t=e.target;
+    if(t.classList.contains('pe17')&&!t.classList.contains('off')){ t.classList.add('off'); t.style.setProperty('--dx',rand(-60,60)+'px'); noise(.12,3000,1200,.05); burst(e.clientX,e.clientY,8,3,['#ff9a2e','#ffd28a']); add2(1,false);
+      if(--peel===0){ setHint('Нажимай на дольки — паук их съест'); talk2(S2,'Какой сочный! Будем есть по долечке!',2000) } return }
+    if(!peel&&t.classList.contains('sl17')&&!t.classList.contains('off')){ t.classList.add('off'); sfx.chomp(1); restart(S2.btn,'jump');
+      const w=NUM[eaten++]; say(S2,`<b>${w}!</b>`,700); speak(w,S2.pitch,S2.rate,S2.who,S2.voice); add2(1) }
+  });
+};
+
+/* ---- День 18. Упакуй подарки: выбери бумагу и завяжи бантик ---- */
+SCENES.adv18=function(alive){
+  room.className='room advkitchen';
+  const P=[['#e8483c','#fff'],['#3d8fe0','#ffd84a'],['#4fae5a','#ff7ab0']];
+  room.innerHTML=`<div class="gift18" id="r-gift"><span id="r-in"></span><i class="bow18"></i></div><div class="pile18" id="r-pile"></div>
+    <div class="papers18">${P.map(([a,b],k)=>`<button data-k="${k}" style="--a:${a};--b:${b}" aria-label="Бумага"></button>`).join('')}<button class="rib18" aria-label="Бантик">🎀</button></div>`;
+  advSpider(.86,.15,true);
+  const ITEMS=[['🧸','Мишка — для мамы!'],['🚂','Паровоз — для папы!'],['🧦','Носочки — для Фиолетового!']];
+  let g=0, step=0; const gift=$('r-gift'), inn=$('r-in');
+  function next(){ step=0; gift.className='gift18'; gift.style.removeProperty('--a'); inn.textContent=ITEMS[g][0]; restart(gift,'pop'); talk2(S2,ITEMS[g][1],1800); setHint('Выбери бумагу для подарка') }
+  room.querySelector('.papers18').addEventListener('click',async e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    if(b.classList.contains('rib18')){ if(step!==1){ restart(b,'shake'); say(S2,'Сначала бумагу!',900); return }
+      step=2; gift.classList.add('tied'); sfx.magic(); add2(1,false); await wait(900); if(!alive()) return;
+      const m=document.createElement('i'); m.style.background=`repeating-linear-gradient(45deg,${gift.style.getPropertyValue('--a')} 0 6px,${gift.style.getPropertyValue('--b')} 6px 10px)`; $('r-pile').appendChild(m);
+      if(++g<ITEMS.length) next(); else { talk2(S2,'Все подарки готовы!',1600); add2(0) } return }
+    if(step!==0) return; step=1; gift.style.setProperty('--a',P[b.dataset.k][0]); gift.style.setProperty('--b',P[b.dataset.k][1]); gift.classList.add('wrapped'); sfx.page(); add2(1,false); setHint('Теперь завяжи бантик 🎀')
+  });
+  setHint('Выбери бумагу для подарка'); setTimeout(()=>alive()&&next(),500);
+};
+
+/* ---- День 19. Снежная крепость: блок ездит туда-сюда, нажми — он ляжет на башню ---- */
+SCENES.adv19=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="fort19" id="r-fort"></div><div class="blk19 mv" id="r-mv"></div>`;
+  const s=advSpider(.12,.84,false), fort=$('r-fort'), mv=$('r-mv');
+  const BW=s.width*.3, BH=Math.min(s.height*.075,40), base=s.height*.84; let top=[s.width*.5], n=0, x=0, dir=1, drop=false, t0=performance.now();
+  mv.style.width=BW+'px'; mv.style.height=BH+'px';
+  setHint('Нажимай, когда снежный кирпич над башней');
+  talk2(S2,'Построим снежную крепость! Нажимай вовремя!',2200);
+  handlers2={down(){ if(drop||busy2) return; drop=true; place() }};
+  (function tick(){ if(!alive()) return; if(!drop){ const sp=.45+n*.06; x=s.width/2+Math.sin((performance.now()-t0)/1000*sp*Math.PI)*s.width*.32; mv.style.left=x+'px'; mv.style.top=(base-BH*(n+1)-BH*2.2)+'px' } requestAnimationFrame(tick) })();
+  async function place(){
+    const cx=top[top.length-1], y=base-BH*(n+1);
+    mv.style.transition='top .25s ease-in'; mv.style.top=y+'px'; await wait(260); if(!alive()) return; mv.style.transition='';
+    if(Math.abs(x-cx)<BW*.6){ const b=document.createElement('i'); b.className='blk19'; b.style.cssText=`left:${x}px;top:${y}px;width:${BW}px;height:${BH}px`; fort.appendChild(b);
+      top.push(n===0?x:x); n++; noise(.15,900,300,.08,0,'lowpass',.8); tone(300+n*40,.08,'sine',0,.04); add2(1,false);
+      if(n===8){ mv.remove(); const f=document.createElement('i'); f.className='flag19'; f.textContent='🚩'; f.style.left=x+'px'; f.style.top=(y-BH*1.4)+'px'; fort.appendChild(f); talk2(S2,'Ура! Крепость готова!',1600); add2(0); return }
+      if(n%3===0) talk2(S2,pick(['Выше!','Крепкая!','Ещё кирпичик!']),1000) }
+    else { const b=document.createElement('i'); b.className='blk19 fall'; b.style.cssText=`left:${x}px;top:${y}px;width:${BW}px;height:${BH}px`; fort.appendChild(b); sfx.boing(); talk2(S2,'Ой, упал! Ещё раз!',1200); setTimeout(()=>b.remove(),900) }
+    t0=performance.now()-Math.random()*2000; drop=false;
+  }
+};
+
+/* ---- День 20. Олени: выглядывают из-за ёлок — поймай всех для упряжки Деда Мороза ---- */
+SCENES.adv20=function(alive){
+  room.className='room advday';
+  room.innerHTML=`<div class="snowground"></div><div class="trees20">${Array.from({length:5},(_,k)=>`<div class="t20" data-k="${k}"><span class="deer20">🦌</span><b>🌲</b></div>`).join('')}</div><div class="team20" id="r-team">🛷</div>`;
+  advSpider(.86,.14,true);
+  setHint('Нажимай на оленей, когда они выглядывают');
+  talk2(S2,'Олени разбежались! Соберём упряжку Деду Морозу!',2400);
+  const T=room.querySelectorAll('.t20'); let cur=null, hideT=0, n=0;
+  function peek(){ if(!alive()||n>=8) return; const k=Math.floor(Math.random()*T.length); cur=T[k]; cur.classList.add('up'); if(n===7) cur.classList.add('rudy');
+    hideT=setTimeout(()=>{ if(!alive()) return; cur?.classList.remove('up'); cur=null; setTimeout(peek,rand(300,700)) },Math.max(900,1600-n*80)) }
+  room.querySelector('.trees20').addEventListener('pointerdown',async e=>{
+    const t=e.target.closest('.t20'); if(!t||t!==cur) return; clearTimeout(hideT); cur=null; t.classList.remove('up');
+    const rudy=t.classList.contains('rudy'); t.classList.remove('rudy');
+    n++; $('r-team').insertAdjacentHTML('afterbegin',`<span${rudy?' class="rudy"':''}>🦌</span>`); [880,1175,1318].forEach((f,i)=>tone(f,.1,'sine',i*.07,.04));
+    if(rudy) talk2(S2,'А это Рудольф с красным носом! Он ведёт упряжку!',2200); else if(n%3===0) talk2(S2,pick(['Попался!','Ещё один!','Скорее в упряжку!']),1100);
+    add2(1); if(n<8) setTimeout(peek,500);
+  });
+  setTimeout(peek,2000);
+};
+
+/* ---- День 21. Фонарики: зажги их по порядку — от 1 до 10 ---- */
+SCENES.adv21=function(alive){
+  room.className='room advnight';
+  const pos=[[18,30],[48,22],[78,30],[30,48],[62,44],[86,56],[14,64],[44,66],[72,74],[24,84]].sort(()=>Math.random()-.5);
+  room.innerHTML=`<div class="snowground"></div>${pos.map(([x,y],k)=>`<button class="lan21" data-n="${k+1}" style="left:${x}%;top:${y}%" aria-label="Фонарик"><i></i><b>${k+1}</b></button>`).join('')}`;
+  advSpider(.9,.12,true);
+  setHint('Зажигай фонарики по порядку: 1, 2, 3…');
+  talk2(S2,'Темно! Зажжём фонарики по порядку — от одного до десяти!',2600);
+  let want=1;
+  room.addEventListener('click',e=>{
+    const b=e.target.closest('.lan21'); if(!b||b.classList.contains('on')) return;
+    if(+b.dataset.n!==want){ restart(b,'shake'); tone(220,.15,'triangle',0,.04); say(S2,`Сначала <b>${want}</b>!`,900); return }
+    b.classList.add('on'); jingle9(want-1); speak(String(want),S2.pitch,S2.rate,S2.who,S2.voice); const c=center(b); burst(c.cx,c.cy,10,3,['#ffe27a','#fff']);
+    if(want===10) room.classList.add('lit21'); want++; add2(1);
+  });
+};
+
+/* ---- День 22. Печенье для Деда Мороза: найди пары — переворачивай карточки ---- */
+SCENES.adv22=function(alive){
+  room.className='room advkitchen';
+  const E=['🍪','🥛','⭐','🎄','⛄','🔔'], cards=[...E,...E].sort(()=>Math.random()-.5);
+  room.innerHTML=`<div class="mem22">${cards.map((c,k)=>`<button class="c22" data-e="${c}" aria-label="Карточка"><span>${c}</span></button>`).join('')}</div>`;
+  advSpider(.14,.9,false);
+  setHint('Открывай карточки и ищи одинаковые');
+  talk2(S2,'Приготовим угощение для Деда Мороза! Найди пары!',2400);
+  let open=[], lock=false;
+  room.querySelector('.mem22').addEventListener('click',async e=>{
+    const b=e.target.closest('.c22'); if(!b||lock||b.classList.contains('up')) return;
+    b.classList.add('up'); sfx.page(); open.push(b); if(open.length<2) return;
+    lock=true; const [a,c]=open; open=[];
+    if(a.dataset.e===c.dataset.e){ await wait(300); a.classList.add('ok'); c.classList.add('ok'); sfx.magic(); add2(1); if(p2===2) talk2(S2,'Ура, пара!',900); lock=false }
+    else { await wait(900); if(!alive()) return; a.classList.remove('up'); c.classList.remove('up'); lock=false }
+  });
+};
+
+/* ---- День 23. Хлопушки: нажми — потяни, нажми ещё — БАХ! и сюрприз ---- */
+SCENES.adv23=function(alive){
+  room.className='room advkitchen';
+  const COL=['#e8483c','#3d8fe0','#4fae5a','#8a3fe0','#f5a03a'], GIFTS=[['👑','Корона!'],['🎈','Шарик!'],['🦆','Уточка!'],['🍬','Конфетка!'],['🎺','Дудочка!']];
+  room.innerHTML=`<div class="crk23">${COL.map((c,k)=>`<button class="cr23" style="--c:${c}" data-k="${k}" aria-label="Хлопушка"><i></i><b></b><i></i></button>`).join('')}</div>`;
+  advSpider(.86,.14,true);
+  setHint('Нажми на хлопушку два раза');
+  talk2(S2,'Хлопушки! Нажми — и потяни ещё разок!',2200);
+  room.querySelector('.crk23').addEventListener('click',e=>{
+    const b=e.target.closest('.cr23'); if(!b||b.classList.contains('bang')) return;
+    if(!b.classList.contains('pull')){ b.classList.add('pull'); tone(200,.25,'sawtooth',0,.02,320); return }
+    b.classList.add('bang'); const c=center(b); noise(.25,3000,200,.18,0,'lowpass',.6); tone(90,.2,'sine',0,.12,40);
+    burst(c.cx,c.cy,50,8); const [g,t]=GIFTS[+b.dataset.k]; b.querySelector('b').textContent=g; talk2(S2,t,1100);
+    add2(1);
+  });
+};
+
+/* ---- День 24. Звезда: соедини звёздочки по порядку — и засияет Рождественская звезда ---- */
+SCENES.adv24=function(alive){
+  room.className='room advnight';
+  const P=Array.from({length:10},(_,k)=>{ const a=-Math.PI/2+k*Math.PI/5, r=k%2?15:36; return [50+Math.cos(a)*r,40+Math.sin(a)*r] });
+  room.innerHTML=`<svg class="star24" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><polygon id="r-fill" points="${P.map(p=>p.join(',')).join(' ')}"/><polyline id="r-line" points=""/>
+    ${P.map(([x,y],k)=>`<g class="pt24" data-k="${k}"><circle cx="${x}" cy="${y}" r="5.5"/><text x="${x}" y="${y+1.6}">${k+1}</text></g>`).join('')}</svg><div class="sleigh24" id="r-sleigh">🦌🦌🛷</div>`;
+  advSpider(.1,.86,false);
+  setHint('Соединяй звёздочки по порядку: 1, 2, 3…');
+  talk2(S2,'Сегодня особенная ночь! Зажжём главную звезду!',2400);
+  let k=0; const line=$('r-line');
+  room.querySelector('.star24').addEventListener('pointerdown',async e=>{
+    const g=e.target.closest('.pt24'); if(!g) return;
+    if(+g.dataset.k!==k){ if(!g.classList.contains('on')){ restart(g,'shake'); say(S2,`Сначала <b>${k+1}</b>!`,900) } return }
+    g.classList.add('on'); jingle9(k); k++; line.setAttribute('points',P.slice(0,k).map(p=>p.join(',')).join(' ')+(k===10?' '+P[0].join(','):'')); add2(1,false);
+    if(k===10){ room.classList.add('shine24'); sfx.magic(); await wait(900); if(!alive()) return; $('r-sleigh').classList.add('go'); sfx.whoosh();
+      talk2(S2,'Смотри! Дед Мороз летит! С Новым годом!',2600); await wait(2800); if(alive()) add2(0) }
   });
 };
 
