@@ -396,6 +396,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .orn9{position:absolute;width:var(--ow,36px);translate:-50% -4px;transform-origin:50% 0;z-index:2;pointer-events:none}
 .orn9 svg{display:block;width:100%}
 .orn9 .emo9,.toy9 .emo9{display:block;text-align:center;font-size:calc(var(--ow,36px)*.95);line-height:1}
+.orn9.hung.fall9,.orn9.fall9{animation:fall9b .9s ease-in forwards}
+@keyframes fall9b{to{translate:-50% 320px;rotate:220deg;opacity:0}}
 .orn9.hung{animation:swing9 2.4s ease-in-out infinite}
 @keyframes swing9{0%,100%{rotate:-7deg}50%{rotate:7deg}}
 .orn9.pop9{animation:pop9 .5s cubic-bezier(.3,1.8,.5,1),swing9 2.4s ease-in-out .5s infinite}
@@ -6134,24 +6136,40 @@ SCENES.toys9=function(alive){
   setTimeout(()=>{ if(alive()) talk2(RIV[0].P,RIV[0].hi,2200) },2600);
   setTimeout(()=>{ if(alive()) talk2(RIV[1].P,RIV[1].hi,2200) },5000);
   let n=0;
-  function fly(b){
-    b.disabled=true; b.classList.remove('want9'); b.classList.add('gone');
-    const i=n++, t=TOYS9[+b.dataset.i], from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
+  // кто какую игрушку повесил: me — чёрный паук (игрок), иначе буква паука-соперника
+  const SLOT=Array(TOYS9.length).fill(null);
+  function fly(b,owner='me',wrong=null){
+    b.disabled=true; b.classList.remove('want9'); b.classList.add('gone'); n++;
+    const i=SLOT.findIndex(x=>!x); SLOT[i]={owner,b,el:null};
+    const t=TOYS9[+b.dataset.i], from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
     const f=document.createElement('div'); f.className='orn9 fly'; f.innerHTML=b.innerHTML; room.appendChild(f);
     const x0=from.left-s.left+from.width/2, y0=from.top-s.top+from.height*.2, t0=performance.now(), T=650;
     sfx.jump();
     (function step(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/T), q=1-(1-k)**2;
       f.style.left=(x0+(to.x-x0)*q)+'px'; f.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*60)+'px'; f.style.rotate=(1-k)*360+'deg';
       if(k<1) return requestAnimationFrame(step);
-      f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
-      add2(1);
+      f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); SLOT[i].el=o; jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
+      if(wrong) setTimeout(()=>crash(i,wrong),700); else add2(1);
     })();
+  }
+  // соперник повесил шарик не своего цвета — шарик падает и сбивает все игрушки чёрного паука; их надо вешать заново
+  function crash(i,R){
+    if(!alive()) return;
+    const drop=k=>{ const sl=SLOT[k]; SLOT[k]=null; n--; if(sl.el){ sl.el.classList.add('fall9'); setTimeout(()=>sl.el.remove(),900) }
+      sl.b.disabled=false; sl.b.classList.remove('gone','want9'); };
+    restart(SLOT[i].el,'shake'); talk2(R.P,pick(['Ой! Я перепутал цвет!','Ой-ой! Это же не мой шарик!']),1600); tone(300,.3,'triangle',0,.05,120);
+    setTimeout(()=>{ if(!alive()) return;
+      drop(i); let lost=0;
+      SLOT.forEach((sl,k)=>{ if(sl&&sl.owner==='me'&&sl.el){ setTimeout(()=>{ if(SLOT[k]===sl){ drop(k) } },60*lost); lost++ } });
+      sfx.thud(); noise(.6,1500,200,.12,0,'lowpass',.6); [0,.12,.24,.36].forEach(t=>tone(rand(700,1400),.08,'sine',t+.2,.03));
+      if(lost){ add2(-lost,false); restart(S2.btn,'shake'); setTimeout(()=>alive()&&talk2(S2,'Ой-ой-ой! Все мои игрушки упали! Вешаем заново!',2200),500) }
+    },650);
   }
   tray.addEventListener('click',e=>{
     const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2) return;
     const t=TOYS9[+b.dataset.i];
     for(const R of RIV){
-      if(b===R.target){ clearTimeout(R.T); R.target=null; R.mine++; talk2(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),1200); restart(R.P.btn,'shake'); schedule(R) }
+      if(b===R.target){ clearTimeout(R.T); R.target=null; R.mist=false; R.mine++; talk2(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),1200); restart(R.P.btn,'shake'); schedule(R) }
       else if(t[R.k]) R.mine++;
     }
     fly(b);
@@ -6163,9 +6181,15 @@ SCENES.toys9=function(alive){
     const left=[...tray.querySelectorAll('.toy9:not(.gone)')].filter(b=>TOYS9[+b.dataset.i][R.k]);
     if(!left.length){ if(R.his>0||R.mine>0) talk2(R.P,R.his>R.mine?R.more:R.less,2000); return }
     if(!R.said){ R.said=true; talk2(R.P,R.hi,2000) }
-    R.target=pick(left); R.target.style.setProperty('--wc',R.col); R.target.classList.add('want9'); tone(500+R.pitch*250,.15,'triangle',0,.03,700+R.pitch*400);
-    R.T=setTimeout(()=>{ if(!alive()||!R.target) return; const b=R.target; R.target=null; R.his++;
-      restart(R.P.btn,'jump'); fly(b); talk2(R.P,pick(R.laugh),1500); sfx.laugh(); schedule(R) },R.wait);
+    // иногда паук ошибается и хватает игрушку чужого цвета (когда у чёрного уже висит хотя бы пара игрушек)
+    const busyB=RIV.map(x=>x.target), alien=[...tray.querySelectorAll('.toy9:not(.gone)')].filter(b=>!TOYS9[+b.dataset.i][R.k]&&!busyB.includes(b));
+    R.mist=SLOT.filter(x=>x&&x.owner==='me').length>=2&&alien.length>0&&Math.random()<.22;
+    const cand=R.mist?alien:left.filter(b=>!busyB.includes(b)); if(!cand.length) return schedule(R);
+    R.target=pick(cand); R.target.style.setProperty('--wc',R.col); R.target.classList.add('want9'); tone(500+R.pitch*250,.15,'triangle',0,.03,700+R.pitch*400);
+    R.T=setTimeout(()=>{ if(!alive()||!R.target) return; const b=R.target; R.target=null;
+      restart(R.P.btn,'jump');
+      if(R.mist){ R.mist=false; fly(b,R.k,R); talk2(R.P,'Ха-ха! Моя!',1000); schedule(R); return }
+      R.his++; fly(b,R.k); talk2(R.P,pick(R.laugh),1500); sfx.laugh(); schedule(R) },R.wait);
   }
   setTimeout(()=>{ if(alive()) schedule(RIV[0]) },4200);
   setTimeout(()=>{ if(alive()) schedule(RIV[1]) },6800);
