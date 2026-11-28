@@ -704,16 +704,23 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .drift:nth-child(3n+1) .q10{left:0;translate:0 0}.drift:nth-child(3n) .q10{left:auto;right:0;translate:0 0}
 
 @keyframes wiggle{25%{rotate:-4deg}75%{rotate:4deg}}
-.paper11{position:absolute;left:50%;top:6%;width:min(70%,42vh);translate:-50% 0;z-index:2;transition:opacity .4s,scale .4s}
-.paper11 svg{width:100%;display:block;filter:drop-shadow(0 4px 6px #0002);touch-action:none}
-.paper11.gone{opacity:0;scale:.5}
-.unfold{position:absolute;left:50%;bottom:30%;translate:-50% 0;border:0;border-radius:999px;padding:12px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer;z-index:5}
-.flake11{position:absolute;left:50%;top:6%;width:min(84%,52vh);aspect-ratio:1;translate:-50% 0;z-index:3}
-.flake11 svg{width:100%;height:100%;filter:drop-shadow(0 0 2px var(--glow,#7fb8e0)) drop-shadow(0 4px 8px #0002)}
-.flake11.open11{animation:unfold .9s cubic-bezier(.3,1.4,.5,1)}
+.snow11 .bubble{bottom:4px;left:92%;transform-origin:0 100%;max-width:min(230px,58vw)}
+.snow11 .bubble::after{left:-9px;bottom:14px;border:9px solid transparent;border-right-color:var(--bubble);border-left:0}
+.col11{position:absolute;left:0;right:0;top:2%;display:flex;flex-direction:column;align-items:center;gap:9px;z-index:2}
+.col11 .hid{visibility:hidden}
+.pap11{width:min(62%,31vh);aspect-ratio:1;transition:opacity .35s,scale .35s}
+.pap11 svg{width:100%;height:100%;display:block;filter:drop-shadow(0 4px 6px #0002);touch-action:none;cursor:pointer}
+.pap11.gone{opacity:0;scale:.5}
+.flk11{position:absolute;left:50%;top:3%;width:min(80%,46vh);aspect-ratio:1;translate:-50% 0;z-index:3;filter:drop-shadow(0 0 .6px #5f97c8) drop-shadow(0 3px 5px #0002)}
+.flk11.unf11{animation:unfold .9s cubic-bezier(.3,1.4,.5,1)}
+.tools11{display:flex;gap:8px}
+.tools11 button{width:44px;height:44px;border:0;border-radius:12px;background:#fff;box-shadow:0 3px 8px #0002;cursor:pointer;padding:9px}
+.tools11 button svg{display:block;width:100%;height:100%;fill:#7fb0d8}
+.tools11 button.on{background:#3d8fe0;box-shadow:0 0 0 3px #fff,0 3px 8px #0003}
+.tools11 button.on svg{fill:#fff}
+.open11{border:0;border-radius:999px;padding:11px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer}
 .shelf11{position:absolute;right:4%;bottom:4%;display:flex;gap:6px;z-index:3}
-.shelf11 i{width:clamp(40px,12vw,60px);aspect-ratio:1;animation:pop .4s}
-.shelf11 svg{width:100%;height:100%;filter:drop-shadow(0 0 1px var(--glow)) drop-shadow(0 2px 3px #0002)}
+.shelf11 img{width:clamp(44px,13vw,64px);aspect-ratio:1;animation:pop .4s;filter:drop-shadow(0 2px 3px #0002)}
 @keyframes unfold{from{scale:.1;rotate:-200deg;opacity:0}}
 .bells{position:absolute;left:3%;right:3%;top:8%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}
 .bells .bell:nth-child(n+5){translate:50% 0}
@@ -4966,7 +4973,7 @@ const ADV=[null,
   {t:'Каток',              o:'⛸️', goal:21, unit:'',          done:'Чемпион катка!'},
   {t:'Кормушка',           o:'🐦', goal:6,  unit:'птичек',   done:'Все птички сыты!'},
   {t:'Ёжик в сугробе',     o:'🦔', goal:5,  unit:'раз',      done:'Ёжик нашёлся!'},
-  {t:'Снежинки из бумаги', o:'❄️', goal:3,  unit:'снежинки',         done:'Красивая снежинка!'},
+  {t:'Снежинки из бумаги', o:'❄️', goal:2,  unit:'снежинки',         done:'Красивая снежинка!'},
   {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
   {t:'С горки на санках',  o:'🛷', goal:10, unit:'',         done:'Ух, как здорово прокатились!'},
   {t:'Шарики по коробкам', o:'🔴', goal:9,  unit:'шариков',  done:'Всё по порядку!'},
@@ -5620,78 +5627,94 @@ SCENES.adv10=function(alive){
   setTimeout(()=>alive()&&start(),1200);
 };
 
-/* ---- День 11. Снежинки из бумаги (3 штуки, разного цвета): сложить круг втрое-вчетверо, подрезать край,
-   вырезать дырочки и развернуть. Снежинка рисуется отдельным SVG со своей маской — так она чёткая на любом экране ---- */
+/* ---- День 11. Снежинки из бумаги (2 штуки): тапами сложить круглый лист, выбрать форму дырочек, навырезать сколько хочешь
+   и развернуть в любой момент. Первая — шестилучевая (сгиб на 12 частей), вторая — восьмилучевая (сгиб на 8 частей).
+   Готовая снежинка рисуется на canvas в полном разрешении экрана — без масок, поэтому чёткая на iPhone ---- */
 SCENES.adv11=function(alive){
-  room.className='room advday';
-  const NS='http://www.w3.org/2000/svg', D2R=Math.PI/180;
+  room.className='room advday snow11';
+  const NS='http://www.w3.org/2000/svg', D2R=Math.PI/180, R=90;
   const P=(r,deg)=>`${(r*Math.cos(deg*D2R)).toFixed(2)} ${(r*Math.sin(deg*D2R)).toFixed(2)}`;
-  const R=90;
-  const FL=[
-    {col:'#ffffff',glow:'#7fb8e0',edge:[[1,0],[.8,6],[.84,12],[.62,18],[.66,24],[.5,30]]},
-    {col:'#cfe7ff',glow:'#3d8fe0',edge:[[1,0],[.7,4],[.9,10],[.72,16],[.78,22],[.6,26],[.64,30]]},
-    {col:'#ffd3ea',glow:'#e0679f',edge:[[.9,0],[1,5],[.72,9],[.82,15],[.56,20],[.7,25],[.58,30]]}];
-  // сектор круга от 0 до th градусов (360 — целый круг)
+  const FL=[{col:'#ffffff',edge:'#9fc4e0',m:6,folds:[180,60,30],vb:[-8,-8,106,62]},
+            {col:'#cfe7ff',edge:'#6fa8dc',m:4,folds:[180,90,45],vb:[-8,-8,106,80]}];
+  // формы дырочек: точки многоугольника в единицах радиуса (круг — отдельно)
+  const SH={
+    circle:null,
+    diamond:[[0,-1.4],[1,0],[0,1.4],[-1,0]],
+    tri:[[0,-1.3],[1.2,.9],[-1.2,.9]],
+    star:Array.from({length:10},(_,k)=>{ const a=-Math.PI/2+k*Math.PI/5, r=k%2?.55:1.35; return [Math.cos(a)*r,Math.sin(a)*r] }),
+    heart:Array.from({length:24},(_,k)=>{ const t=k/24*Math.PI*2; return [16*Math.sin(t)**3/14, -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))/14] })};
+  const ICON={circle:'<circle cx="0" cy="0" r="1"/>'};
+  const wedgeD=th=>`M0 0 L${P(R,0)} L${P(R*.8,th)} Z`;
   const sector=th=>th>=359.9?`M${R} 0 A${R} ${R} 0 1 1 ${-R} 0 A${R} ${R} 0 1 1 ${R} 0 Z`:`M0 0 L${P(R,0)} A${R} ${R} 0 ${th>180?1:0} 1 ${P(R,th)} Z`;
-  room.innerHTML=`<div class="shelf11" id="r-shelf"></div>
-    <div class="paper11"><svg viewBox="-100 -100 200 200" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-120" y="-120" width="240" height="240"><rect x="-120" y="-120" width="240" height="240" fill="#fff"/><g id="r-holes"></g></mask></defs>
-      <g id="r-g"><path id="r-shape" stroke="#9fc4e0" stroke-width="1" mask="url(#cut11)"/></g></svg></div>
-    <button class="unfold" id="r-btn" hidden></button><div class="flake11" id="r-flake" hidden></div>`;
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.16,y:s.height*.86});
-  const pap=$('r-pap'), shape=$('r-shape'), g=$('r-g'), holes=$('r-holes'), btn=$('r-btn'), flake=$('r-flake');
-  let f=0, stage='', n=0, th=360, busy=false;
+  room.innerHTML=`<div class="col11"><div class="pap11" id="r-papw"><svg viewBox="-100 -100 200 200" id="r-pap"><defs><mask id="cut11" maskUnits="userSpaceOnUse" x="-120" y="-120" width="240" height="240"><rect x="-120" y="-120" width="240" height="240" fill="#fff"/><g id="r-holes"></g></mask></defs>
+      <g id="r-g"><path id="r-shape" stroke-width="1" mask="url(#cut11)"/></g></svg></div>
+    <div class="tools11" id="r-tools">${Object.keys(SH).map(k=>`<button data-k="${k}" aria-label="Форма"><svg viewBox="-1.6 -1.6 3.2 3.2">${k==='circle'?'<circle r="1.1"/>':`<polygon points="${SH[k].map(p=>p.join(',')).join(' ')}"/>`}</svg></button>`).join('')}</div>
+    <button class="open11" id="r-open">Развернуть!</button></div><canvas class="flk11" id="r-flk" hidden></canvas><div class="shelf11" id="r-shelf"></div>`;
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.12,y:s.height*.9});
+  const pap=$('r-pap'), papw=$('r-papw'), shape=$('r-shape'), g=$('r-g'), holes=$('r-holes'), tools=$('r-tools'), openB=$('r-open'), flk=$('r-flk');
+  let f=0, stage='', th=360, fi=0, busy=false, form='circle', H=[];
   const vb=(a,ms)=>{ const from=pap.getAttribute('viewBox').split(' ').map(Number), t0=performance.now();
     return new Promise(res=>(function st(){ const k=Math.min(1,(performance.now()-t0)/ms), q=k<.5?2*k*k:1-(-2*k+2)**2/2;
       pap.setAttribute('viewBox',from.map((v,i)=>(v+(a[i]-v)*q).toFixed(2)).join(' ')); k<1?requestAnimationFrame(st):res() })()) };
-  const showBtn=t=>{ btn.textContent=t; btn.hidden=false; restart(btn,'pop') };
+  function pick11(k){ form=k; tools.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k)) }
+  tools.addEventListener('click',e=>{ const b=e.target.closest('button'); if(b){ pick11(b.dataset.k); tone(900,.05,'sine',0,.03) } });
   function begin(){
-    const F=FL[f]; stage='fold'; n=0; th=360; holes.innerHTML=''; shape.setAttribute('fill',F.col); shape.setAttribute('d',sector(360));
-    pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); room.querySelector('.paper11').classList.remove('gone'); flake.hidden=true;
-    talk2(S2,f===0?'Вот круглый листок бумаги! Сначала сложим его.':f===1?'Теперь голубая снежинка!':'И последняя — розовая!',2400);
-    setHint('Нажми «Сложить!» — три раза'); showBtn('Сложить!');
+    const F=FL[f]; stage='fold'; th=360; fi=0; H=[]; holes.innerHTML=''; shape.setAttribute('fill',F.col); shape.setAttribute('stroke',F.edge); shape.setAttribute('d',sector(360));
+    pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); papw.classList.remove('gone'); flk.hidden=true; tools.classList.add('hid'); openB.classList.add('hid'); pick11('circle');
+    talk2(S2,f===0?'Вот круглый листок! Нажимай на него — сложим.':'А эту сложим по-другому — будет восемь лучиков!',2600);
+    setHint('Нажимай на бумагу — она сложится');
+    // на низких экранах уменьшаем лист, чтобы кнопки не заезжали под облачко паука (оно внизу, ~110px)
+    requestAnimationFrame(()=>{ const rm=rr(), col=room.querySelector('.col11').getBoundingClientRect(), over=col.bottom-(rm.bottom-118);
+      if(over>0) papw.style.width=Math.max(120,papw.offsetWidth-over)+'px' });
   }
   async function fold(){
-    const next=th===360?180:th===180?60:30, from=th, t0=performance.now(); busy=true; sfx.page();
-    await new Promise(res=>(function st(){ const k=Math.min(1,(performance.now()-t0)/450), q=1-(1-k)**2; const a=from+(next-from)*q;
+    const F=FL[f], next=F.folds[fi++], from=th, t0=performance.now(); busy=true; sfx.page();
+    await new Promise(res=>(function st(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/450), q=1-(1-k)**2, a=from+(next-from)*q;
       shape.setAttribute('d',sector(a)); g.setAttribute('transform',`rotate(${(-a/2).toFixed(1)})`); k<1?requestAnimationFrame(st):res() })());
-    th=next; busy=false;
-    if(th===30){ stage='trim'; setHint('Нажми «Подрезать!» — ножницы сделают край фигурным'); showBtn('Подрезать!'); talk2(S2,'Сложили! Теперь подрежем край.',1800) }
-  }
-  async function trim(){
-    busy=true; const F=FL[f]; noise(.25,5000,2500,.06); tone(1400,.05,'square',0,.02); tone(1500,.05,'square',.12,.02);
-    g.removeAttribute('transform');
-    shape.setAttribute('d',`M0 0 ${F.edge.map(([r,a])=>'L'+P(R*r,a)).join(' ')} Z`);
-    await vb([-8,-10,106,66],600); busy=false; stage='cut';
-    setHint('Нажимай на бумагу — вырежи 6 дырочек (и по краям тоже!)'); talk2(S2,'Теперь вырезай дырочки — где хочешь!',2000);
+    th=next;
+    if(fi===F.folds.length){ g.removeAttribute('transform'); shape.setAttribute('d',wedgeD(th)); noise(.2,5000,2500,.05); await vb(F.vb,600); if(!alive()) return; stage='cut';
+      tools.classList.remove('hid'); openB.classList.remove('hid'); restart(tools,'pop');
+      setHint('Выбери форму и нажимай на бумагу — вырезай дырочки. Можно и по краям!');
+      talk2(S2,'Выбирай форму и вырезай! Развернуть можно когда захочешь.',2600) }
+    busy=false;
   }
   pap.addEventListener('pointerdown',e=>{
-    if(stage!=='cut'||n>=6) return; const pt=pap.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(pap.getScreenCTM().inverse()), x=q.x, y=q.y;
-    const rad=Math.hypot(x,y), ang=Math.atan2(y,x); if(rad>R+6||ang<-.15||ang>Math.PI/6+.15) return;
-    const r0=3+Math.random()*3.5+rad/90*2, kind=(n+f)%3; let c;
-    if(kind===0){ c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1)); c.setAttribute('r',r0.toFixed(1)) }
-    else { c=document.createElementNS(NS,'polygon'); const pts=kind===1?[[0,-1.4],[1,0],[0,1.4],[-1,0]]:[[0,-1.3],[1.2,.9],[-1.2,.9]];
-      c.setAttribute('points',pts.map(([a,b])=>`${(x+a*r0).toFixed(1)},${(y+b*r0).toFixed(1)}`).join(' ')) }
+    if(busy) return;
+    if(stage==='fold'){ fold(); return }
+    if(stage!=='cut') return;
+    if(H.length>=16){ say(S2,'Хватит дырочек — разворачивай!',1200); return }
+    const pt=pap.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; const q=pt.matrixTransform(pap.getScreenCTM().inverse()), x=q.x, y=q.y;
+    const rad=Math.hypot(x,y), ang=Math.atan2(y,x)/D2R; if(rad>R+8||ang<-10||ang>th+10) return;
+    const r0=4+rad/90*3, h={k:form,x,y,r:r0}; H.push(h);
+    let c;
+    if(form==='circle'){ c=document.createElementNS(NS,'circle'); c.setAttribute('cx',x.toFixed(1)); c.setAttribute('cy',y.toFixed(1)); c.setAttribute('r',r0.toFixed(1)) }
+    else { c=document.createElementNS(NS,'polygon'); c.setAttribute('points',SH[form].map(([a,b])=>`${(x+a*r0).toFixed(1)},${(y+b*r0).toFixed(1)}`).join(' ')) }
     c.setAttribute('fill','#000'); holes.appendChild(c);
-    noise(.07,5000,3000,.05); tone(1500,.04,'square',0,.015); n++;
-    if(n===6){ stage='open'; setHint('Нажми «Развернуть!»'); showBtn('Развернуть!'); talk2(S2,'Готово! Разворачивай!',1600) }
+    noise(.07,5000,3000,.05); tone(1500,.04,'square',0,.015);
   });
-  async function unfold(){
-    const F=FL[f], d=shape.getAttribute('d'), id='m11-'+f;
-    // своя маска внутри большой снежинки: копия дырочек в тех же координатах
-    flake.innerHTML=`<svg viewBox="-100 -100 200 200" style="--glow:${F.glow}"><defs><mask id="${id}" maskUnits="userSpaceOnUse" x="-10" y="-10" width="120" height="70"><rect x="-10" y="-10" width="120" height="70" fill="#fff"/>${holes.innerHTML}</mask>
-      <path id="w${id}" d="${d}" fill="${F.col}" stroke="${F.col}" stroke-width=".6" mask="url(#${id})"/></defs>
-      ${Array.from({length:6},(_,k)=>`<use href="#w${id}" transform="rotate(${k*60})"/><use href="#w${id}" transform="rotate(${k*60}) scale(1,-1)"/>`).join('')}</svg>`;
-    room.querySelector('.paper11').classList.add('gone'); await wait(400); if(!alive()) return;
-    flake.hidden=false; restart(flake,'open11'); taDa(); const r=flake.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff',F.glow,'#ffe27a']);
+  // рисуем снежинку на canvas: клин с вырезанными дырочками, повёрнутый и отражённый m раз
+  function draw(){
+    const F=FL[f], dpr=Math.min(3,window.devicePixelRatio||1), W=Math.round(flk.clientWidth*dpr);
+    flk.width=W; flk.height=W;
+    const wc=document.createElement('canvas'); wc.width=W; wc.height=W; const w=wc.getContext('2d');
+    w.setTransform(W/200,0,0,W/200,W/2,W/2);
+    const wedge=new Path2D(wedgeD(th)); w.fillStyle=F.col; w.fill(wedge); w.lineWidth=.5; w.strokeStyle=F.col; w.stroke(wedge);
+    w.globalCompositeOperation='destination-out';
+    for(const h of H){ const p=new Path2D(); if(h.k==='circle') p.arc(h.x,h.y,h.r,0,Math.PI*2); else { SH[h.k].forEach(([a,b],i)=>i?p.lineTo(h.x+a*h.r,h.y+b*h.r):p.moveTo(h.x+a*h.r,h.y+b*h.r)); p.closePath() } w.fill(p) }
+    const c=flk.getContext('2d'); c.clearRect(0,0,W,W);
+    for(let k=0;k<F.m;k++) for(const m of [1,-1]){ c.setTransform(1,0,0,1,0,0); c.translate(W/2,W/2); c.rotate(k*2*Math.PI/F.m); c.scale(1,m); c.drawImage(wc,-W/2,-W/2) }
+    c.setTransform(1,0,0,1,0,0);
+  }
+  openB.onclick=async ()=>{
+    if(stage!=='cut'||busy) return;
+    if(!H.length){ say(S2,'Сначала вырежи хоть одну дырочку!',1200); restart(openB,'shake'); return }
+    stage='open'; tools.classList.add('hid'); openB.classList.add('hid'); papw.classList.add('gone'); sfx.page(); await wait(350); if(!alive()) return;
+    flk.hidden=false; draw(); restart(flk,'unf11'); taDa(); const r=flk.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#9fd0f5','#ffe27a']);
     talk2(S2,pick(['Ух ты! Какая красивая снежинка!','Красота! Ни одной такой больше нет!','Вот это узор!']),2000); add2(1,false);
     await wait(2600); if(!alive()) return;
-    const mini=document.createElement('i'); mini.innerHTML=flake.innerHTML.replace(new RegExp(id,'g'),id+'s'); $('r-shelf').appendChild(mini);
-    if(++f<FL.length) begin(); else { flake.classList.add('toshelf'); add2(0) }
-  }
-  btn.onclick=()=>{ if(busy) return; btn.hidden=true;
-    if(stage==='fold'){ fold().then(()=>{ if(alive()&&stage==='fold') showBtn('Сложить!') }) }
-    else if(stage==='trim') trim();
-    else if(stage==='open') unfold() };
+    const mini=document.createElement('img'); mini.src=flk.toDataURL(); $('r-shelf').appendChild(mini);
+    if(++f<FL.length) begin(); else add2(0);
+  };
   begin();
 };
 
