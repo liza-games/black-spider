@@ -1532,6 +1532,12 @@
 "'Хочу! Я буду самой морской игрушкой!'": "\"Yes! I'll be the seaside ornament!\"",
 "'Эх, не успел… Ну ладно, зато как красиво!'": "'Oh, too slow… Well, at least it looks so pretty!'",
 "'Спасибо! Можно я буду жить под вашей ёлкой?'": "'Thank you! May I live under your tree?'",
-"'Конечно, живи!'": "'Of course you can!'"
+"'Конечно, живи!'": "'Of course you can!'",
+"'игрушку'": "'ornament'",
+"'игрушки'": "'ornaments'",
+"`Я повесил ${w(mine)}, а пауки — ${others}! Я победил!`": "`I hung ${w(mine)}, and the spiders — ${others}! I won!`",
+"`Поровну: у меня ${mine} и у пауков ${others}! Ничья!`": "`Even: ${mine} for me and ${others} for the spiders! A draw!`",
+"`Я повесил ${w(mine)}, а пауки — ${others}. В следующий раз обгоню!`": "`I hung ${w(mine)}, and the spiders — ${others}. I'll beat them next time!`",
+"'Глык-глык…'": "'Glug-glug…'"
 }
 }

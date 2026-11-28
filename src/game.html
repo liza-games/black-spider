@@ -369,7 +369,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .ep9room .win9{position:absolute;left:5%;top:7%;width:22%;aspect-ratio:3/4;border:5px solid #fff;border-radius:8px;background:linear-gradient(#22335c,#3d5a8c);box-shadow:0 2px 6px #0002;z-index:0}
 .ep9room .win9::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#fff 0 2px,transparent 3px),radial-gradient(circle at 70% 55%,#fff 0 2px,transparent 3px),radial-gradient(circle at 45% 80%,#fff 0 1.5px,transparent 2.5px),linear-gradient(90deg,transparent 47%,#fff 47% 53%,transparent 53%),linear-gradient(transparent 47%,#fff 47% 53%,transparent 53%)}
 .ep9room .floor9{position:absolute;left:0;right:0;bottom:0;height:20%;background:repeating-linear-gradient(90deg,#c99a6b 0 60px,#bf8f60 60px 62px);z-index:0}
-.glass9{position:absolute;left:72%;bottom:20%;width:9%;aspect-ratio:.72;translate:-50% 0;border:3px solid #9fc4e0;border-top:0;border-radius:0 0 8px 8px;background:#ffffff66;z-index:3;opacity:0;scale:.3;transition:opacity .3s,scale .4s,rotate .5s,bottom 1.2s;transform-origin:50% 100%}
+.glass9{position:absolute;left:72%;bottom:20%;translate:-50% 0;border:3px solid #9fc4e0;border-top:0;border-radius:0 0 8px 8px;background:#ffffff66;z-index:3;opacity:0;scale:.3;transition:opacity .3s,scale .4s,rotate .5s,bottom 1.2s;transform-origin:50% 100%}
 .glass9 i{position:absolute;left:0;right:0;bottom:0;height:0;background:#7cc3f0;border-radius:0 0 5px 5px;transition:height 1s}
 .glass9.in{opacity:1;scale:1}.glass9.tip{rotate:100deg}.glass9.float{bottom:24%;rotate:70deg;animation:bob9 2s ease-in-out infinite}
 .sea9{position:absolute;left:0;right:0;bottom:0;height:0;z-index:4;background:linear-gradient(#5fb4e8cc,#2a7fc4ee);transition:height 1.6s ease-out;pointer-events:none}
@@ -395,8 +395,8 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .lights9{position:absolute;z-index:3;pointer-events:none}
 .lights9 svg{display:block;width:100%;height:100%}
 .bulb9{fill:#55615a;stroke:#0004;stroke-width:1.5;transition:fill .2s}
-.bulb9.on{fill:var(--c);filter:drop-shadow(0 0 4px var(--c)) drop-shadow(0 0 2px #fff);animation:twinkle9 1.4s ease-in-out infinite}
-@keyframes twinkle9{50%{opacity:.55}}
+.bulb9.on{fill:var(--c);stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 6px var(--c)) drop-shadow(0 0 12px var(--c));animation:twinkle9 1.4s ease-in-out infinite}
+@keyframes twinkle9{50%{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 3px var(--c))}}
 .glow9 .tree9{filter:drop-shadow(0 0 18px #ffe27a)}
 .orn9{position:absolute;width:var(--ow,36px);translate:-50% -4px;transform-origin:50% 0;z-index:2;pointer-events:none}
 .orn9 svg{display:block;width:100%}
@@ -407,7 +407,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes swing9{0%,100%{rotate:-7deg}50%{rotate:7deg}}
 .orn9.pop9{animation:pop9 .5s cubic-bezier(.3,1.8,.5,1),swing9 2.4s ease-in-out .5s infinite}
 @keyframes pop9{from{scale:1.6}to{scale:1}}
-.orn9.fly{z-index:6;translate:-50% 0}
+.orn9.fly{z-index:6;translate:-50% -4px}
 .tray9{position:absolute;left:3%;right:3%;bottom:2.5%;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;z-index:5}
 .toy9{width:46px;height:50px;padding:4px 7px;border:0;border-radius:14px;background:#fff9;box-shadow:0 2px 6px #0002;cursor:pointer;transition:opacity .2s,scale .2s;--ow:36px}
 .toy9 svg{display:block;width:100%;height:100%}
@@ -6074,11 +6074,14 @@ function toy9(t){ return t.e?`<span class="emo9">${t.e}</span>`:ball9(t.c) }
 const STAR9=`<svg viewBox="0 0 100 100"><path d="M50 4 L62 36 L96 37 L69 58 L79 92 L50 72 L21 92 L31 58 L4 37 L38 36 Z" fill="#ffd84a" stroke="#e8a816" stroke-width="5" stroke-linejoin="round"/><circle cx="41" cy="46" r="4" fill="#7a5a12"/><circle cx="59" cy="46" r="4" fill="#7a5a12"/><path d="M41 58 Q50 66 59 58" stroke="#7a5a12" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
 
 // общая сцена: ёлка; done — сколько игрушек уже висит; star — горит ли звезда
-function tree9Scene(done,star){
+// какая игрушка на каком месте висит (запоминаем на 1-м этапе, чтобы на следующих ёлка была такой же)
+let ARR9=null;
+function tree9Scene(done,star,low){
   room.className='room ep9room';
   room.innerHTML=`<div class="win9"></div><div class="floor9"></div><div class="tree9" id="r-tree">${TREE9}</div><div class="lights9" id="r-lights"></div><div class="tray9" id="r-tray"></div>`;
   const tree=$('r-tree'), s=rr();
-  const W=Math.min(s.width*.74,s.height*.48); tree.style.width=W+'px'; tree.style.height=W*1.2+'px'; room.style.setProperty('--ow',Math.max(26,W*.13)+'px');
+  const W=low?Math.min(s.width*.8,s.height*.55):Math.min(s.width*.74,s.height*.48); tree.style.width=W+'px'; tree.style.height=W*1.2+'px'; room.style.setProperty('--ow',Math.max(26,W*.13)+'px');
+  if(low) tree.style.top=Math.max(s.height*.04,s.height*.72-W*1.2)+'px';
   // гирлянда — отдельным слоем поверх игрушек, ровно по размеру ёлки
   const L=$('r-lights'); L.style.cssText=`left:${tree.offsetLeft-W/2}px;top:${tree.offsetTop}px;width:${W}px;height:${W*1.2}px`;
   for(let i=0;i<done;i++) hang9(i,false);
@@ -6087,7 +6090,7 @@ function tree9Scene(done,star){
 }
 function spot9(i){ const tree=$('r-tree'), [x,y]=SPOTS9[i]; return {x:tree.offsetLeft-tree.offsetWidth/2+x/200*tree.offsetWidth, y:tree.offsetTop+y/240*tree.offsetHeight} }
 function hang9(i,anim){
-  const o=document.createElement('div'); o.className='orn9 hung'; o.innerHTML=toy9(TOYS9[i]);
+  const o=document.createElement('div'); o.className='orn9 hung'; o.innerHTML=toy9(TOYS9[ARR9?.[i]??i]);
   const p=spot9(i); o.style.left=p.x+'px'; o.style.top=p.y+'px'; o.style.animationDelay=(-Math.random()*2)+'s'; room.appendChild(o);
   if(anim){ restart(o,'pop9') }
   return o;
@@ -6099,6 +6102,11 @@ function putStar9(anim){
 const STARFISH9=`<svg viewBox="0 0 100 100"><path d="M50 8 L61 38 L94 39 L68 59 L77 91 L50 72 L23 91 L32 59 L6 39 L39 38 Z" fill="#ff8a5c" stroke="#ff8a5c" stroke-width="14" stroke-linejoin="round"/>
   <g fill="#ffd2b8"><circle cx="50" cy="22" r="3"/><circle cx="80" cy="42" r="3"/><circle cx="70" cy="78" r="3"/><circle cx="30" cy="78" r="3"/><circle cx="20" cy="42" r="3"/></g>
   <circle cx="43" cy="48" r="6" fill="#fff"/><circle cx="57" cy="48" r="6" fill="#fff"/><circle cx="44" cy="49" r="3" fill="#222"/><circle cx="58" cy="49" r="3" fill="#222"/><path d="M42 60 Q50 67 58 60" stroke="#8a3a1a" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`;
+// реплика чёрного паука в 9-м эпизоде — маленьким облачком слева от него (не закрывает ёлку и других пауков)
+let chipB=null, chipBT=0;
+function bsay(t,ms=1800){ if(!S2) return; chipB?.remove(); clearTimeout(chipBT); const c=document.createElement('div'); c.className='chip9'; c.innerHTML=bold(t); c.style.setProperty('--wc','#222');
+  const s=rr(), x=parseFloat(S2.wrap.style.left), y=parseFloat(S2.wrap.style.top); c.style.top=(y+28)+'px'; c.style.right=(s.width-x+30)+'px';
+  room.appendChild(c); chipB=c; speak(t,S2.pitch,S2.rate,S2.who,S2.voice); chipBT=setTimeout(()=>{ c.remove(); if(chipB===c) chipB=null },ms) }
 function spider9(){
   S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.86,y:s.height*.16});
   const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.86+'px'; th.style.height=s.height*.16+'px'; room.prepend(th);
@@ -6147,7 +6155,7 @@ SCENES.toys9=function(alive){
   tray.classList.add('lock9');
   let n=0, started=false;
   (async()=>{
-    talk2(S2,'Давай нарядим ёлку! Ой, а тут ещё пауки…',2200); await wait(2400);
+    bsay('Давай нарядим ёлку! Ой, а тут ещё пауки…',2200); await wait(2400);
     for(const R of RIV){ if(!alive()) return; restart(R.P.btn,'jump'); rsay(R,R.hi,1500); await wait(1600) }
     if(!alive()) return; chip?.remove();
     // отсчёт: 3, 2, 1, вешаем!
@@ -6167,11 +6175,21 @@ SCENES.toys9=function(alive){
     const x0=from.left-s.left+from.width/2, y0=from.top-s.top+from.height*.2, t0=performance.now(), T=650;
     sfx.jump();
     (function step(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/T), q=1-(1-k)**2;
-      f.style.left=(x0+(to.x-x0)*q)+'px'; f.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*60)+'px'; f.style.rotate=(1-k)*360+'deg';
+      f.style.left=(x0+(to.x-x0)*q)+'px'; f.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*50)+'px';
       if(k<1) return requestAnimationFrame(step);
-      f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); SLOT[i].el=o; jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
-      if(wrong) setTimeout(()=>crash(i,wrong),700); else add2(1);
+      f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); SLOT[i].el=o; SLOT[i].toy=+b.dataset.i; ARR9=SLOT.map((x,k)=>x&&x.toy!=null?x.toy:k); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
+      if(wrong) setTimeout(()=>crash(i,wrong),700); else if(p2+1>=EPX[l2].goal){ add2(1,false); finale() } else add2(1);
     })();
+  }
+  // итог: сколько игрушек повесил сам чёрный паук, а сколько — соперники
+  async function finale(){
+    for(const R of RIV){ clearTimeout(R.T); R.target=null }
+    const mine=SLOT.filter(x=>x&&x.owner==='me').length, others=SLOT.length-mine, w=n=>n+' '+plural(n,'игрушку','игрушки','игрушек');
+    await wait(700); if(!alive()) return;
+    if(mine>others){ sfx.fanfare(); restart(S2.btn,'jump'); bsay(`Я повесил ${w(mine)}, а пауки — ${others}! Я победил!`,2800); RIV.forEach(R=>restart(R.P.btn,'shake')) }
+    else if(mine===others){ restart(S2.btn,'jump'); bsay(`Поровну: у меня ${mine} и у пауков ${others}! Ничья!`,2800) }
+    else { restart(S2.btn,'shake'); RIV.forEach(R=>restart(R.P.btn,'jump')); bsay(`Я повесил ${w(mine)}, а пауки — ${others}. В следующий раз обгоню!`,2800) }
+    await wait(3000); if(alive()) add2(0);
   }
   // соперник повесил шарик не своего цвета — шарик падает и сбивает все игрушки чёрного паука; их надо вешать заново
   function crash(i,R){
@@ -6183,14 +6201,14 @@ SCENES.toys9=function(alive){
       drop(i); let lost=0;
       SLOT.forEach((sl,k)=>{ if(sl&&sl.owner==='me'&&sl.el){ setTimeout(()=>{ if(SLOT[k]===sl){ drop(k) } },60*lost); lost++ } });
       sfx.thud(); noise(.6,1500,200,.12,0,'lowpass',.6); [0,.12,.24,.36].forEach(t=>tone(rand(700,1400),.08,'sine',t+.2,.03));
-      if(lost){ add2(-lost,false); restart(S2.btn,'shake'); setTimeout(()=>alive()&&talk2(S2,'Ой-ой-ой! Все мои игрушки упали! Вешаем заново!',2200),500) }
+      if(lost){ add2(-lost,false); restart(S2.btn,'shake'); setTimeout(()=>alive()&&bsay('Ой-ой-ой! Все мои игрушки упали! Вешаем заново!',2200),500) }
     },650);
   }
   tray.addEventListener('click',e=>{
     const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2||!started) return;
     const t=TOYS9[+b.dataset.i];
     for(const R of RIV){
-      if(b===R.target){ clearTimeout(R.T); R.target=null; R.mist=false; R.mine++; say(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),900); restart(R.P.btn,'shake'); schedule(R) }
+      if(b===R.target){ clearTimeout(R.T); R.target=null; R.mist=false; R.mine++; bsay(pick(['Успел!','Эта моя!','Ага, не отдам!']),900); restart(R.P.btn,'shake'); schedule(R) }
       else if(t[R.k]) R.mine++;
     }
     fly(b);
@@ -6218,23 +6236,24 @@ SCENES.toys9=function(alive){
 SCENES.star9=function(alive){
   // Придумала Лиза: паук захотел пить, налил стакан и не допил; Фиолетовый взял стакан и опрокинул — воды стало больше и больше,
   // получилось море, из моря выползла морская звезда — и тоже хочет поставить звезду на ёлку!
-  tree9Scene(TOYS9.length,false); spider9();
+  tree9Scene(TOYS9.length,false,true); spider9();
   const s=rr(), tray=$('r-tray'), th0=room.querySelector('.thread');
   room.insertAdjacentHTML('beforeend',`<div class="sea9" id="r-sea"></div><div class="glass9" id="r-glass"><i id="r-gw"></i></div><div class="sf9" id="r-sf">${STARFISH9}</div>`);
   const glass=$('r-glass'), gw=$('r-gw'), sea=$('r-sea'), sf=$('r-sf');
+  { const gW=Math.round(s.width*.09); glass.style.width=gW+'px'; glass.style.height=Math.round(gW*1.38)+'px' }
   const go=(ms)=>new Promise(r=>setTimeout(r,ms));
   // паук ездит по ниточке вверх-вниз
   function slide(P,th,x,y0,y1,ms){ const t0=performance.now(); return new Promise(res=>(function st(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/ms), q=k<.5?2*k*k:1-(-2*k+2)**2/2, y=y0+(y1-y0)*q;
     put(P,{x:s.width*x,y:s.height*y}); th.style.height=s.height*y+'px'; k<1?requestAnimationFrame(st):res() })()) }
   setHint('Смотри, что будет…');
   (async()=>{
-    talk2(S2,'Уф, сколько игрушек повесили! Мне надо попить.',2200); await go(2300); if(!alive()) return;
+    bsay('Уф, сколько игрушек повесили! Мне надо попить.',2200); await go(2300); if(!alive()) return;
     glass.classList.add('in'); await go(500); if(!alive()) return;
     // наливаем
-    sfx.water(); gw.style.height='85%'; talk2(S2,'Налью себе водички!',1500); await go(1600); if(!alive()) return;
+    sfx.water(); gw.style.height='85%'; bsay('Налью себе водички!',1500); await go(1600); if(!alive()) return;
     await slide(S2,th0,.86,.16,.58,900); if(!alive()) return;
-    for(let k=0;k<3;k++){ tone(320-k*30,.12,'sine',k*.28,.05,200); } gw.style.height='45%'; say(S2,'<b>Глык-глык…</b>',1200); await go(1300); if(!alive()) return;
-    talk2(S2,'Уф, больше не хочу. Поставлю тут.',1800); await go(1900); if(!alive()) return;
+    for(let k=0;k<3;k++){ tone(320-k*30,.12,'sine',k*.28,.05,200); } gw.style.height='45%'; bsay('Глык-глык…',1200); await go(1300); if(!alive()) return;
+    bsay('Уф, больше не хочу. Поставлю тут.',1800); await go(1900); if(!alive()) return;
     await slide(S2,th0,.86,.58,.16,900); if(!alive()) return;
     // приходит Фиолетовый и опрокидывает стакан
     const Pp=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}), th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.62+'px'; room.prepend(th);
@@ -6243,12 +6262,12 @@ SCENES.star9=function(alive){
     glass.classList.add('tip'); sfx.splash(); noise(1.2,900,200,.08,0,'lowpass',.7); talk2(Pp,'Ой-ой! Я её уронил!',1500); await go(700); if(!alive()) return;
     gw.style.height='0';
     sea.classList.add('rise1'); await go(1600); if(!alive()) return;
-    talk2(S2,'Воды всё больше и больше!',1600); noise(2,600,200,.06,0,'lowpass',.6); sea.classList.add('rise2'); await go(1800); if(!alive()) return;
-    glass.classList.add('float'); talk2(S2,'Это же целое море!',1500); sfx.splash(); await go(1200); if(!alive()) return;
+    bsay('Воды всё больше и больше!',1600); noise(2,600,200,.06,0,'lowpass',.6); sea.classList.add('rise2'); await go(1800); if(!alive()) return;
+    glass.classList.add('float'); bsay('Это же целое море!',1500); sfx.splash(); await go(1200); if(!alive()) return;
     await slide(Pp,th,.62,.6,-.15,900); Pp.wrap.remove(); th.remove(); if(!alive()) return;
     // из моря выползает морская звезда
     sf.classList.add('up'); [0,.15,.3].forEach((t,i)=>tone(600+i*200,.15,'sine',t,.04)); await go(900); if(!alive()) return;
-    talk2(S2,'Ой! Кто это?',1200); await go(1300); if(!alive()) return;
+    bsay('Ой! Кто это?',1200); await go(1300); if(!alive()) return;
     sayStar('Привет! Я морская звезда! Я сама поставлю звезду на ёлку — я ведь тоже звезда!',2600); await go(2700); if(!alive()) return;
     race();
   })();
@@ -6256,10 +6275,10 @@ SCENES.star9=function(alive){
   function sayStar(t,ms){ sf.querySelector('.q9')?.remove(); const q=document.createElement('span'); q.className='q9'; q.textContent=t; sf.appendChild(q); speak(t,1.6,1.05,'B',1); setTimeout(()=>q.remove(),ms) }
   async function race(){
     // завязка: спорят, кто поставит звезду, и договариваются наперегонки
-    talk2(S2,'Нет-нет, звезду поставлю я! Я же весь вечер ёлку наряжал!',2400); await go(2600); if(!alive()) return;
+    bsay('Нет-нет, звезду поставлю я! Я же весь вечер ёлку наряжал!',2400); await go(2600); if(!alive()) return;
     sayStar('А я тоже хочу! Давай наперегонки — кто первый схватит звезду!',2600); await go(2800); if(!alive()) return;
     tray.innerHTML=`<button class="toy9 big float9" aria-label="Звезда">${STAR9}</button>`; const b=tray.querySelector('button'); b.disabled=true; restart(b,'pop'); sfx.magic();
-    talk2(S2,'Вон она, на волнах качается! Готов?',1800); await go(2000); if(!alive()) return;
+    bsay('Вон она, на волнах качается! Готов?',1800); await go(2000); if(!alive()) return;
     const cd=document.createElement('div'); cd.className='cd9'; room.appendChild(cd);
     for(const t of ['3','2','1','Хватай!']){ if(!alive()) return; cd.textContent=t; restart(cd,'pop'); tone(t.length>1?880:520,.18,'sine',0,.06); await go(t.length>1?600:800) }
     cd.remove(); if(!alive()) return;
@@ -6269,14 +6288,14 @@ SCENES.star9=function(alive){
       sf.style.left=(x0+(x1-x0)*k)+'px'; sf.firstElementChild.style.rotate=Math.sin(performance.now()/180)*8+'deg';
       if(k>=1){ done=true; starTakes(); return } requestAnimationFrame(crawl) })();
     b.addEventListener('click',async ()=>{ if(done) return; done=true; await put9(b,false); if(!alive()) return;
-      talk2(S2,'Ура! Успел!',1400); await go(1600); if(!alive()) return;
+      bsay('Ура! Успел!',1400); await go(1600); if(!alive()) return;
       sayStar('Эх! Ты успел… Обидно!',2000); await go(2200); if(!alive()) return;
-      talk2(S2,'Не грусти! Хочешь жить под нашей ёлкой?',2200); await go(2400); if(!alive()) return;
+      bsay('Не грусти! Хочешь жить под нашей ёлкой?',2200); await go(2400); if(!alive()) return;
       sayStar('Хочу! Я буду самой морской игрушкой!',2200); sf.classList.add('home'); sfx.magic(); await go(2600); if(alive()) add2(1) });
     async function starTakes(){ await put9(b,true); if(!alive()) return; sayStar('Ура! Я поставила звезду! Ха-ха!',2000); await go(2200); if(!alive()) return;
-      talk2(S2,'Эх, не успел… Ну ладно, зато как красиво!',2200); await go(2400); if(!alive()) return;
+      bsay('Эх, не успел… Ну ладно, зато как красиво!',2200); await go(2400); if(!alive()) return;
       sayStar('Спасибо! Можно я буду жить под вашей ёлкой?',2200); sf.classList.add('home'); await go(2400); if(!alive()) return;
-      talk2(S2,'Конечно, живи!',1400); await go(1600); if(alive()) add2(1) }
+      bsay('Конечно, живи!',1400); await go(1600); if(alive()) add2(1) }
   }
   // звезда летит на макушку (от кнопки или от морской звезды)
   async function put9(b,byStar){
@@ -6294,7 +6313,7 @@ SCENES.star9=function(alive){
 
 // 3. Огоньки: на ёлке гирлянда — нажимай на лампочки, чтобы они зажглись
 SCENES.lights9=function(alive){
-  tree9Scene(TOYS9.length,true); spider9();
+  tree9Scene(TOYS9.length,true,true); spider9();
   const box=$('r-lights');
   const G=[[56,92,100,108,144,90,[.2,.5,.8]],[40,150,100,168,160,148,[.14,.38,.62,.86]],[24,194,100,212,176,192,[.12,.37,.63,.88]]];
   const q=(a,b,c,t)=>(1-t)**2*a+2*(1-t)*t*b+t*t*c;
@@ -6303,7 +6322,7 @@ SCENES.lights9=function(alive){
   box.innerHTML=`<svg viewBox="0 0 200 240">${G.map(([x0,y0,x1,y1,x2,y2])=>`<path d="M${x0} ${y0} Q${x1} ${y1} ${x2} ${y2}" stroke="#1f4a2a" stroke-width="2" fill="none"/>`).join('')}
     ${B.map(([x,y],i)=>`<circle class="bulb9" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="8.5" style="--c:${COL[i%COL.length]}"/>`).join('')}</svg>`;
   setHint('Нажимай на лампочки — зажигай гирлянду');
-  talk2(S2,'А теперь зажжём огоньки!',1800);
+  bsay('А теперь зажжём огоньки!',1800);
   let lit=0;
   handlers2={down(e){
     if(busy2) return; let best=null, bd=1e9;
