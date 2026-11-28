@@ -365,6 +365,34 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 /* ================= эпизод 3: море ================= */
 :root{ --sky:#bfe6f5; --sea:#3d8fd1; --sea2:#2f78b8; --stone:#8d9499; --stone2:#6f777d; --sand:#ecd9a0; --sun:#f7d04a; --ok:#3fa652 }
 .room.adv{background:linear-gradient(#18264a,#2e4a80 62%,#5a78a8)}
+.room.ep9room{background:linear-gradient(#fbeedd,#f4dfc4 80%,#c99a6b 80%)}
+.ep9room .win9{position:absolute;left:5%;top:7%;width:22%;aspect-ratio:3/4;border:5px solid #fff;border-radius:8px;background:linear-gradient(#22335c,#3d5a8c);box-shadow:0 2px 6px #0002;z-index:0}
+.ep9room .win9::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,#fff 0 2px,transparent 3px),radial-gradient(circle at 70% 55%,#fff 0 2px,transparent 3px),radial-gradient(circle at 45% 80%,#fff 0 1.5px,transparent 2.5px),linear-gradient(90deg,transparent 47%,#fff 47% 53%,transparent 53%),linear-gradient(transparent 47%,#fff 47% 53%,transparent 53%)}
+.ep9room .floor9{position:absolute;left:0;right:0;bottom:0;height:20%;background:repeating-linear-gradient(90deg,#c99a6b 0 60px,#bf8f60 60px 62px);z-index:0}
+.tree9{position:absolute;left:50%;top:4%;translate:-50% 0;z-index:1;transition:filter .8s}
+.tree9 svg{display:block;width:100%;height:100%}
+.lights9{position:absolute;inset:0;z-index:3}
+.bulb9{fill:#55615a;stroke:#0004;stroke-width:1.5;transition:fill .2s}
+.bulb9.on{fill:var(--c);filter:drop-shadow(0 0 4px var(--c)) drop-shadow(0 0 2px #fff);animation:twinkle9 1.4s ease-in-out infinite}
+@keyframes twinkle9{50%{opacity:.55}}
+.glow9 .tree9{filter:drop-shadow(0 0 18px #ffe27a)}
+.orn9{position:absolute;width:var(--ow,36px);translate:-50% -4px;transform-origin:50% 0;z-index:2;pointer-events:none}
+.orn9 svg{display:block;width:100%}
+.orn9 .emo9,.toy9 .emo9{display:block;text-align:center;font-size:calc(var(--ow,36px)*.95);line-height:1}
+.orn9.hung{animation:swing9 2.4s ease-in-out infinite}
+@keyframes swing9{0%,100%{rotate:-7deg}50%{rotate:7deg}}
+.orn9.pop9{animation:pop9 .5s cubic-bezier(.3,1.8,.5,1),swing9 2.4s ease-in-out .5s infinite}
+@keyframes pop9{from{scale:1.6}to{scale:1}}
+.orn9.fly{z-index:6;translate:-50% 0}
+.tray9{position:absolute;left:3%;right:3%;bottom:2.5%;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;z-index:5}
+.toy9{width:50px;height:54px;padding:4px 7px;border:0;border-radius:14px;background:#fff9;box-shadow:0 2px 6px #0002;cursor:pointer;transition:opacity .2s,scale .2s;--ow:36px}
+.toy9 svg{display:block;width:100%;height:100%}
+.toy9.big{width:84px;height:84px;padding:8px;animation:bellnext .9s ease-in-out infinite}
+.toy9.gone{opacity:0;scale:.4;pointer-events:none}
+.star9{position:absolute;width:calc(var(--ow,36px)*1.9);translate:-50% -50%;z-index:4;pointer-events:none}
+.star9 svg{display:block;width:100%}
+.star9.land{filter:drop-shadow(0 0 10px #ffe27a) drop-shadow(0 0 4px #fff);animation:starglow9 1.6s ease-in-out infinite}
+@keyframes starglow9{50%{scale:1.1}}
 .room.advday{background:linear-gradient(#bfe3f5,#e8f4fb 70%)}
 .room.advkitchen{background:linear-gradient(#f6e3c8,#efd2ad);}
 .room.advkitchen::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(90deg,#d9b48a 0 40px,#cfa678 40px 80px);z-index:0}
@@ -983,6 +1011,21 @@ html[lang=en] .wake .wtext .wen{order:1;font-weight:700;font-size:16px;color:#cf
       </svg>
       <span class="ep">Эпизод 7 · спорт</span><span class="nm">Паучья олимпиада</span><span class="st" id="m7s"></span>
     </button>
+    <button class="card" id="m9">
+      <svg viewBox="0 0 200 110" aria-hidden="true">
+        <rect width="200" height="110" fill="#fbeedd"/><rect y="88" width="200" height="22" fill="#c99a6b"/>
+        <rect x="14" y="14" width="34" height="44" rx="4" fill="#2f4a7c" stroke="#fff" stroke-width="3"/><path d="M31 14 V58 M14 36 H48" stroke="#fff" stroke-width="2"/>
+        <rect x="94" y="88" width="12" height="14" fill="#8a5a32"/>
+        <path d="M100 50 L146 94 H54 Z" fill="#2f8f4a"/><path d="M100 30 L134 70 H66 Z" fill="#37a356"/><path d="M100 10 L124 46 H76 Z" fill="#43b863"/>
+        <path d="M100 3 l3 7 h7 l-6 4 l2 7 l-6 -4 l-6 4 l2 -7 l-6 -4 h7Z" fill="#ffd84a" stroke="#e8a816" stroke-width="1"/>
+        <g><circle cx="92" cy="36" r="4" fill="#e8483c"/><circle cx="110" cy="58" r="4.5" fill="#3d8fe0"/><circle cx="84" cy="64" r="4.5" fill="#f5c03a"/><circle cx="118" cy="82" r="5" fill="#7a3cc9"/><circle cx="76" cy="84" r="5" fill="#ff7ab0"/><circle cx="100" cy="76" r="4.5" fill="#e8483c"/></g>
+        <line x1="166" y1="0" x2="166" y2="38" stroke="#999" stroke-width="1.5"/>
+        <g stroke="#141412" stroke-width="3" stroke-linecap="round" fill="none"><path d="M161 46 L151 40 L145 46 M161 50 L149 52 M171 46 L181 40 L187 46 M171 50 L183 52"/></g>
+        <ellipse cx="166" cy="51" rx="9" ry="8" fill="#141412"/><circle cx="166" cy="40" r="7" fill="#141412"/><circle cx="163.5" cy="39" r="2.4" fill="#fff"/><circle cx="168.5" cy="39" r="2.4" fill="#fff"/>
+        <circle cx="146" cy="70" r="5" fill="#4fae5a" stroke="#0002"/><rect x="144" y="63" width="4" height="3" fill="#c9a24a"/>
+      </svg>
+      <span class="ep">Эпизод 9 · праздник</span><span class="nm">Наряжаем ёлку</span><span class="st" id="m9s"></span>
+    </button>
     <button class="card" id="m8">
       <svg viewBox="0 0 200 110" aria-hidden="true">
         <rect width="200" height="110" fill="#22335c"/><circle cx="172" cy="20" r="11" fill="#fff6c8"/>
@@ -1252,6 +1295,9 @@ $('sound').addEventListener('click',()=>{
 /* ================= фоновая музыка =================
    Короткие мелодии-петли, сыгранные синтезатором (без файлов). Восьмые ноты, MIDI-номера, 0 — пауза */
 const MUSIC={
+  9:{bpm:120,wave:'triangle',vol:.028,   // ёлка: «Deck the Halls» (народная)
+     mel:[79,0,0,77,76,0,74,0, 72,0,74,0,76,0,72,0, 74,76,77,74,76,0,0,74, 72,0,71,0,72,0,0,0],
+     bass:[48,0,55,0,48,0,55,0, 53,0,57,0,48,0,55,0, 50,0,57,0,48,0,55,0, 43,0,50,0,48,0,0,0]},
   0:{bpm:108,wave:'triangle',vol:.03,   // главное меню: тема чёрного паука, вприпрыжку
      mel:[67,0,72,0,76,74,72,0, 69,0,72,0,77,76,74,0, 71,0,74,0,79,77,76,74, 72,0,76,0,72,0,0,0,
           67,0,72,0,76,74,72,0, 69,0,72,0,77,76,74,0, 79,0,77,76,74,0,71,0, 72,0,0,0,0,0,0,0],
@@ -2107,6 +2153,7 @@ function showMenu(){
   const f7=lsGet('spider-ep7',0), bank7=lsGet('spider-ep7-bank',0);
   $('m7s').textContent=(f7>=EP7.length?'Пройден ✓ 🏆':f7>0?({shop:'Магазин',cup7:'Кубок',run7d:'Финал',spr7:'Спринт',sling7:'Рогатка',climb7:'Лазание'}[EP7[f7].key.startsWith('shop')?'shop':EP7[f7].key]||''):'Начать')+(bank7>0?` · 🐷 ${bank7} £`:'');
   $('m8s').textContent=advStatus();
+  { const f9=lsGet('spider-ep9',0); $('m9s').textContent=f9>=EP9.length?'Пройден ✓':f9>0?`Этап ${f9+1} из ${EP9.length}`:'Начать' }
   // сезонный эпизод: с середины ноября до Рождества (и в волшебном режиме) — первым в меню, с лентой; иначе — в конце
   { const c=$('m8'), box=c.parentElement, on=advSeason();
     c.classList.toggle('season',on); c.dataset.rib='❄ Только в декабре ❄'; if(on){ if(box.firstElementChild!==c) box.prepend(c) } else if(box.lastElementChild!==c) box.append(c) }
@@ -2133,6 +2180,7 @@ $('m5').addEventListener('click',()=>{unlockAudio();startStory(5)});
 $('m6').addEventListener('click',()=>{unlockAudio();startStory(6)});
 $('m7').addEventListener('click',()=>{unlockAudio();startStory(7)});
 $('m8').addEventListener('click',()=>{unlockAudio();startStory(8,0)});
+$('m9').addEventListener('click',()=>{unlockAudio();startStory(9)});
 $('menuBtn').addEventListener('click',showMenu);
 
 /* =====================================================================
@@ -2189,8 +2237,14 @@ const EP7=[
   {key:'run7d',  title:'Финал: барьерный бег с Серебристым',goal:60, unit:'м', done:''},
   {key:'cup7',   title:'Кубок чемпиона',              goal:1,  unit:'',  done:''}
 ];
+const EP9=[
+  {key:'toys9',  title:'Повесь игрушки на ёлку',      goal:10, unit:'игрушек', done:'Какая нарядная ёлка!'},
+  {key:'star9',  title:'Звезда на макушку',           goal:1,  unit:'',        done:'Звёздочка сияет!'},
+  {key:'lights9',title:'Зажги огоньки',               goal:11, unit:'огоньков',done:'С Новым годом!'}
+];
 // (эпизод 8 — ниже, рядом со сценами)
 const STORIES={
+  9:{n:9,levels:EP9,store:'spider-ep9',fin:['Ёлка готова!','Паук любуется огоньками']},
   8:{n:8,levels:null,store:'spider-ep8',hub:true,fin:['Ёлка наряжена!','']},
   7:{n:7,levels:EP7,store:'spider-ep7',fin:['Паук — чемпион олимпиады!','']},
   2:{n:2,levels:EP2,store:'spider-ep2',fin:['Спокойной ночи!','Чёрный паук сладко спит']},
@@ -5436,6 +5490,125 @@ SCENES.adv12=function(alive){
     if(++ph<SONG.length){ say(S2,pick(['<b>Красиво!</b>','<b>Дальше!</b>','<b>Ля-ля-ля!</b>']),900); k=0; await wait(700); if(!alive()) return; lock=false; mark() }
     else { bells.forEach((x,i)=>setTimeout(()=>{ ring(x.dataset.n,200); restart(x,'ding') },i*110)); talk2(S2,'Какая песенка! Ура!',1800); await wait(1500); if(alive()) add2(0) }
   });
+};
+
+/* =====================================================================
+   ЭПИЗОД 9 — НАРЯЖАЕМ ЁЛКУ (придумала Лиза): нажимаешь на игрушку — она сама летит и вешается на ёлку
+   ===================================================================== */
+const TREE9=`<svg viewBox="0 0 200 240" class="tree9svg" aria-hidden="true">
+  <rect x="88" y="200" width="24" height="34" rx="4" fill="#8a5a32"/>
+  <path d="M100 104 L192 206 Q100 216 8 206 Z" fill="#2f8f4a"/>
+  <path d="M100 52 L172 148 Q100 158 28 148 Z" fill="#37a356"/>
+  <path d="M100 8 L152 88 Q100 97 48 88 Z" fill="#43b863"/>
+  <g fill="#fff" opacity=".9"><path d="M8 206 Q30 196 52 205 Q76 196 100 207 Q124 196 148 205 Q170 196 192 206 Q100 216 8 206Z"/><path d="M28 148 Q46 140 64 147 Q82 139 100 148 Q118 139 136 147 Q154 140 172 148 Q100 158 28 148Z"/><path d="M48 88 Q61 81 74 87 Q87 80 100 88 Q113 80 126 87 Q139 81 152 88 Q100 97 48 88Z"/></g>
+</svg>`;
+// места для игрушек на ёлке (в единицах viewBox 200×240) — в таком порядке они и вешаются
+const SPOTS9=[[100,62],[78,120],[124,116],[60,180],[100,168],[142,178],[84,76],[100,128],[34,198],[164,196]];
+const TOYS9=[
+  {c:'#e8483c'},{c:'#3d8fe0'},{c:'#f5c03a'},{c:'#7a3cc9'},{e:'🔔'},{c:'#ff7ab0'},{e:'🍭'},{c:'#4fae5a'},{e:'🧸'},{c:'#ffffff'}
+];
+function ball9(c){ return `<svg viewBox="0 0 40 48"><rect x="15" y="0" width="10" height="7" rx="2" fill="#c9a24a"/><circle cx="20" cy="27" r="18" fill="${c}" stroke="#0002" stroke-width="1.5"/>
+  <path d="M5 24 Q20 32 35 24" stroke="#fff8" stroke-width="3" fill="none"/><ellipse cx="13" cy="19" rx="5" ry="3.5" fill="#fff" opacity=".7" transform="rotate(-30 13 19)"/></svg>` }
+function toy9(t){ return t.e?`<span class="emo9">${t.e}</span>`:ball9(t.c) }
+const STAR9=`<svg viewBox="0 0 100 100"><path d="M50 4 L62 36 L96 37 L69 58 L79 92 L50 72 L21 92 L31 58 L4 37 L38 36 Z" fill="#ffd84a" stroke="#e8a816" stroke-width="5" stroke-linejoin="round"/><circle cx="41" cy="46" r="4" fill="#7a5a12"/><circle cx="59" cy="46" r="4" fill="#7a5a12"/><path d="M41 58 Q50 66 59 58" stroke="#7a5a12" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+
+// общая сцена: ёлка; done — сколько игрушек уже висит; star — горит ли звезда
+function tree9Scene(done,star){
+  room.className='room ep9room';
+  room.innerHTML=`<div class="win9"></div><div class="floor9"></div><div class="tree9" id="r-tree">${TREE9}<div class="lights9" id="r-lights"></div></div><div class="tray9" id="r-tray"></div>`;
+  const tree=$('r-tree'), s=rr();
+  const W=Math.min(s.width*.78,s.height*.6); tree.style.width=W+'px'; tree.style.height=W*1.2+'px'; room.style.setProperty('--ow',Math.max(26,W*.13)+'px');
+  for(let i=0;i<done;i++) hang9(i,false);
+  if(star) putStar9(false);
+  return tree;
+}
+function spot9(i){ const tree=$('r-tree'), [x,y]=SPOTS9[i]; return {x:tree.offsetLeft-tree.offsetWidth/2+x/200*tree.offsetWidth, y:tree.offsetTop+y/240*tree.offsetHeight} }
+function hang9(i,anim){
+  const o=document.createElement('div'); o.className='orn9 hung'; o.innerHTML=toy9(TOYS9[i]);
+  const p=spot9(i); o.style.left=p.x+'px'; o.style.top=p.y+'px'; o.style.animationDelay=(-Math.random()*2)+'s'; room.appendChild(o);
+  if(anim){ restart(o,'pop9') }
+  return o;
+}
+function putStar9(anim){
+  const tree=$('r-tree'), st=document.createElement('div'); st.className='star9'+(anim?' land':''); st.innerHTML=STAR9;
+  st.style.left=tree.offsetLeft+'px'; st.style.top=(tree.offsetTop+8/240*tree.offsetHeight)+'px'; room.appendChild(st); return st;
+}
+function spider9(){
+  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.86,y:s.height*.16});
+  const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.86+'px'; th.style.height=s.height*.16+'px'; room.prepend(th);
+}
+function jingle9(k){ const sc=[72,74,76,77,79,81,83,84,86,88]; const f=440*2**((sc[k%sc.length]-69)/12); tone(f,.25,'sine',0,.05); tone(f*2,.12,'sine',.03,.02); tone(f*3,.08,'triangle',.05,.01) }
+
+// 1. Игрушки: внизу лежат в коробке — нажимаешь, игрушка летит на ёлку
+SCENES.toys9=function(alive){
+  tree9Scene(0,false); spider9();
+  const tray=$('r-tray');
+  tray.innerHTML=TOYS9.map((t,i)=>`<button class="toy9" data-i="${i}" aria-label="Игрушка">${toy9(t)}</button>`).join('');
+  setHint('Нажимай на игрушки — они сами повесятся на ёлку');
+  talk2(S2,'Давай нарядим ёлку! Нажимай на игрушки!',2400);
+  let n=0;
+  const SAY=['Красота!','Ещё одну!','Как блестит!','Ух ты!','Ёлочка улыбается!','Здорово!'];
+  tray.addEventListener('click',e=>{
+    const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2) return;
+    b.disabled=true; b.classList.add('gone');
+    const i=n++, from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
+    const fly=document.createElement('div'); fly.className='orn9 fly'; fly.innerHTML=b.innerHTML;
+    fly.style.left=(from.left-s.left+from.width/2)+'px'; fly.style.top=(from.top-s.top+from.height*.2)+'px'; room.appendChild(fly);
+    sfx.jump();
+    // летит по дуге: вверх и на своё место
+    const x0=parseFloat(fly.style.left), y0=parseFloat(fly.style.top), t0=performance.now(), T=650;
+    (function step(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/T), q=1-(1-k)**2;
+      fly.style.left=(x0+(to.x-x0)*q)+'px'; fly.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*60)+'px'; fly.style.rotate=(1-k)*360+'deg';
+      if(k<1) return requestAnimationFrame(step);
+      fly.remove(); hang9(i,true); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',TOYS9[i].c||'#ff9ab8']);
+      if(n%3===0&&n<TOYS9.length) talk2(S2,pick(SAY),1400);
+      add2(1);
+    })();
+  });
+};
+
+// 2. Звезда на макушку: паук спускается за звездой и ставит её наверх
+SCENES.star9=function(alive){
+  tree9Scene(TOYS9.length,false); spider9();
+  const tray=$('r-tray'); tray.innerHTML=`<button class="toy9 big" aria-label="Звезда">${STAR9}</button>`;
+  setHint('Нажми на звезду — паук поставит её на макушку');
+  talk2(S2,'Осталась самая главная — звезда!',2200);
+  tray.querySelector('button').addEventListener('click',async e=>{
+    const b=e.currentTarget; if(b.disabled) return; b.disabled=true; b.classList.add('gone');
+    const s=rr(), tree=$('r-tree'), from=b.getBoundingClientRect();
+    const fly=document.createElement('div'); fly.className='star9'; fly.innerHTML=STAR9; room.appendChild(fly);
+    const x0=from.left-s.left+from.width/2, y0=from.top-s.top+from.height/2, x1=tree.offsetLeft, y1=tree.offsetTop+8/240*tree.offsetHeight, t0=performance.now(), T=1100;
+    tone(520,.9,'sine',0,.03,1040);
+    await new Promise(res=>(function step(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/T), q=k<.5?2*k*k:1-(-2*k+2)**2/2;
+      fly.style.left=(x0+(x1-x0)*q)+'px'; fly.style.top=(y0+(y1-y0)*q-Math.sin(k*Math.PI)*80)+'px'; fly.style.rotate=(1-q)*720+'deg';
+      k<1?requestAnimationFrame(step):res() })());
+    if(!alive()) return; fly.classList.add('land'); sfx.magic(); burst(s.left+x1,s.top+y1,40,7,['#fff','#ffe27a','#ffd84a']);
+    restart(S2.btn,'jump'); add2(1);
+  });
+};
+
+// 3. Огоньки: на ёлке гирлянда — нажимай на лампочки, чтобы они зажглись
+SCENES.lights9=function(alive){
+  tree9Scene(TOYS9.length,true); spider9();
+  const box=$('r-lights');
+  const G=[[56,92,100,108,144,90,[.2,.5,.8]],[40,150,100,168,160,148,[.14,.38,.62,.86]],[24,194,100,212,176,192,[.12,.37,.63,.88]]];
+  const q=(a,b,c,t)=>(1-t)**2*a+2*(1-t)*t*b+t*t*c;
+  const B=G.flatMap(([x0,y0,x1,y1,x2,y2,ts])=>ts.map(t=>[q(x0,x1,x2,t),q(y0,y1,y2,t)+4]));
+  const COL=['#ff4d4d','#ffd84a','#4fc3ff','#7dff7a','#ff7ae0'];
+  box.innerHTML=`<svg viewBox="0 0 200 240">${G.map(([x0,y0,x1,y1,x2,y2])=>`<path d="M${x0} ${y0} Q${x1} ${y1} ${x2} ${y2}" stroke="#1f4a2a" stroke-width="2" fill="none"/>`).join('')}
+    ${B.map(([x,y],i)=>`<circle class="bulb9" data-i="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="7" style="--c:${COL[i%COL.length]}"/>`).join('')}</svg>`;
+  setHint('Нажимай на лампочки — зажигай гирлянду');
+  talk2(S2,'А теперь зажжём огоньки!',1800);
+  let lit=0;
+  handlers2={down(e){
+    if(busy2) return; let best=null, bd=1e9;
+    for(const c of box.querySelectorAll('.bulb9:not(.on)')){ const r=c.getBoundingClientRect(), d=Math.hypot(r.left+r.width/2-e.clientX,r.top+r.height/2-e.clientY); if(d<bd){bd=d;best=c} }
+    if(!best||bd>44) return;
+    best.classList.add('on'); best.style.animationDelay=(-Math.random()*1.4)+'s'; const r=best.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,10,3,['#fff',best.style.getPropertyValue('--c')]); jingle9(lit++);
+    if(lit===B.length){ handlers2={}; room.classList.add('glow9'); sfx.magic() }
+    add2(1);
+  }};
 };
 
 /* ---- старт ---- */

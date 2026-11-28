@@ -33,7 +33,9 @@
 "Паучья олимпиада": "Spider Olympics",
 "Как добавить русский голос?": "How to add an English voice?",
 "Эпизод 8 · декабрь": "Episode 8 · December",
-"Адвент-календарь": "Advent calendar"
+"Адвент-календарь": "Advent calendar",
+"Эпизод 9 · праздник": "Episode 9 · holiday",
+"Наряжаем ёлку": "Decorating the tree"
 },
 "js": {
 "'🔊 Звук'": "'🔊 Sound'",
@@ -1272,6 +1274,29 @@
 "'Сначала найди подарок!'": "'Find a present first!'",
 "'А где мой подарок?'": "\"Where's my present?\"",
 "'Без подарка не считается!'": "\"No present, it doesn't count!\"",
-"'Я самый нарядный на катке! Сдаюсь, ты победил!'": "\"I'm the best dressed on the ice! I give up, you win!\""
+"'Я самый нарядный на катке! Сдаюсь, ты победил!'": "\"I'm the best dressed on the ice! I give up, you win!\"",
+"`Этап ${f9+1} из ${EP9.length}`": "`Stage ${f9+1} of ${EP9.length}`",
+"'Повесь игрушки на ёлку'": "'Hang the ornaments on the tree'",
+"'игрушек'": "'ornaments'",
+"'Какая нарядная ёлка!'": "'What a pretty tree!'",
+"'Звезда на макушку'": "'A star on top'",
+"'Звёздочка сияет!'": "'The star is shining!'",
+"'Зажги огоньки'": "'Light up the tree'",
+"'огоньков'": "'lights'",
+"'С Новым годом!'": "'Happy holidays!'",
+"'Ёлка готова!'": "'The tree is ready!'",
+"'Паук любуется огоньками'": "'The spider admires the lights'",
+"`<button class=\"toy9\" data-i=\"${i}\" aria-label=\"Игрушка\">${toy9(t)}</button>`": "`<button class=\"toy9\" data-i=\"${i}\" aria-label=\"Ornament\">${toy9(t)}</button>`",
+"'Нажимай на игрушки — они сами повесятся на ёлку'": "'Tap the ornaments — they will hang themselves on the tree'",
+"'Давай нарядим ёлку! Нажимай на игрушки!'": "\"Let's decorate the tree! Tap the ornaments!\"",
+"'Ещё одну!'": "'One more!'",
+"'Ух ты!'": "'Wow!'",
+"'Ёлочка улыбается!'": "'The tree is smiling!'",
+"'Здорово!'": "'Great!'",
+"`<button class=\"toy9 big\" aria-label=\"Звезда\">${STAR9}</button>`": "`<button class=\"toy9 big\" aria-label=\"Star\">${STAR9}</button>`",
+"'Нажми на звезду — паук поставит её на макушку'": "'Tap the star — the spider will put it on top'",
+"'Осталась самая главная — звезда!'": "'Only the most important one is left — the star!'",
+"'Нажимай на лампочки — зажигай гирлянду'": "'Tap the bulbs to light the garland'",
+"'А теперь зажжём огоньки!'": "\"Now let's turn on the lights!\""
 }
 }
