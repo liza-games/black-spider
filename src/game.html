@@ -428,14 +428,6 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .sled13e{position:absolute;width:clamp(70px,22vw,110px);font-size:clamp(44px,13vw,70px);translate:-50% -50%;z-index:2;line-height:1;pointer-events:none}
 .obs13{position:absolute;left:0;top:79%;z-index:2;pointer-events:none}
 .obs13 i{position:absolute;left:0;top:0;font-style:normal;font-size:clamp(34px,10vw,52px);translate:-50% -50%;line-height:1}
-.ball14{position:absolute;left:50%;top:30%;width:clamp(70px,22vw,110px);translate:-50% -50%;transition:transform .45s ease-in,scale .45s;z-index:2}
-.ball14 svg{display:block;width:100%}
-.ball14.in{transform:translate(var(--tx),var(--ty));scale:.4}
-.boxes14{position:absolute;left:0;right:0;bottom:6%;display:flex;justify-content:center;gap:4%;z-index:1}
-.boxes14 button{width:27%;aspect-ratio:1.1;border:0;border-radius:12px;background:var(--c);box-shadow:inset 0 -10px 0 #0002,0 6px 12px #0002;cursor:pointer;position:relative}
-.boxes14 button::before{content:"";position:absolute;left:-4%;right:-4%;top:-8%;height:22%;border-radius:8px;background:var(--c);filter:brightness(.85)}
-.boxes14 button i{position:absolute;inset:30% 12% 12%;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-end;justify-content:center}
-.boxes14 button i b{width:26%;aspect-ratio:1;border-radius:50%;background:#fff8}
 .win15{position:absolute;z-index:2;left:50%;top:8%;width:min(74%,46vh);aspect-ratio:4/5;translate:-50% 0;border:10px solid #fff;border-radius:16px;box-shadow:0 8px 20px #0003;overflow:hidden;background:#fff}
 .view15{position:absolute;inset:0;font-size:clamp(18px,5vw,28px)}
 .view15 span{position:absolute;translate:-50% -50%;line-height:1}
@@ -525,6 +517,15 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .shine24 .star24{animation:bellnext 1.6s ease-in-out infinite}
 .sleigh24{position:absolute;left:-30%;top:66%;font-size:clamp(30px,9vw,48px);white-space:nowrap;transform:scaleX(-1);z-index:3}
 .sleigh24.go{transition:left 3s linear,top 3s ease-out;left:110%;top:58%}
+.room.advpong{background:linear-gradient(#d9eef9,#bfe1f3);overflow:hidden}
+.advpong .mid14{position:absolute;left:4%;right:4%;top:50%;border-top:3px dashed #ffffffcc}
+.score14{position:absolute;left:4%;top:50%;translate:0 -50%;display:flex;gap:6px;align-items:center;padding:4px 10px;border-radius:12px;background:#fff;box-shadow:0 2px 6px #0002;font:900 20px var(--display);z-index:3}
+.score14 b:first-child{color:#222}.score14 b:last-child{color:#8a3fe0}.score14 i{font-style:normal;color:#999}
+.pad14{position:absolute;left:0;top:0;height:14px;border-radius:8px;z-index:3;will-change:transform}
+.pad14.me{background:linear-gradient(#e8483c,#b8281e);box-shadow:0 3px 0 #7a1a12}
+.pad14.him{background:linear-gradient(#a56ae8,#7a3cc9);box-shadow:0 3px 0 #4f2386}
+.ball14{position:absolute;left:0;top:0;z-index:4;will-change:transform;pointer-events:none}
+.ball14 svg{display:block;width:100%}
 .room.advday{background:linear-gradient(#bfe3f5,#e8f4fb 70%)}
 .room.advkitchen{background:linear-gradient(#f6e3c8,#efd2ad);}
 .room.advkitchen::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;background:repeating-linear-gradient(90deg,#d9b48a 0 40px,#cfa678 40px 80px);z-index:0}
@@ -5013,7 +5014,7 @@ const ADV=[null,
   {t:'Снежинки из бумаги', o:'❄️', goal:3,  unit:'снежинки',         done:'Какие красивые снежинки!'},
   {t:'Колокольчики',       o:'🔔', goal:4,  unit:'',         done:'Вот это концерт!'},
   {t:'С горки на санках',  o:'🛷', goal:10, unit:'',         done:'Ух, как здорово прокатились!'},
-  {t:'Шарики по коробкам', o:'🔴', goal:9,  unit:'шариков',  done:'Всё по порядку!'},
+  {t:'Снежный пинг-понг', o:'🔴', goal:5,  unit:'очков',   done:'Победа! Пять очков!'},
   {t:'Морозные узоры',     o:'🌬️', goal:3,  unit:'окошка',   done:'Какие чудеса за окном!'},
   {t:'Письмо Деду Морозу', o:'✉️', goal:4,  unit:'',         done:'Письмо улетело!'},
   {t:'Мандаринка',         o:'🍊', goal:14, unit:'',         done:'Вкусно пахнет Новым годом!'},
@@ -5856,25 +5857,53 @@ SCENES.adv13=function(alive){
   })();
 };
 
-/* ---- День 14. Шары по коробкам: какой шарик — в коробку того же цвета ---- */
+/* ---- День 14. Снежный пинг-понг: чёрный паук внизу, Фиолетовый наверху, отбивают ёлочный шарик дощечками-санками.
+   Двигай свою дощечку пальцем. До 5 очков; если первым наберёт Фиолетовый — реванш ---- */
 SCENES.adv14=function(alive){
-  room.className='room advkitchen';
-  const C={red:'#e8483c',blue:'#3d8fe0',gold:'#f5c03a'};
-  room.innerHTML=`<div class="ball14" id="r-ball"></div><div class="boxes14">${Object.entries(C).map(([k,c])=>`<button data-k="${k}" style="--c:${c}" aria-label="Коробка"><i></i></button>`).join('')}</div>`;
-  advSpider(.86,.16,true);
-  setHint('Нажми на коробку такого же цвета, как шарик');
-  talk2(S2,'Разложим шарики по коробкам! Каждый — в свою!',2200);
-  const order=['red','blue','gold','blue','red','gold','gold','red','blue'];
-  let i=0, lock=true; const ball=$('r-ball');
-  function show(){ const c=C[order[i]]; ball.innerHTML=ball9(c); ball.className='ball14'; restart(ball,'pop'); lock=false }
-  room.querySelector('.boxes14').addEventListener('click',async e=>{
-    const b=e.target.closest('button'); if(!b||lock) return;
-    if(b.dataset.k!==order[i]){ restart(b,'shake'); tone(260,.15,'triangle',0,.04,200); say(S2,'<b>Не та коробка!</b>',900); return }
-    lock=true; const r=center(b), s=rr(); ball.classList.add('in'); ball.style.setProperty('--tx',(r.cx-(s.left+s.width/2))+'px'); ball.style.setProperty('--ty',(r.cy-(s.top+s.height*.3))+'px');
-    await wait(450); if(!alive()) return; restart(b,'shake'); jingle9(i); b.querySelector('i').insertAdjacentHTML('beforeend','<b></b>');
-    i++; add2(1); if(i<order.length){ if(i%3===0) talk2(S2,pick(['Как аккуратно!','Порядок!','Здорово!']),1200); await wait(300); if(alive()) show() }
-  });
-  setTimeout(()=>alive()&&show(),900);
+  room.className='room advpong';
+  room.innerHTML=`<div class="mid14"></div><div class="score14" id="r-sc"><b id="r-s1">0</b><i>:</i><b id="r-s2">0</b></div>
+    <div class="pad14 me" id="r-p1"></div><div class="pad14 him" id="r-p2"></div><div class="ball14" id="r-ball">${ball9('#e8483c')}</div>`;
+  const s=rr(), W=s.width, H=s.height, PW=W*.28, PH=14, BR=Math.max(13,W*.045);
+  const p1=$('r-p1'), p2el=$('r-p2'), ballEl=$('r-ball'); p1.style.width=p2el.style.width=PW+'px'; ballEl.style.width=BR*2+'px';
+  const Y1=H*.84, Y2=H*.14;
+  S2=makeMain('small'); wearAll(S2,['santa']); S2.wrap.classList.add('noanim');
+  const P=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'}); wearAll(P,['santa']); P.wrap.classList.add('noanim');
+  // реплики — маленьким облачком рядом с пауком
+  const chips={};
+  function chip(t,txt,ms=1400,col='#222'){ chips[t.who||'me']?.remove(); const c=document.createElement('div'); c.className='chip9'; c.style.setProperty('--wc',col); c.innerHTML=bold(txt);
+    const x=parseFloat(t.wrap.style.left), y=parseFloat(t.wrap.style.top); c.style.top=(t===S2?y-62:y+38)+'px'; if(x<W/2) c.style.left=(x+30)+'px'; else c.style.right=(W-x+30)+'px';
+    room.appendChild(c); chips[t.who||'me']=c; speak(txt,t.pitch,t.rate,t.who,t.voice); setTimeout(()=>c.remove(),ms) }
+  let x1=W/2, x2=W/2, bx=W/2, by=H/2, vx=0, vy=0, sp=H*.5, me=0, him=0, live=false, last=performance.now(), aiErr=0;
+  const draw=()=>{ p1.style.transform=`translate(${x1-PW/2}px,${Y1}px)`; p2el.style.transform=`translate(${x2-PW/2}px,${Y2-PH}px)`;
+    ballEl.style.transform=`translate(${bx-BR}px,${by-BR}px)`; put(S2,{x:x1,y:Y1+PH+S2.wrap.offsetHeight*.32}); put(P,{x:x2,y:Y2-PH-P.wrap.offsetHeight*.32}) };
+  const score=()=>{ $('r-s1').textContent=me; $('r-s2').textContent=him };
+  function serve(toMe){ live=false; bx=W/2; by=H/2; vx=vy=0; sp=H*.5; draw();
+    setTimeout(()=>{ if(!alive()) return; const a=(Math.random()-.5)*.9; vx=Math.sin(a)*sp; vy=Math.cos(a)*sp*(toMe?1:-1); live=true; sfx.pop() },1100) }
+  handlers2={ down(e,p){ x1=Math.max(PW/2,Math.min(W-PW/2,p.x)) }, move(e,p){ x1=Math.max(PW/2,Math.min(W-PW/2,p.x)) } };
+  setHint('Води пальцем влево-вправо — отбивай шарик своей дощечкой!');
+  talk2(S2,'Сыграем в снежный пинг-понг! До пяти очков!',2200);
+  setTimeout(()=>alive()&&chip(P,'Я тебя обыграю!',1600,'#8a3fe0'),1600);
+  setTimeout(()=>alive()&&serve(true),3200);
+  (function tick(){
+    if(!alive()) return; const now=performance.now(), dt=Math.min(.033,(now-last)/1000); last=now;
+    // Фиолетовый: тянется за шариком, но не идеально и не слишком быстро
+    const target=vy<0?bx+aiErr:W/2, aiSp=W*(.55+Math.min(.35,(me+him)*.04));
+    x2+=Math.max(-aiSp*dt,Math.min(aiSp*dt,target-x2)); x2=Math.max(PW/2,Math.min(W-PW/2,x2));
+    if(live){
+      bx+=vx*dt; by+=vy*dt;
+      if(bx<BR){ bx=BR; vx=Math.abs(vx); tone(500,.04,'sine',0,.03) } if(bx>W-BR){ bx=W-BR; vx=-Math.abs(vx); tone(500,.04,'sine',0,.03) }
+      // отбили?
+      const hit=(px,py,dir)=>{ const off=(bx-px)/(PW/2); if(Math.abs(off)>1.15) return false;
+        sp=Math.min(H*1.1,sp*1.06); const a=off*1.0; vx=Math.sin(a)*sp; vy=Math.cos(a)*sp*dir; return true };
+      if(vy>0&&by+BR>=Y1&&by+BR<=Y1+PH+20){ if(hit(x1,Y1,-1)){ by=Y1-BR; sfx.boing?.(); tone(660,.06,'square',0,.03); aiErr=(Math.random()-.5)*PW*(.6+Math.random()*.9) } }
+      if(vy<0&&by-BR<=Y2&&by-BR>=Y2-PH-20){ if(hit(x2,Y2,1)){ by=Y2+BR; tone(520,.06,'square',0,.03) } }
+      if(by>H+BR){ live=false; him++; score(); chip(P,pick(['Ха-ха! Моё очко!','Хи-хи! Не поймал!','Ха-ха-ха!']),1300,'#8a3fe0'); restart(S2.btn,'shake');
+        if(him>=5){ setTimeout(()=>{ if(!alive()) return; chip(P,'Я выиграл! Давай реванш!',1800,'#8a3fe0'); me=0; him=0; p2=0; render2(); score(); serve(true) },1400) } else serve(true) }
+      if(by<-BR){ live=false; me++; score(); burst(s.left+bx,s.top+12,20,5,['#fff','#ffe27a','#e8483c']); tone(880,.1,'sine',0,.05); tone(1175,.12,'sine',.1,.05);
+        chip(P,pick(['Ой! Пропустил!','Эх!','Ну ничего, отыграюсь!']),1300,'#8a3fe0'); restart(P.btn,'shake'); add2(1,me<5); if(me<5) serve(false) }
+    }
+    draw(); requestAnimationFrame(tick);
+  })();
 };
 
 /* ---- День 15. Морозные узоры: окно замёрзло — потри пальцем и посмотри, что там ---- */
