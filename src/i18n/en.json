@@ -1538,6 +1538,20 @@
 "`Я повесил ${w(mine)}, а пауки — ${others}! Я победил!`": "`I hung ${w(mine)}, and the spiders — ${others}! I won!`",
 "`Поровну: у меня ${mine} и у пауков ${others}! Ничья!`": "`Even: ${mine} for me and ${others} for the spiders! A draw!`",
 "`Я повесил ${w(mine)}, а пауки — ${others}. В следующий раз обгоню!`": "`I hung ${w(mine)}, and the spiders — ${others}. I'll beat them next time!`",
-"'Глык-глык…'": "'Glug-glug…'"
+"'Глык-глык…'": "'Glug-glug…'",
+"'Красивая ёлка, правда?'": "'Pretty tree, right?'",
+"'Я самый фиолетовый!'": "\"I'm the purplest!\"",
+"'Фиолетовый — лучший цвет!'": "'Purple is the best colour!'",
+"'Я быстрее всех!'": "\"I'm the fastest!\"",
+"'Не трогай — я тороплюсь!'": "\"Don't touch — I'm in a hurry!\"",
+"'Буль-буль! Я синий, как море!'": "\"Blub-blub! I'm blue like the sea!\"",
+"'Синие шарики — самые красивые!'": "'Blue baubles are the prettiest!'",
+"'Я блестящий, как солнышко!'": "\"I'm shiny like the sun!\"",
+"'Блеск-блеск!'": "'Sparkle-sparkle!'",
+"'Я зелёный, как ёлочка!'": "\"I'm green like the tree!\"",
+"'Тсс, я прячусь в ветках!'": "\"Shh, I'm hiding in the branches!\"",
+"'Ой, какой ты милый!'": "\"Oh, you're so sweet!\"",
+"'Я самый розовенький!'": "\"I'm the pinkest!\"",
+"'Эй, не мешай!'": "\"Hey, don't bother me!\""
 }
 }

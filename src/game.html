@@ -387,6 +387,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .tray9:has(.float9){z-index:6;bottom:9%}
 @keyframes bob9{50%{translate:0 -6px}}
 .walker.tiny9{scale:.8}
+.ep9room .chip9{z-index:12}
 .chip9{position:absolute;padding:5px 9px;border-radius:12px;background:#fff;border:2px solid var(--wc);box-shadow:0 3px 8px #0002;font:800 13px var(--body);color:#222;width:max-content;max-width:42vw;z-index:7;pointer-events:none;animation:pop .25s}
 .cd9{position:absolute;left:50%;top:40%;translate:-50% -50%;padding:10px 26px;border-radius:24px;background:#fffffff0;box-shadow:0 8px 24px #0003;font:900 clamp(30px,10vw,52px) var(--display);color:var(--accent,#d64535);z-index:8;white-space:nowrap}
 .tray9.lock9{opacity:.55;pointer-events:none;filter:saturate(.6)}
@@ -2474,7 +2475,7 @@ function makeMain(cls){
     if(handlers2.move) return; // в сценах с рисованием пальцем тап по пауку — часть игры
     e.preventDefault(); if(busy2) return;
     if(t.wrap.classList.contains('asleep')){say(t,'<b>Хррр…</b>',1000);return}
-    restart(t.btn,'jump'); sfx.jump(); talk2(t,pick(['Я чёрный паук!','Хи-хи, щекотно!','Скоро спать!']));
+    restart(t.btn,'jump'); sfx.jump(); const line=pick(['Я чёрный паук!','Хи-хи, щекотно!','Скоро спать!']); t.onTap?t.onTap(line):talk2(t,line);
   });
   return t;
 }
@@ -6108,7 +6109,7 @@ function bsay(t,ms=1800){ if(!S2) return; chipB?.remove(); clearTimeout(chipBT);
   const s=rr(), x=parseFloat(S2.wrap.style.left), y=parseFloat(S2.wrap.style.top); c.style.top=(y+28)+'px'; c.style.right=(s.width-x+30)+'px';
   room.appendChild(c); chipB=c; speak(t,S2.pitch,S2.rate,S2.who,S2.voice); chipBT=setTimeout(()=>{ c.remove(); if(chipB===c) chipB=null },ms) }
 function spider9(){
-  S2=makeMain('small'); wearAll(S2,['santa']); const s=rr(); put(S2,{x:s.width*.86,y:s.height*.16});
+  S2=makeMain('small'); wearAll(S2,['santa']); S2.onTap=()=>bsay(pick(['Хи-хи, щекотно!','Я чёрный паук!','Красивая ёлка, правда?']),1500); const s=rr(); put(S2,{x:s.width*.86,y:s.height*.16});
   const th=document.createElement('div'); th.className='thread'; th.style.left=s.width*.86+'px'; th.style.height=s.height*.16+'px'; room.prepend(th);
 }
 function jingle9(k){ const sc=[72,74,76,77,79,81,83,84,86,88]; const f=440*2**((sc[k%sc.length]-69)/12); tone(f,.25,'sine',0,.05); tone(f*2,.12,'sine',.03,.02); tone(f*3,.08,'triangle',.05,.01) }
@@ -6120,29 +6121,31 @@ SCENES.toys9=function(alive){
   const s0=rr();
   // соперники: Фиолетовый охотится за фиолетовыми игрушками, Красный — за красными, и он быстрее
   const RIV=[
-    {k:'p',cls:'purple',label:'Фиолетовый паук',pitch:1.7,x:.14,y:.2,wait:1900,gap:[1800,3200],
+    {k:'p',cls:'purple',label:'Фиолетовый паук',pitch:1.7,poke:['Я самый фиолетовый!','Фиолетовый — лучший цвет!'],x:.14,y:.2,wait:1900,gap:[1800,3200],
      hi:'А все фиолетовые игрушки повешу я!',laugh:['Ха-ха-ха! Не успел!','Ха-ха! Моя!','Ха-ха-ха! Опять не успел!','Хи-хи! Фиолетовая — моя!'],
      more:'Ха-ха! Фиолетовых у меня больше!',less:'Эх, ты быстрый! Ладно, вешай остальные!'},
-    {k:'r',cls:'red',label:'Красный паук',pitch:1.05,x:.1,y:.5,wait:1300,gap:[1300,2400],
+    {k:'r',cls:'red',label:'Красный паук',pitch:1.05,poke:['Я быстрее всех!','Не трогай — я тороплюсь!'],x:.1,y:.5,wait:1300,gap:[1300,2400],
      hi:'А я самый быстрый! Все красные — мои!',laugh:['Ха-ха-ха, догоняй!','Ха-ха! Догоняй!','Ха-ха-ха! Я быстрее!'],
      more:'Ха-ха! Красных у меня больше! Догоняй!',less:'Ого! Ты меня догнал!'},
-    {k:'b',cls:'blue',col:'#2f7fd6',label:'Синий паук',pitch:.9,x:.9,y:.36,wait:2000,gap:[2600,4400],
+    {k:'b',cls:'blue',col:'#2f7fd6',label:'Синий паук',pitch:.9,poke:['Буль-буль! Я синий, как море!','Синие шарики — самые красивые!'],x:.9,y:.36,wait:2000,gap:[2600,4400],
      hi:'А синие игрушки — мои! Буль-буль!',laugh:['Хи-хи! Синяя — моя!','Ха-ха! Не догнал!'],
      more:'Синих у меня больше!',less:'Ну ладно, ты молодец!'},
-    {k:'y',cls:'gold',col:'#e8a816',label:'Жёлтый паук',pitch:1.4,x:.3,y:.07,wait:1800,gap:[2600,4400],
+    {k:'y',cls:'gold',col:'#e8a816',label:'Жёлтый паук',pitch:1.4,poke:['Я блестящий, как солнышко!','Блеск-блеск!'],x:.3,y:.07,wait:1800,gap:[2600,4400],
      hi:'Всё жёлтое и блестящее — моё!',laugh:['Блестяшка моя! Ха-ха!','Ха-ха! Сверкает у меня!'],
      more:'Жёлтых у меня больше! Блеск!',less:'Ой, ты успел!'},
-    {k:'g',cls:'green',col:'#3f9a4e',label:'Зелёный паук',pitch:.8,x:.91,y:.53,wait:2100,gap:[2800,4600],
+    {k:'g',cls:'green',col:'#3f9a4e',label:'Зелёный паук',pitch:.8,poke:['Я зелёный, как ёлочка!','Тсс, я прячусь в ветках!'],x:.91,y:.53,wait:2100,gap:[2800,4600],
      hi:'Зелёные шарики — мои! Под цвет ёлочки!',laugh:['Ха-ха! Зелёная — моя!','Хо-хо! Не успел!'],
      more:'Зелёных у меня больше!',less:'Эх, обогнал меня!'},
-    {k:'k',cls:'pink',col:'#ff6fae',label:'Розовый паук',pitch:1.9,x:.7,y:.07,wait:1700,gap:[2600,4400],
+    {k:'k',cls:'pink',col:'#ff6fae',label:'Розовый паук',pitch:1.9,poke:['Ой, какой ты милый!','Я самый розовенький!'],x:.7,y:.07,wait:1700,gap:[2600,4400],
      hi:'А мне все розовенькие!',laugh:['Хи-хи-хи! Розовенькая моя!','Ой, хи-хи! Не успел!'],
      more:'Хи-хи! Розовых у меня больше!',less:'Ой, ты такой быстрый!'}];
   RIV[0].col='#8a3fe0'; RIV[1].col='#d62a1e';
   for(const R of RIV){
     R.P=makeWalker(R.cls+' small tiny9',{pitch:R.pitch,rate:1.15,who:R.cls,voice:1,label:R.label}); put(R.P,{x:s0.width*R.x,y:s0.height*R.y});
     const th=document.createElement('div'); th.className='thread'; th.style.left=s0.width*R.x+'px'; th.style.height=s0.height*R.y+'px'; room.prepend(th);
-    R.mine=0; R.his=0; R.target=null; R.T=0; R.said=R.k==='p'||R.k==='r';
+    R.mine=0; R.his=0; R.target=null; R.T=0;
+    R.P.btn.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); restart(R.P.btn,pick(['jump','shake'])); tone(600+R.pitch*300,.1,'sine',0,.04,900+R.pitch*300);
+      rsay(R,pick(R.poke.concat(['Хи-хи, щекотно!','Эй, не мешай!'])),1300) });
   }
   const tray=$('r-tray');
   tray.innerHTML=TOYS9.map((t,i)=>`<button class="toy9" data-i="${i}" aria-label="Игрушка">${toy9(t)}</button>`).join('');
@@ -6178,9 +6181,12 @@ SCENES.toys9=function(alive){
       f.style.left=(x0+(to.x-x0)*q)+'px'; f.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*50)+'px';
       if(k<1) return requestAnimationFrame(step);
       f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); SLOT[i].el=o; SLOT[i].toy=+b.dataset.i; ARR9=SLOT.map((x,k)=>x&&x.toy!=null?x.toy:k); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
-      if(wrong) setTimeout(()=>crash(i,wrong),700); else if(p2+1>=EPX[l2].goal){ add2(1,false); finale() } else add2(1);
+      if(wrong) setTimeout(()=>crash(i,wrong),700); else { SLOT[i].ok=true; sync() }
     })();
   }
+  // счётчик = сколько игрушек правильно висит на ёлке (без прибавок — так он никогда не собьётся)
+  let fin=false;
+  function sync(){ const c=SLOT.filter(x=>x&&x.ok).length, was=p2; p2=c; render2(); if(c>was) sfx.tick(p2); if(c>=SLOT.length&&!fin){ fin=true; finale() } }
   // итог: сколько игрушек повесил сам чёрный паук, а сколько — соперники
   async function finale(){
     for(const R of RIV){ clearTimeout(R.T); R.target=null }
@@ -6195,13 +6201,13 @@ SCENES.toys9=function(alive){
   function crash(i,R){
     if(!alive()) return;
     const drop=k=>{ const sl=SLOT[k]; SLOT[k]=null; n--; if(sl.el){ sl.el.classList.add('fall9'); setTimeout(()=>sl.el.remove(),900) }
-      sl.b.disabled=false; sl.b.classList.remove('gone','want9'); };
+      sl.b.disabled=false; sl.b.classList.remove('gone','want9'); sync(); };
     restart(SLOT[i].el,'shake'); rsay(R,pick(['Ой! Я перепутал цвет!','Ой-ой! Это же не мой шарик!']),1600); tone(300,.3,'triangle',0,.05,120);
     setTimeout(()=>{ if(!alive()) return;
       drop(i); let lost=0;
       SLOT.forEach((sl,k)=>{ if(sl&&sl.owner==='me'&&sl.el){ setTimeout(()=>{ if(SLOT[k]===sl){ drop(k) } },60*lost); lost++ } });
       sfx.thud(); noise(.6,1500,200,.12,0,'lowpass',.6); [0,.12,.24,.36].forEach(t=>tone(rand(700,1400),.08,'sine',t+.2,.03));
-      if(lost){ add2(-lost,false); restart(S2.btn,'shake'); setTimeout(()=>alive()&&bsay('Ой-ой-ой! Все мои игрушки упали! Вешаем заново!',2200),500) }
+      sync(); if(lost){ restart(S2.btn,'shake'); setTimeout(()=>alive()&&bsay('Ой-ой-ой! Все мои игрушки упали! Вешаем заново!',2200),500) }
     },650);
   }
   tray.addEventListener('click',e=>{
