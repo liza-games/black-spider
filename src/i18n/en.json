@@ -1498,6 +1498,23 @@
 "'Ой, хи-хи! Не успел!'": "'Oh, hee-hee! Too slow!'",
 "'Хи-хи! Розовых у меня больше!'": "'Hee-hee! I hung more pink ones!'",
 "'Ой, ты такой быстрый!'": "\"Oh, you're so fast!\"",
-"'Нажимай на игрушки! Хватай быстрее — разноцветные пауки хотят повесить их сами!'": "'Tap the ornaments! Be quick — the colourful spiders want to hang them themselves!'"
+"'Нажимай на игрушки! Хватай быстрее — разноцветные пауки хотят повесить их сами!'": "'Tap the ornaments! Be quick — the colourful spiders want to hang them themselves!'",
+"'Смотри, что будет…'": "'Watch what happens…'",
+"'Уф, сколько игрушек повесили! Мне надо попить.'": "'Phew, so many ornaments! I need a drink.'",
+"'Налью себе водички!'": "\"I'll pour myself some water!\"",
+"'<b>Глык-глык…</b>'": "'<b>Glug-glug…</b>'",
+"'Уф, больше не хочу. Поставлю тут.'": "\"Phew, that's enough. I'll leave it here.\"",
+"'О, водичка! Можно мне?'": "'Ooh, water! Can I have some?'",
+"'Ой-ой! Я её уронил!'": "'Oops! I knocked it over!'",
+"'Воды всё больше и больше!'": "'More and more water!'",
+"'Это же целое море!'": "\"It's a whole sea!\"",
+"'Ой! Кто это?'": "\"Oh! Who's that?\"",
+"'Привет! Я морская звезда! Я сама поставлю звезду на ёлку — я ведь тоже звезда!'": "\"Hi! I'm a starfish! I'll put the star on the tree myself — I'm a star too!\"",
+"`<button class=\"toy9 big float9\" aria-label=\"Звезда\">${STAR9}</button>`": "`<button class=\"toy9 big float9\" aria-label=\"Star\">${STAR9}</button>`",
+"'Скорее нажми на звезду, пока её не забрала морская звезда!'": "'Quick, tap the star before the starfish takes it!'",
+"'Нет, это я поставлю! Скорее нажимай на звезду!'": "\"No, I'll do it! Quick, tap the star!\"",
+"'Эх! Ты успел… Ну ладно, я буду жить под ёлкой!'": "\"Oh! You made it… Fine, I'll live under the tree!\"",
+"'Ура! Я поставила звезду! Ха-ха!'": "'Hooray! I put the star on! Ha-ha!'",
+"'Ну ладно, зато как красиво!'": "'Oh well, but it looks so pretty!'"
 }
 }
