@@ -719,7 +719,7 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .tools11 button.on{background:#3d8fe0;box-shadow:0 0 0 3px #fff,0 3px 8px #0003}
 .tools11 button.on svg{fill:#fff}
 .open11{border:0;border-radius:999px;padding:11px 22px;font:900 18px var(--body);color:#fff;background:#3d8fe0;box-shadow:0 4px 0 #2464b8;cursor:pointer}
-.shelf11{position:absolute;right:4%;bottom:4%;display:flex;gap:6px;z-index:3}
+.shelf11{position:absolute;right:3%;top:2%;display:flex;gap:6px;z-index:3}
 .shelf11 img{width:clamp(44px,13vw,64px);aspect-ratio:1;animation:pop .4s;filter:drop-shadow(0 2px 3px #0002)}
 @keyframes unfold{from{scale:.1;rotate:-200deg;opacity:0}}
 .bells{position:absolute;left:3%;right:3%;top:8%;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:2}
@@ -5635,7 +5635,7 @@ SCENES.adv11=function(alive){
   const NS='http://www.w3.org/2000/svg', D2R=Math.PI/180, R=90;
   const P=(r,deg)=>`${(r*Math.cos(deg*D2R)).toFixed(2)} ${(r*Math.sin(deg*D2R)).toFixed(2)}`;
   const FL=[{col:'#ffffff',edge:'#9fc4e0',m:6,folds:[180,60,30],vb:[-8,-8,106,62]},
-            {col:'#cfe7ff',edge:'#6fa8dc',m:4,folds:[180,90,45],vb:[-8,-8,106,80]}];
+            {col:'#e2382c',edge:'#a8231a',m:4,folds:[180,90,45],vb:[-8,-8,106,80]}];
   // формы дырочек: точки многоугольника в единицах радиуса (круг — отдельно)
   const SH={
     circle:null,
@@ -5661,7 +5661,7 @@ SCENES.adv11=function(alive){
   function begin(){
     const F=FL[f]; stage='fold'; th=360; fi=0; H=[]; holes.innerHTML=''; shape.setAttribute('fill',F.col); shape.setAttribute('stroke',F.edge); shape.setAttribute('d',sector(360));
     pap.setAttribute('viewBox','-100 -100 200 200'); g.removeAttribute('transform'); papw.classList.remove('gone'); flk.hidden=true; tools.classList.add('hid'); openB.classList.add('hid'); pick11('circle');
-    talk2(S2,f===0?'Вот круглый листок! Нажимай на него — сложим.':'А эту сложим по-другому — будет восемь лучиков!',2600);
+    talk2(S2,f===0?'Вот круглый листок! Нажимай на него — сложим.':'А теперь красная! Её сложим по-другому — будет восемь лучиков!',2600);
     setHint('Нажимай на бумагу — она сложится');
     // на низких экранах уменьшаем лист, чтобы кнопки не заезжали под облачко паука (оно внизу, ~110px)
     requestAnimationFrame(()=>{ const rm=rr(), col=room.querySelector('.col11').getBoundingClientRect(), over=col.bottom-(rm.bottom-118);
@@ -5709,7 +5709,7 @@ SCENES.adv11=function(alive){
     if(stage!=='cut'||busy) return;
     if(!H.length){ say(S2,'Сначала вырежи хоть одну дырочку!',1200); restart(openB,'shake'); return }
     stage='open'; tools.classList.add('hid'); openB.classList.add('hid'); papw.classList.add('gone'); sfx.page(); await wait(350); if(!alive()) return;
-    flk.hidden=false; draw(); restart(flk,'unf11'); taDa(); const r=flk.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#9fd0f5','#ffe27a']);
+    flk.hidden=false; flk.style.filter=`drop-shadow(0 0 .6px ${FL[f].edge}) drop-shadow(0 3px 5px #0002)`; draw(); restart(flk,'unf11'); taDa(); const r=flk.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2,40,6,['#fff','#9fd0f5','#ffe27a']);
     talk2(S2,pick(['Ух ты! Какая красивая снежинка!','Красота! Ни одной такой больше нет!','Вот это узор!']),2000); add2(1,false);
     await wait(2600); if(!alive()) return;
     const mini=document.createElement('img'); mini.src=flk.toDataURL(); $('r-shelf').appendChild(mini);
