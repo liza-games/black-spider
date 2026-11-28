@@ -6249,8 +6249,9 @@ SCENES.star9=function(alive){
   { const gW=Math.round(s.width*.09); glass.style.width=gW+'px'; glass.style.height=Math.round(gW*1.38)+'px' }
   const go=(ms)=>new Promise(r=>setTimeout(r,ms));
   // паук ездит по ниточке вверх-вниз
-  function slide(P,th,x,y0,y1,ms){ const t0=performance.now(); return new Promise(res=>(function st(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/ms), q=k<.5?2*k*k:1-(-2*k+2)**2/2, y=y0+(y1-y0)*q;
-    put(P,{x:s.width*x,y:s.height*y}); th.style.height=s.height*y+'px'; k<1?requestAnimationFrame(st):res() })()) }
+  // без CSS-перехода у паука: иначе ниточка уезжает вниз раньше, а паук догоняет её с опозданием
+  function slide(P,th,x,y0,y1,ms){ const t0=performance.now(); P.wrap.classList.add('noanim'); return new Promise(res=>(function st(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/ms), q=k<.5?2*k*k:1-(-2*k+2)**2/2, y=y0+(y1-y0)*q;
+    put(P,{x:s.width*x,y:s.height*y}); th.style.height=s.height*y+'px'; if(k<1) requestAnimationFrame(st); else { P.wrap.classList.remove('noanim'); res() } })()) }
   setHint('Смотри, что будет…');
   (async()=>{
     bsay('Уф, сколько игрушек повесили! Мне надо попить.',2200); await go(2300); if(!alive()) return;
@@ -6260,7 +6261,7 @@ SCENES.star9=function(alive){
     // спускаемся ровно к стакану: пьём, только когда доехали
     const gTop=(glass.getBoundingClientRect().top-rr().top)/s.height, yDrink=gTop-S2.wrap.offsetHeight*.3/s.height;
     await slide(S2,th0,.86,.16,yDrink,1100); if(!alive()) return; await go(250); if(!alive()) return;
-    for(let k=0;k<3;k++){ tone(320-k*30,.12,'sine',k*.28,.05,200); } gw.style.height='45%'; bsay('Глык-глык…',1200); await go(1300); if(!alive()) return;
+    gw.style.transition='height .35s'; bsay('Глык-глык…',1400); for(const [k,h] of [[0,'72%'],[1,'58%'],[2,'45%']]){ tone(320-k*30,.12,'sine',0,.05,200); gw.style.height=h; await go(420); if(!alive()) return } await go(400); if(!alive()) return;
     bsay('Уф, больше не хочу. Поставлю тут.',1800); await go(1900); if(!alive()) return;
     await slide(S2,th0,.86,yDrink,.16,900); if(!alive()) return;
     // приходит Фиолетовый и опрокидывает стакан
