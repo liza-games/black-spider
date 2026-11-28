@@ -385,9 +385,10 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 @keyframes pop9{from{scale:1.6}to{scale:1}}
 .orn9.fly{z-index:6;translate:-50% 0}
 .tray9{position:absolute;left:3%;right:3%;bottom:2.5%;display:flex;flex-wrap:wrap;justify-content:center;gap:6px;z-index:5}
-.toy9{width:50px;height:54px;padding:4px 7px;border:0;border-radius:14px;background:#fff9;box-shadow:0 2px 6px #0002;cursor:pointer;transition:opacity .2s,scale .2s;--ow:36px}
+.toy9{width:46px;height:50px;padding:4px 7px;border:0;border-radius:14px;background:#fff9;box-shadow:0 2px 6px #0002;cursor:pointer;transition:opacity .2s,scale .2s;--ow:36px}
 .toy9 svg{display:block;width:100%;height:100%}
 .toy9.big{width:84px;height:84px;padding:8px;animation:bellnext .9s ease-in-out infinite}
+.toy9.want9p{box-shadow:0 0 0 3px #7a3cc9,0 0 16px #b07aff;animation:shake .4s infinite}
 .toy9.gone{opacity:0;scale:.4;pointer-events:none}
 .star9{position:absolute;width:calc(var(--ow,36px)*1.9);translate:-50% -50%;z-index:4;pointer-events:none}
 .star9 svg{display:block;width:100%}
@@ -2238,7 +2239,7 @@ const EP7=[
   {key:'cup7',   title:'Кубок чемпиона',              goal:1,  unit:'',  done:''}
 ];
 const EP9=[
-  {key:'toys9',  title:'Повесь игрушки на ёлку',      goal:10, unit:'игрушек', done:'Какая нарядная ёлка!'},
+  {key:'toys9',  title:'Повесь игрушки на ёлку',      goal:16, unit:'игрушек', done:'Какая нарядная ёлка!'},
   {key:'star9',  title:'Звезда на макушку',           goal:1,  unit:'',        done:'Звёздочка сияет!'},
   {key:'lights9',title:'Зажги огоньки',               goal:11, unit:'огоньков',done:'С Новым годом!'}
 ];
@@ -5503,9 +5504,10 @@ const TREE9=`<svg viewBox="0 0 200 240" class="tree9svg" aria-hidden="true">
   <g fill="#fff" opacity=".9"><path d="M8 206 Q30 196 52 205 Q76 196 100 207 Q124 196 148 205 Q170 196 192 206 Q100 216 8 206Z"/><path d="M28 148 Q46 140 64 147 Q82 139 100 148 Q118 139 136 147 Q154 140 172 148 Q100 158 28 148Z"/><path d="M48 88 Q61 81 74 87 Q87 80 100 88 Q113 80 126 87 Q139 81 152 88 Q100 97 48 88Z"/></g>
 </svg>`;
 // места для игрушек на ёлке (в единицах viewBox 200×240) — в таком порядке они и вешаются
-const SPOTS9=[[100,62],[78,120],[124,116],[60,180],[100,168],[142,178],[84,76],[100,128],[34,198],[164,196]];
+const SPOTS9=[[100,50],[78,120],[124,116],[60,180],[100,168],[142,178],[82,78],[100,146],[34,198],[164,196],[118,78],[56,140],[146,138],[100,104],[80,196],[122,196]];
 const TOYS9=[
-  {c:'#e8483c'},{c:'#3d8fe0'},{c:'#f5c03a'},{c:'#7a3cc9'},{e:'🔔'},{c:'#ff7ab0'},{e:'🍭'},{c:'#4fae5a'},{e:'🧸'},{c:'#ffffff'}
+  {c:'#e8483c'},{c:'#3d8fe0'},{c:'#9b4fe0',p:1},{c:'#f5c03a'},{e:'🔔'},{c:'#7a3cc9',p:1},{c:'#ff7ab0'},{e:'🍭'},
+  {c:'#4fae5a'},{c:'#b07aff',p:1},{e:'🧸'},{c:'#ffffff'},{c:'#e8483c'},{c:'#6a2cb8',p:1},{e:'🍬'},{c:'#3d8fe0'}
 ];
 function ball9(c){ return `<svg viewBox="0 0 40 48"><rect x="15" y="0" width="10" height="7" rx="2" fill="#c9a24a"/><circle cx="20" cy="27" r="18" fill="${c}" stroke="#0002" stroke-width="1.5"/>
   <path d="M5 24 Q20 32 35 24" stroke="#fff8" stroke-width="3" fill="none"/><ellipse cx="13" cy="19" rx="5" ry="3.5" fill="#fff" opacity=".7" transform="rotate(-30 13 19)"/></svg>` }
@@ -5517,7 +5519,7 @@ function tree9Scene(done,star){
   room.className='room ep9room';
   room.innerHTML=`<div class="win9"></div><div class="floor9"></div><div class="tree9" id="r-tree">${TREE9}<div class="lights9" id="r-lights"></div></div><div class="tray9" id="r-tray"></div>`;
   const tree=$('r-tree'), s=rr();
-  const W=Math.min(s.width*.78,s.height*.6); tree.style.width=W+'px'; tree.style.height=W*1.2+'px'; room.style.setProperty('--ow',Math.max(26,W*.13)+'px');
+  const W=Math.min(s.width*.74,s.height*.48); tree.style.width=W+'px'; tree.style.height=W*1.2+'px'; room.style.setProperty('--ow',Math.max(26,W*.13)+'px');
   for(let i=0;i<done;i++) hang9(i,false);
   if(star) putStar9(false);
   return tree;
@@ -5539,32 +5541,50 @@ function spider9(){
 }
 function jingle9(k){ const sc=[72,74,76,77,79,81,83,84,86,88]; const f=440*2**((sc[k%sc.length]-69)/12); tone(f,.25,'sine',0,.05); tone(f*2,.12,'sine',.03,.02); tone(f*3,.08,'triangle',.05,.01) }
 
-// 1. Игрушки: внизу лежат в коробке — нажимаешь, игрушка летит на ёлку
+// 1. Игрушки: внизу лежат в коробке — нажимаешь, игрушка летит на ёлку.
+// Фиолетовый паук хочет сам повесить все фиолетовые игрушки: если не успеть нажать на фиолетовую, он её утащит
 SCENES.toys9=function(alive){
   tree9Scene(0,false); spider9();
+  const s0=rr(), P=makeWalker('purple small',{pitch:1.7,rate:1.15,who:'purple',voice:1,label:'Фиолетовый паук'});
+  put(P,{x:s0.width*.14,y:s0.height*.2});
+  { const th=document.createElement('div'); th.className='thread'; th.style.left=s0.width*.14+'px'; th.style.height=s0.height*.2+'px'; room.prepend(th) }
   const tray=$('r-tray');
   tray.innerHTML=TOYS9.map((t,i)=>`<button class="toy9" data-i="${i}" aria-label="Игрушка">${toy9(t)}</button>`).join('');
-  setHint('Нажимай на игрушки — они сами повесятся на ёлку');
+  setHint('Нажимай на игрушки! Фиолетовые — быстрее, а то их утащит Фиолетовый!');
   talk2(S2,'Давай нарядим ёлку! Нажимай на игрушки!',2400);
-  let n=0;
-  const SAY=['Красота!','Ещё одну!','Как блестит!','Ух ты!','Ёлочка улыбается!','Здорово!'];
-  tray.addEventListener('click',e=>{
-    const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2) return;
-    b.disabled=true; b.classList.add('gone');
-    const i=n++, from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
-    const fly=document.createElement('div'); fly.className='orn9 fly'; fly.innerHTML=b.innerHTML;
-    fly.style.left=(from.left-s.left+from.width/2)+'px'; fly.style.top=(from.top-s.top+from.height*.2)+'px'; room.appendChild(fly);
+  setTimeout(()=>{ if(alive()) talk2(P,'А все фиолетовые игрушки повешу я!',2200) },2600);
+  let n=0, mine=0, his=0, target=null, grabT=0;
+  const LAUGH=['Ха-ха-ха! Не успел!','Ха-ха! Моя!','Ха-ха-ха! Опять не успел!','Хи-хи! Фиолетовая — моя!'];
+  function fly(b,who){
+    b.disabled=true; b.classList.remove('want9p'); b.classList.add('gone');
+    const i=n++, t=TOYS9[+b.dataset.i], from=b.getBoundingClientRect(), s=rr(), to=spot9(i);
+    const f=document.createElement('div'); f.className='orn9 fly'; f.innerHTML=b.innerHTML; room.appendChild(f);
+    const x0=from.left-s.left+from.width/2, y0=from.top-s.top+from.height*.2, t0=performance.now(), T=650;
     sfx.jump();
-    // летит по дуге: вверх и на своё место
-    const x0=parseFloat(fly.style.left), y0=parseFloat(fly.style.top), t0=performance.now(), T=650;
     (function step(){ if(!alive()) return; const k=Math.min(1,(performance.now()-t0)/T), q=1-(1-k)**2;
-      fly.style.left=(x0+(to.x-x0)*q)+'px'; fly.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*60)+'px'; fly.style.rotate=(1-k)*360+'deg';
+      f.style.left=(x0+(to.x-x0)*q)+'px'; f.style.top=(y0+(to.y-y0)*q-Math.sin(k*Math.PI)*60)+'px'; f.style.rotate=(1-k)*360+'deg';
       if(k<1) return requestAnimationFrame(step);
-      fly.remove(); hang9(i,true); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',TOYS9[i].c||'#ff9ab8']);
-      if(n%3===0&&n<TOYS9.length) talk2(S2,pick(SAY),1400);
+      f.remove(); const o=hang9(i,true); o.innerHTML=toy9(t); jingle9(i); burst(s.left+to.x,s.top+to.y+12,14,4,['#fff','#ffe27a',t.c||'#ff9ab8']);
       add2(1);
     })();
+  }
+  tray.addEventListener('click',e=>{
+    const b=e.target.closest('.toy9'); if(!b||b.disabled||busy2) return;
+    if(b===target){ clearTimeout(grabT); target=null; mine++; talk2(S2,pick(['Успел!','Эта моя!','Ага, не отдам!']),1200); restart(P.btn,'shake'); schedule() }
+    else if(TOYS9[+b.dataset.i].p) mine++;
+    fly(b,'me');
   });
+  // Фиолетовый присматривает фиолетовую игрушку (она мигает), и если её не нажать — забирает
+  function schedule(){ clearTimeout(grabT); grabT=setTimeout(aim,rand(1800,3200)) }
+  function aim(){
+    if(!alive()||busy2) return;
+    const left=[...tray.querySelectorAll('.toy9:not(.gone)')].filter(b=>TOYS9[+b.dataset.i].p);
+    if(!left.length){ if(his>0||mine>0) talk2(P,his>mine?'Ха-ха! Фиолетовых у меня больше!':'Эх, ты быстрый! Ладно, вешай остальные!',2000); return }
+    target=pick(left); target.classList.add('want9p'); tone(700,.15,'triangle',0,.03,900);
+    grabT=setTimeout(()=>{ if(!alive()||!target) return; const b=target; target=null; his++;
+      restart(P.btn,'jump'); fly(b,'purple'); talk2(P,pick(LAUGH),1500); sfx.laugh(); schedule() },1900);
+  }
+  setTimeout(()=>{ if(alive()) schedule() },4200);
 };
 
 // 2. Звезда на макушку: паук спускается за звездой и ставит её наверх
