@@ -461,6 +461,11 @@ footer button:focus-visible,#replay:focus-visible{outline:2px solid var(--accent
 .tugtrack u{position:absolute;top:0;bottom:0;border-radius:7px;transition:left .35s,width .35s}
 .tugtrack u.p{background:var(--violet)}.tugtrack u.b{background:#1d1d1b}
 .tugtrack i{position:absolute;top:50%;left:50%;width:22px;height:22px;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#dbe8f3);box-shadow:0 2px 4px #0004;transition:left .35s cubic-bezier(.3,1.4,.5,1)}
+.bubble.dotty{padding:10px 16px;min-width:0}
+.tdots{display:flex;gap:6px;align-items:center;height:14px}
+.tdots i{width:9px;height:9px;border-radius:50%;background:var(--fg);opacity:.35;animation:tdot 1s ease-in-out infinite}
+.tdots i:nth-child(2){animation-delay:.15s}.tdots i:nth-child(3){animation-delay:.3s}
+@keyframes tdot{30%{opacity:1;translate:0 -4px}60%{opacity:.35;translate:0 0}}
 .walker.purple{transition:transform .25s cubic-bezier(.3,1.4,.5,1),opacity .2s}
 .snowball{position:absolute;left:0;top:0;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#dbe8f3);box-shadow:0 2px 3px #0003;z-index:8;pointer-events:none}
 .garwire{position:absolute;left:0;top:10%;width:100%;height:22%;z-index:1}
@@ -1305,7 +1310,9 @@ const H=()=>B.wrap.offsetWidth*170/200;
 function home(s){const r=rect();return{x:r.width*s.anchor,y:Math.max(H()*.35+54,r.height*.2)}}
 function restart(el,cls){el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls)}
 function say(s,html,ms=1800){
-  s.bubble.innerHTML=html;
+  // в сценах, где пауки быстро ездят (каток), вместо текста — облачко с бегущими точками: текст на ходу дрожит, а голос всё равно слышно
+  s.bubble.innerHTML=s.dots?'<span class="tdots"><i></i><i></i><i></i></span>':html;
+  s.bubble.classList.toggle('dotty',!!s.dots);
   if(s.stageEl){ // эпизод 2: позиция из разметки
     const st=s.stageEl.getBoundingClientRect(), wr=s.wrap.getBoundingClientRect();
     s.bubble.classList.toggle('flip',wr.left+wr.width/2-st.left>st.width*.5);
@@ -5137,7 +5144,7 @@ SCENES.adv7=function(alive){
 SCENES.adv8=function(alive){
   room.className='room rink';
   room.innerHTML=`<canvas class="cv" id="r-cv"></canvas>`;
-  S2=makeMain('small free'); wearAll(S2,['santa']); const s=rr();
+  S2=makeMain('small free'); wearAll(S2,['santa']); const s=rr(); S2.dots=true;
   const cv=$('r-cv'), g=cv.getContext('2d'), dpr=Math.min(2,devicePixelRatio||1); cv.width=s.width*dpr; cv.height=s.height*dpr; g.setTransform(dpr,0,0,dpr,0,0);
   const sw=Math.min(s.width*.24,s.height*.15); S2.wrap.style.width=sw+'px';
   const st={x:s.width*.5,y:s.height*.6,vx:0,vy:0,tx:null,ty:null,trail:[],stars:[],t:0,part:'stars',got:0};
@@ -5157,7 +5164,7 @@ SCENES.adv8=function(alive){
     st.part=part;
     if(part==='heart'){ talk2(S2,'Теперь фигурное катание! Нарисуем коньками сердечко — по точкам!',2800); setHint('Катись по светящимся точкам по очереди — получится сердечко') }
     if(part==='tag'){ talk2(S2,'Ой, кто это там? Фиолетовый! Догоним его!',2400); setHint('Догони Фиолетового — подкатись к нему вплотную!');
-      P=makeWalker('purple small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:'Фиолетовый паук'}); P.wrap.style.width=sw*.9+'px';
+      P=makeWalker('purple small free',{pitch:1.3,rate:1.15,who:'r7',voice:1,label:'Фиолетовый паук'}); P.wrap.style.width=sw*.9+'px'; P.dots=true;
       pv.x=s.width*.85; pv.y=s.height*.2; setTimeout(()=>alive()&&P&&talk2(P,'Не догонишь! Я самый быстрый на льду!',2000),1200) }
   }
   window._rink={st,pv,toTag:()=>{ st.got=8; hi=HEART.length; p2=18; render2(); nextPart('tag') }};   // для автопроверки
@@ -5196,9 +5203,9 @@ SCENES.adv8=function(alive){
       else { pv.vx*=Math.pow(.3,dt); pv.vy*=Math.pow(.3,dt) }
       pv.x=Math.max(sw*.4,Math.min(s.width-sw*.4,pv.x+pv.vx*dt)); pv.y=Math.max(sw*.4,Math.min(s.height-sw*.3,pv.y+pv.vy*dt));
       if(pv.immune<=0&&Math.hypot(pv.x-st.x,pv.y-st.y)<sw*.6){ pv.tired=false; pv.stun=.25; pv.immune=1.8; pv.slipT=2.5; pv.vx=(pv.x-st.x)*6; pv.vy=(pv.y-st.y)*6;   // поймали — мигает и сразу удирает, пару секунд его не поймать st.got++; sparkle(pv.x,pv.y,26); restart(P.btn,'shake'); sfx.pop();
-        const left=11-st.got; add2(1,false);
-        if(left>0) talk2(P,pick(['Ой, поймал!','Эй, щекотно!','Ладно-ладно, ещё раз!']),1300);
-        else { talk2(P,'Сдаюсь! Ты катаешься лучше всех!',2000); st.part='done'; setTimeout(()=>alive()&&add2(0),1600) } }
+        add2(1,false);
+        if(p2<EPX[l2].goal) talk2(P,pick(['Ой, поймал!','Эй, щекотно!','Ладно-ладно, ещё раз!']),1300);
+        else { talk2(P,'Сдаюсь! Ты катаешься лучше всех!',2000); st.part='done'; P.dots=false; setTimeout(()=>alive()&&add2(0),1600) } }
       P.btn.style.rotate=Math.max(-20,Math.min(20,pv.vx*.06)).toFixed(1)+'deg'; P.wrap.style.transform=`translate(${(pv.x-sw*.45).toFixed(1)}px,${(pv.y-sw*.45).toFixed(1)}px)`;
       P.wrap.style.opacity=pv.immune>0?.55+.45*Math.round(st.t*8%1):1 }
     // рисуем: следы коньков, звёзды, точки сердечка
