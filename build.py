@@ -55,11 +55,11 @@ page = f"""<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="only light">
-<meta name="description" content="Добрая игра для детей про чёрного паука: ловим мух, плывём на остров, соревнуемся на олимпиаде и открываем адвент-календарь.">
+<meta name="description" content="Восемь лап — восемь приключений: ловим мух, плывём на остров, бегаем наперегонки с соседями и открываем адвент-календарь.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Чёрный паук">
 <meta property="og:title" content="Чёрный паук">
-<meta property="og:description" content="Добрая игра для детей: ловим мух, плывём на остров, соревнуемся и ждём Новый год.">
+<meta property="og:description" content="Восемь лап — восемь приключений! Ловим мух, плывём на остров, бегаем наперегонки и ждём Новый год.">
 <meta property="og:url" content="https://liza-games.github.io/black-spider/">
 <meta property="og:image" content="https://liza-games.github.io/black-spider/preview.png">
 <meta property="og:image:type" content="image/png">
