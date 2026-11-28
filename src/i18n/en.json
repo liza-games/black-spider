@@ -1415,6 +1415,24 @@
 "'Соединяй звёздочки по порядку: 1, 2, 3…'": "'Join the stars in order: 1, 2, 3…'",
 "'Сегодня особенная ночь! Зажжём главную звезду!'": "\"Tonight is a special night! Let's light the big star!\"",
 "`Сначала <b>${k+1}</b>!`": "`First <b>${k+1}</b>!`",
-"'Смотри! Дед Мороз летит! С Новым годом!'": "'Look! Father Frost is flying! Happy New Year!'"
+"'Смотри! Дед Мороз летит! С Новым годом!'": "'Look! Father Frost is flying! Happy New Year!'",
+"`Сегодня ${today} декабря! Найди окошко с этим числом!`": "`Today is December ${today}! Find the window with that number!`",
+"'Смотри внимательно: из сугроба торчат колючки!'": "'Look closely: prickles are sticking out of a snowdrift!'",
+"'Ищи следы ёжика на снегу!'": "\"Look for the hedgehog's tracks in the snow!\"",
+"'Ёжик дышит — видишь тёплый парок?'": "'The hedgehog is breathing — can you see the warm puff?'",
+"'Ёжик утащил яблочко — оно торчит из сугроба!'": "'The hedgehog took an apple — it is sticking out of a drift!'",
+"'Последний раз! Снова ищи колючки!'": "'Last time! Look for the prickles again!'",
+"'Эй! Это мой сугроб!'": "'Hey! This is my snowdrift!'",
+"'Угу! Не мешай спать!'": "\"Hoo! Don't wake me up!\"",
+"'Привет! Я маленький снеговик!'": "\"Hi! I'm a little snowman!\"",
+"'Хррр… Тише, я сплю!'": "\"Zzz… Shh, I'm sleeping!\"",
+"'Ёжика ищешь? Он не тут!'": "\"Looking for the hedgehog? He's not here!\"",
+"'Чик-чирик! Улетаю!'": "\"Tweet-tweet! I'm off!\"",
+"'Ой, чей-то носок!'": "\"Oh, someone's sock!\"",
+"'Пи-пи! Напугал!'": "'Squeak! You scared me!'",
+"'Ищи примету — где прячется ёжик? Не тыкай наугад: спугнёшь!'": "\"Look for a clue — where is the hedgehog? Don't tap at random, you'll scare him!\"",
+"'Ёжик спрятался в сугробе! Найдёшь его по примете?'": "'The hedgehog is hiding in a snowdrift! Can you find him by a clue?'",
+"`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Сугроб\"><span class=\"in\">${k===hog?'🦔':occ[k][0]}</span><i></i>${k===decoy?`<b class=\"clue c-decoy\">${pick(DECOY)}</b>`:''}</button>`": "`<button class=\"drift\" data-k=\"${k}\" aria-label=\"Snowdrift\"><span class=\"in\">${k===hog?'🦔':occ[k][0]}</span><i></i>${k===decoy?`<b class=\"clue c-decoy\">${pick(DECOY)}</b>`:''}</button>`",
+"'Ой! Ёжик испугался шума и перебежал! Ищи примету снова!'": "'Oh! The noise scared the hedgehog and he ran off! Look for the clue again!'"
 }
 }
